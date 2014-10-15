@@ -50,7 +50,7 @@ class UrlManager extends BaseUrlManager
             unset($params[$this->languageParam]);
             $languageRequired = true;
         } else {
-            $language = Yii::app()->language;
+            $language = Yii::$app->language;
             $languageRequired = false;
         }
 
@@ -59,7 +59,7 @@ class UrlManager extends BaseUrlManager
         // Unless a language was explicitely specified in the parameters we can return a URL without any prefix
         // for the default language, if suffixes are disabled for the default language. In any other case we
         // always add the suffix, e.g. to create "reset" URLs that explicitely contain the default language.
-        if (!$languageRequired && !$localeurls->enableDefaultSuffix && $language===$localeUrls->getDefaultLanguage()) {
+        if (!$languageRequired && !$localeUrls->enableDefaultSuffix && $language===$localeUrls->getDefaultLanguage()) {
             return  $url;
         } else {
             $key = array_search($language, $localeUrls->languages);

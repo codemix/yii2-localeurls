@@ -92,21 +92,23 @@ class LocaleUrls extends Component
         $pathInfo = $request->getPathInfo();
         $languages = [];
         foreach ($this->languages as $k => $v) {
-            $languages = is_string($k) ? $k : $v;
+            $languages[] = is_string($k) ? $k : $v;
         }
         $pattern = implode('|', $languages);
-        if (preg_match("#^($pattern)\b(\?)#", $pathInfo, $m)) {
+        if (preg_match("#^($pattern)\b(/?)#", $pathInfo, $m)) {
             $pathInfo = mb_substr($pathInfo, mb_strlen($m[1].$m[2]));
             $language = $m[1];
             Yii::$app->language = $language;
             if ($this->enablePersistence) {
                 Yii::$app->session[$this->languageSessionKey] = $language;
                 if ($this->languageCookieDuration) {
-                    $cookies = $this->getCookies();
-                    $cookie = new Cookie($this->languageCookieName);
+                    $cookie = new Cookie([
+                        'name' => $this->languageCookieName,
+                        'httpOnly' => true
+                    ]);
                     $cookie->value = $language;
                     $cookie->expire = time() + (int) $this->languageCookieDuration;
-                    $cookies->add($cookie);
+                    Yii::$app->getResponse()->getCookies()->add($cookie);
                 }
             }
 
@@ -126,7 +128,7 @@ class LocaleUrls extends Component
             if ($this->enablePersistence) {
                 $language = Yii::$app->session->get($this->languageSessionKey);
                 if ($language===null) {
-                    $language = $this->getCookies()->get($this->languageCookieName);
+                    $language = $request->getCookies()->get($this->languageCookieName);
                 }
             }
             if ($language===null && $this->enableLanguageDetection) {
@@ -146,9 +148,9 @@ class LocaleUrls extends Component
             }
 
             $baseUrl = $request->getBaseUrl();
-            $length = $baseUrl==='' ? strlen("$baseUrl/$language") : 0;
+            $length = strlen($baseUrl);
             $url = $request->getUrl();
-            $url = $length ? substr_replace($url, $baseUrl, 1, $length) : "/$language$url";
+            $url = $length ? substr_replace($url, "/$language", $length+1, 0) : "/$language$url";
             Yii::$app->getResponse()->redirect($url);
         }
     }

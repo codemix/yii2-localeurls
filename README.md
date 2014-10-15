@@ -36,13 +36,17 @@ Install the package through [composer](http://getcomposer.org):
 
     composer require codemix/yii2-localeurls
 
-You then need to configure two application components in your application
-configuration:
+And then add this to your application configuration:
 
 ```php
 <?php
 return [
     // ...
+
+    'bootstrap' => ['localeUrls'],
+
+    // ...
+
     'components' => [
         // ...
 
