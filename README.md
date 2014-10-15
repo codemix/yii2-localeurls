@@ -36,7 +36,7 @@ Install the package through [composer](http://getcomposer.org):
 
     composer require codemix/yii2-localeurls
 
-Then you need to configure two application components in your application
+You then need to configure two application components in your application
 configuration:
 
 ```php
@@ -103,7 +103,7 @@ This will give you a URL like
 > the language parameter is always prepended/insterted to the final relative/absolute URL.
 
 If for some reason you want to use a different name than `language` for that URL
-parameter you can configure it through the `languageParam` option of the `UrlManager`
+parameter you can configure it through the `languageParam` option of the `urlManager`
 component.
 
 ### Default Language
@@ -135,16 +135,17 @@ language code are no longer accessible:
 ### Language Configuration
 
 All languages including the default language must be configured in the `languages`
-parameter of the `localeUrls` component. You should list more specific languages first:
+parameter of the `localeUrls` component. You should list more specific language
+codes before the similar looking generic ones (i.e. 'en_us' before 'en'):
 
-    'languages' => ['en_us','en_uk','en','de_at','de'],
+    'languages' => ['en_us','en_uk','en','fr','de_at','de'],
 
 You can also use friendlier names in URLs, which are configured like so:
 
     'languages' => ['en','german'=>'de'],
 
 ```php
-<?= Url:to(['demo/action', 'language'=>'fr']) ?>
+<?= Url:to(['demo/action', 'language'=>'de']) ?>
 ```
 
 This will give you a URL like
@@ -157,23 +158,24 @@ The last language a visitor has used will be stored in the user session and in a
 If the user visits your site again without a language code, he will get redirected
 to the stored language.
 
-For example, the user first visits:
+For example, if the user first visits:
 
     /de/some/page
 
-Then after some time comes back to one of the following URLs:
+then after some time comes back to one of the following URLs:
 
     /some/page      -> Redirect to /de/some/page
     /               -> Redirect to /de/
-    /dk/some/page   -> Some page with language 'dk'
+    /dk/some/page
 
 In the last case, `dk` will be stored as last language.
 
-`enablePersistence` is by default set to `true` in the `localeUrls` component.
+Persistence is enabled by default and can be disabled by setting `enablePersistence`
+to `false` in the `localeUrls` component.
 
-You can modify the persistence settings with:
+You can modify other persistence settings with:
 
- * `languageCookieDuration`: How long to store the language information in a cookie.
+ * `languageCookieDuration`: How long in seconds to store the language information in a cookie.
    Set to `false` to disable the cookie.
  * `languageCookieName`: The name of the language cookie. Default is `_language`.
  * `languageSessionKey`: The name of the language session key. Default is `_language`.
