@@ -65,26 +65,42 @@ return [
 
 Now you're ready to use the extension.
 
+> Note: You can still configure custom URL rules as usual. Just ignore any `language`
+> parameter as it will get removed before parsing and added after creating a URL.
+
+> Note 2: The language code will be removed from the
+> [pathInfo](http://www.yiiframework.com/doc-2.0/yii-web-request.html#$pathInfo-detail).
+
 ## Mode of operation and configuration
 
 ### Creating URLs
 
-All created URLs will contain the code of the current application language. To create a
-link to a different language (i.e. to "switch" the language), you can add the `language`
-URL parameter:
+All created URLs will contain the code of the current application language. So if the
+language was detected to be `de` and you use:
+
+```php
+<?= $url = Url:to(['demo/action']) ?>
+<?= Html::a('Click', ['demo/action']) ?>
+```
+
+you'll get URLs like
+
+    /de/demo/action
+
+To create a link to switch the application to a different language, you can
+explicitely add the `language` URL parameter:
 
 ```php
 <?= $url = Url:to(['demo/action', 'language'=>'fr']) ?>
+<?= Html::a('Click', ['demo/action', 'language'=>'fr']) ?>
 ```
 
-Unless you have configured a custom URL rule for `demo/action` the above will produce something like:
+This will give you a URL like
 
     /fr/demo/action
 
-> Note: The language processing happens in a very early stage of the application.
-> After this is done, the language code will be removed from the
-> [pathInfo](http://www.yiiframework.com/doc-2.0/yii-web-request.html#$pathInfo-detail),
-> so all your URL rules will work as if there was no language parameter involved.
+> Note: The URLs may look different if you use custom URL rules. In this case
+> the language parameter is always prepended/insterted to the final relative/absolute URL.
 
 If for some reason you want to use a different name than `language` for that URL
 parameter you can configure it through the `languageParam` option of the `UrlManager`
