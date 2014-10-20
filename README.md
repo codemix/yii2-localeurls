@@ -210,3 +210,52 @@ browser settings. If one of the preferred languages matches your language, it wi
 used as application language (and also persisted if persistenc is enabled).
 
 To disable this, you can set `enableLanguageDetection` to `false`. It's enabled by default.
+
+## Example Language Selection Widget
+
+There's no widget for language selection included, because there are simply too many options
+for the markup and behavior of such a widget. But it's very easy to build. Here's the basic idea:
+
+```php
+use Yii;
+use yii\bootstrap\Dropdown;
+
+class LanguageDropdown extends Dropdown
+{
+    private static $_labels;
+
+    public function init()
+    {
+        $route = Yii::$app->controller->route;
+        $appLanguage = Yii::$app->language;
+        $params = $_GET;
+
+        array_unshift($params, $route);
+
+        foreach (Yii::$app->localeUrls->languages as $language) {
+            if ($language===$appLanguage) {
+                continue;   // Exclude the current language
+            }
+            $params['language'] = $language;
+            $this->items[] = [
+                'label' => self::label($language),
+                'url' => $params,
+            ];
+        }
+        parent::init();
+    }
+
+    public static function label($code)
+    {
+        if (self::$_labels===null) {
+            self::$_labels = [
+                'de' => Yii::t('language', 'German'),
+                'fr' => Yii::t('language', 'French'),
+                'en' => Yii::t('language', 'English'),
+            ];
+        }
+
+        return isset(self::$_labels[$code]) ? self::$_labels[$code] : null;
+    }
+}
+```
