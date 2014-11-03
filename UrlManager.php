@@ -63,12 +63,12 @@ class UrlManager extends BaseUrlManager
             return  $url;
         } else {
             $key = array_search($language, $localeUrls->languages);
-            $baseUrl = $this->getBaseUrl();
-            $length = strlen($baseUrl);
+            $base = $this->showScriptName ? $this->getScriptUrl() : $this->getBaseUrl();
+            $length = strlen($base);
             if (is_string($key)) {
                 $language = $key;
             }
-            return $length ?  substr_replace($url, "$baseUrl/$language", 1, $length) : "/$language$url";
+            return $length ? substr_replace($url, "$base/$language", 0, $length) : "/$language$url";
         }
     }
 }
