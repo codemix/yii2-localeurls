@@ -150,7 +150,7 @@ class LocaleUrls extends Component
             $baseUrl = $request->getBaseUrl();
             $length = strlen($baseUrl);
             $url = rtrim($request->getUrl(), '/');
-            $url = $length ? substr_replace($url, "/$language", $length+1, 0) : "/$language$url";
+            $url = $length ? substr_replace($url, "/$language", $length, 0) : "/$language$url";
             Yii::$app->getResponse()->redirect($url);
         }
     }
