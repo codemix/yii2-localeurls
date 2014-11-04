@@ -97,7 +97,7 @@ class LocaleUrls extends Component
         $pattern = implode('|', $languages);
         if (preg_match("#^($pattern)\b(/?)#", $pathInfo, $m)) {
             $pathInfo = mb_substr($pathInfo, mb_strlen($m[1].$m[2]));
-            $language = $m[1];
+            $language = isset($this->languages[$m[1]]) ? $this->languages[$m[1]] : $m[1];
             Yii::$app->language = $language;
             if ($this->enablePersistence) {
                 Yii::$app->session[$this->languageSessionKey] = $language;
@@ -145,6 +145,11 @@ class LocaleUrls extends Component
                 } else {
                     $language = $this->_defaultLanguage;
                 }
+            }
+
+            $key = array_search($language, $this->languages);
+            if ($key && is_string($key)) {
+                $language = $key;
             }
 
             $baseUrl = $request->getBaseUrl();
