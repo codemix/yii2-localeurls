@@ -68,8 +68,11 @@ class LocaleUrls extends Component
      */
     public function init()
     {
-        $this->_defaultLanguage = Yii::$app->language;
-        $this->processRequest();
+        if (!Yii::$app->getRequest()->isConsoleRequest)
+        {
+            $this->_defaultLanguage = Yii::$app->language;
+            $this->processRequest();
+        }
         return parent::init();
     }
 
