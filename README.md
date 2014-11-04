@@ -217,6 +217,7 @@ There's no widget for language selection included, because there are simply too 
 for the markup and behavior of such a widget. But it's very easy to build. Here's the basic idea:
 
 ```php
+<?php
 use Yii;
 use yii\bootstrap\Dropdown;
 
