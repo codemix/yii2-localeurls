@@ -227,7 +227,7 @@ class LanguageDropdown extends Dropdown
 
     public function init()
     {
-        $route = Yii::$app->controller->route;
+        $route = '/'.Yii::$app->controller->route;
         $appLanguage = Yii::$app->language;
         $params = $_GET;
 
