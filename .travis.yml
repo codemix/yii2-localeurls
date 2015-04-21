@@ -1,0 +1,14 @@
+language: php
+php:
+  - "5.5"
+  - "5.4"
+  - "5.3"
+  - "hhvm"
+
+sudo: false
+
+install:
+  - travis_retry composer self-update && composer --version
+  - travis_retry composer global require "fxp/composer-asset-plugin:1.0.0"
+  - export PATH="$HOME/.composer/vendor/bin:$PATH"
+  - travis_retry install --prefer-dist --no-interaction

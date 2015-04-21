@@ -123,8 +123,15 @@ class LocaleUrls extends Component
                 if (!empty($queryString)) {
                     $url .= "?$queryString";
                 }
+                if (Yii::$app->urlManager->showScriptName) {
+                    $url = $request->getScriptUrl().$url;
+                }
                 Yii::$app->getResponse()->redirect($url);
-                Yii::$app->end();
+                if (YII_ENV_TEST) {
+                    throw new \yii\base\Exception($url);
+                } else {
+                    Yii::$app->end();
+                }
             }
             $request->setPathInfo($pathInfo);
         } else {
@@ -187,7 +194,11 @@ class LocaleUrls extends Component
                 $url = $length ? substr_replace($url, "/$language", $length, 0) : "/$language$url";
             }
             Yii::$app->getResponse()->redirect($url);
-            Yii::$app->end();
+            if (YII_ENV_TEST) {
+                throw new \yii\base\Exception($url);
+            } else {
+                Yii::$app->end();
+            }
         }
     }
 }
