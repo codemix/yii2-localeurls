@@ -140,6 +140,21 @@ class LocaleUrls extends Component
                     if (in_array($acceptable, $this->languages)) {
                         $language = $acceptable;
                         break;
+                    } else {
+                        $parts = explode('-', $acceptable);
+                        if (count($parts)===2) {
+                            // Some browsers send 'de-de' instead of 'de-DE'
+                            $acceptable = "$parts[0]-".strtoupper($parts[1]);
+                            if (in_array($acceptable, $this->languages)) {
+                                $language = $acceptable;
+                                break;
+                            }
+                            // Finally also try 'de' if 'de-DE' is not found
+                            if (in_array($parts[0], $this->languages)) {
+                                $language = $parts[0];
+                                break;
+                            }
+                        }
                     }
                 }
             }
