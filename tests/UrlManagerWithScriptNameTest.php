@@ -44,4 +44,17 @@ class UrlManagerWithScriptNameTest extends TestCase
         ]);
         $this->assertEquals('/index.php/en_us/demo/action', Url::to(['/demo/action', 'language' => 'en_us']));
     }
+
+    public function testCreateUrlWithSpecificAliasedLanguage()
+    {
+        $this->mockComponents([
+            'localeUrls' => [
+                'languages' => ['fr', 'en', 'deutsch' => 'de'],
+            ],
+            'request' => [
+                'url' => '/index.php/fr/site/page',
+            ]
+        ]);
+        $this->assertEquals('/index.php/deutsch/demo/action', Url::to(['/demo/action', 'language' => 'de']));
+    }
 }
