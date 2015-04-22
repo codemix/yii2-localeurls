@@ -93,14 +93,32 @@ class LocaleUrls extends Component
     {
         $request = Yii::$app->getRequest();
         $pathInfo = $request->getPathInfo();
-        $languages = [];
+        $parts = [];
         foreach ($this->languages as $k => $v) {
-            $languages[] = is_string($k) ? $k : $v;
+            $value = is_string($k) ? $k : $v;
+            if (substr($value, -2)==='-*') {
+                $parts[] = substr($value, 0, -2) . '\-' . '[a-zA-Z]{2,3}';
+            } else {
+                $parts[] = $value;
+            }
         }
-        $pattern = implode('|', $languages);
+        $pattern = implode('|', $parts);
         if (preg_match("#^($pattern)\b(/?)#", $pathInfo, $m)) {
             $pathInfo = mb_substr($pathInfo, mb_strlen($m[1].$m[2]));
-            $language = isset($this->languages[$m[1]]) ? $this->languages[$m[1]] : $m[1];
+            if (isset($this->languages[$m[1]])) {
+                // Replace alias with language code
+                $language = $this->languages[$m[1]];
+            } elseif (preg_match('/^(..)\-(...?)$/',$m[1], $lm) && in_array($lm[1].'-*',$this->languages)) {
+                // Convert wildcard country to uppercase (de-at -> de-AT)
+                $language = $lm[1].'-'.strtoupper($lm[2]);
+
+                // Redirect de-AT to de-at
+                if ($language===$m[1]) {
+                    $this->redirectToLanguage($lm[1].'-'.strtolower($lm[2]), '/'.$m[1]);
+                }
+            } else {
+                $language = $m[1];
+            }
             Yii::$app->language = $language;
             if ($this->enablePersistence) {
                 Yii::$app->session[$this->languageSessionKey] = $language;
@@ -118,20 +136,7 @@ class LocaleUrls extends Component
             // "Reset" case: We called e.g. /fr/demo/page so the persisted language was set back to "fr".
             // Now we can redirect to the URL without language prefix, if default prefixes are disabled.
             if (!$this->enableDefaultSuffix && $language===$this->_defaultLanguage) {
-                $url = $request->getBaseUrl().'/'.$pathInfo;
-                $queryString = $request->getQueryString();
-                if (!empty($queryString)) {
-                    $url .= "?$queryString";
-                }
-                if (Yii::$app->urlManager->showScriptName) {
-                    $url = $request->getScriptUrl().$url;
-                }
-                Yii::$app->getResponse()->redirect($url);
-                if (YII_ENV_TEST) {
-                    throw new \yii\base\Exception($url);
-                } else {
-                    Yii::$app->end();
-                }
+                $this->redirectToLanguage('', '/'.$this->_defaultLanguage);
             }
             $request->setPathInfo($pathInfo);
         } else {
@@ -177,28 +182,71 @@ class LocaleUrls extends Component
             if ($key && is_string($key)) {
                 $language = $key;
             }
+            $this->redirectToLanguage($language);
+        }
+    }
 
-            $baseUrl = $request->getBaseUrl();
-            $length = strlen($baseUrl);
-            $url = rtrim($request->getUrl(), '/');
-            if (Yii::$app->urlManager->showScriptName) {
-                $scriptUrl = $request->getScriptUrl();  // e.g. '/baseurl/index.php'
-                if ($url==='') {
-                    $url = "$scriptUrl/$language";      // Redirect "/" -> "index.php/de"
-                } else {
-                    // Redirect index.php/key/val -> index.php/de/key/val
-                    $length = strlen($scriptUrl);
-                    $url = substr_replace($url, "/$language", $length, 0);
-                }
+    /**
+     * Redirect to the current URL with given language code applied
+     *
+     * @param string $language the language code to add. Can also be empty to not add any language code.
+     * @param string|null $remove the language code to remove from the pathInfo
+     */
+    protected function redirectToLanguage($language, $remove = null)
+    {
+        $request = Yii::$app->getRequest();
+
+        // Examples:
+        // 1) /baseurl/index.php/some/page?q=foo
+        // 2) /baseurl/some/page?q=foo
+        // 3)
+        // 4) /some/page?q=foo
+
+        if (Yii::$app->urlManager->showScriptName) {
+            // 1) /baseurl/index.php
+            // 2) /baseurl/index.php
+            // 3) /index.php
+            // 4) /index.php
+            $redirectUrl = $request->getScriptUrl();
+        } else {
+            // 1) /baseurl
+            // 2) /baseurl
+            // 3)
+            // 4)
+            $redirectUrl = $request->getBaseUrl();
+        }
+
+        if ($language) {
+            $redirectUrl .= '/'.$language;
+        }
+
+        // 1) some/page
+        // 2) some/page
+        // 3)
+        // 4) some/page
+        $pathInfo = $request->getPathInfo();
+        if ($pathInfo) {
+            if ($remove) {
+                $redirectUrl .= '/'.substr($pathInfo, strlen($remove));
             } else {
-                $url = $length ? substr_replace($url, "/$language", $length, 0) : "/$language$url";
+                $redirectUrl .= '/'.$pathInfo;
             }
-            Yii::$app->getResponse()->redirect($url);
-            if (YII_ENV_TEST) {
-                throw new \yii\base\Exception($url);
-            } else {
-                Yii::$app->end();
-            }
+        }
+
+        // 1) q=foo
+        // 2) q=foo
+        // 3)
+        // 4) q=foo
+        $queryString = $request->getQueryString();
+        if ($queryString) {
+            $redirectUrl .= '?'.$queryString;
+        }
+
+        Yii::$app->getResponse()->redirect($redirectUrl);
+        if (YII_ENV_TEST) {
+            throw new \yii\base\Exception($redirectUrl);
+        } else {
+            Yii::$app->end();
         }
     }
 }

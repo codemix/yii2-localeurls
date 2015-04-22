@@ -7,7 +7,7 @@ class LocaleUrlWithScriptNameTest extends TestCase
     {
         $this->mockComponents([
             'localeUrls' => [
-                'languages' => ['en_us', 'en', 'de'],
+                'languages' => ['en-us', 'en', 'de'],
             ],
             'request' => [
                 'url' => '/index.php/site/page',
@@ -20,24 +20,24 @@ class LocaleUrlWithScriptNameTest extends TestCase
     {
         $this->mockComponents([
             'localeUrls' => [
-                'languages' => ['en_us', 'en', 'de'],
+                'languages' => ['en-US', 'en', 'de'],
             ],
             'request' => [
-                'url' => '/index.php/de/site/page',
+                'url' => '/index.php/en-US/site/page',
             ]
         ]);
-        $this->assertEquals('de', Yii::$app->language);
-        $this->assertEquals('de', Yii::$app->session->get('_language'));
+        $this->assertEquals('en-US', Yii::$app->language);
+        $this->assertEquals('en-US', Yii::$app->session->get('_language'));
         $cookie = Yii::$app->response->cookies->get('_language');
         $this->assertNotNull($cookie);
-        $this->assertEquals('de', $cookie->value);
+        $this->assertEquals('en-US', $cookie->value);
     }
 
     public function testUsesAliasFormUrl()
     {
         $this->mockComponents([
             'localeUrls' => [
-                'languages' => ['en_us', 'en', 'deutsch' => 'de'],
+                'languages' => ['en-us', 'en', 'deutsch' => 'de'],
             ],
             'request' => [
                 'url' => '/index.php/deutsch/site/page',
@@ -50,6 +50,39 @@ class LocaleUrlWithScriptNameTest extends TestCase
         $this->assertEquals('de', $cookie->value);
     }
 
+    public function testAcceptsWildCardCountry()
+    {
+        $this->mockComponents([
+            'localeUrls' => [
+                'languages' => ['en-us', 'deutsch' => 'de', 'es-*'],
+            ],
+            'request' => [
+                'url' => '/index.php/es-bo/site/page',
+            ]
+        ]);
+        $this->assertEquals('es-BO', Yii::$app->language);
+        $this->assertEquals('es-BO', Yii::$app->session->get('_language'));
+        $cookie = Yii::$app->response->cookies->get('_language');
+        $this->assertNotNull($cookie);
+        $this->assertEquals('es-BO', $cookie->value);
+    }
+
+    /**
+     * @expectedException \yii\base\Exception
+     * @expectedExceptionMessage /index.php/es-bo/site/page
+     */
+    public function testRedirectsIfUpperCaseWildCardCountry()
+    {
+        $this->mockComponents([
+            'localeUrls' => [
+                'languages' => ['en-us', 'deutsch' => 'de', 'es-*'],
+            ],
+            'request' => [
+                'url' => '/index.php/es-BO/site/page',
+            ]
+        ]);
+    }
+
     /**
      * @expectedException \yii\base\Exception
      * @expectedExceptionMessage /index.php/site/page
@@ -58,7 +91,7 @@ class LocaleUrlWithScriptNameTest extends TestCase
     {
         $this->mockComponents([
             'localeUrls' => [
-                'languages' => ['en_us', 'en', 'de'],
+                'languages' => ['en-us', 'en', 'de'],
             ],
             'request' => [
                 'url' => '/index.php/en/site/page',
@@ -74,7 +107,7 @@ class LocaleUrlWithScriptNameTest extends TestCase
     {
         $this->mockComponents([
             'localeUrls' => [
-                'languages' => ['en_us', 'en', 'de'],
+                'languages' => ['en-us', 'en', 'de'],
                 'enableDefaultSuffix' => true,
             ],
             'request' => [
@@ -91,7 +124,7 @@ class LocaleUrlWithScriptNameTest extends TestCase
     {
         $this->mockComponents([
             'localeUrls' => [
-                'languages' => ['en_us', 'en', 'de'],
+                'languages' => ['en-us', 'en', 'de'],
             ],
             'request' => [
                 'url' => '/index.php/site/page',
@@ -108,11 +141,11 @@ class LocaleUrlWithScriptNameTest extends TestCase
     {
         $this->mockComponents([
             'localeUrls' => [
-                'languages' => ['en_us', 'en', 'at'=>'de-AT'],
+                'languages' => ['en-us', 'en', 'de', 'at'=>'de-AT'],
             ],
             'request' => [
                 'url' => '/index.php/site/page',
-                'acceptableLanguages' => ['de-AT'],
+                'acceptableLanguages' => ['de-at', 'de', 'en'],
             ]
         ]);
     }
@@ -125,7 +158,7 @@ class LocaleUrlWithScriptNameTest extends TestCase
     {
         $this->mockComponents([
             'localeUrls' => [
-                'languages' => ['en_us', 'en', 'de', 'at' => 'de-AT'],
+                'languages' => ['en-us', 'en', 'de', 'at' => 'de-AT'],
             ],
             'request' => [
                 'url' => '/index.php/site/page',
@@ -142,7 +175,7 @@ class LocaleUrlWithScriptNameTest extends TestCase
     {
         $this->mockComponents([
             'localeUrls' => [
-                'languages' => ['en_us', 'en', 'de'],
+                'languages' => ['en-us', 'en', 'de'],
             ],
             'request' => [
                 'url' => '/index.php/site/page',
