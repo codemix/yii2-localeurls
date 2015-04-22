@@ -4,22 +4,91 @@ use yii\di\Container;
 
 abstract class TestCase extends \PHPUnit_Framework_TestCase
 {
-    protected $showScriptName = true;
+    /**
+     * @var array Request component configuration for each test method
+     */
+    protected $request = [];
 
+    /**
+     * @var bool show script name configuration for each test method
+     */
+    protected $showScriptName = false;
+
+    /**
+     * @var string the base URL to use
+     */
+    protected $baseUrl = '';
+
+    /**
+     * Destroy Yii app singleton, the DI container and the session
+     */
     protected function tearDown()
     {
 
         \Yii::$app->session->destroy();
         \Yii::$app = null;
         \Yii::$container = new Container();
+        $this->request = [];
+        $this->localeUrls = [];
         parent::tearDown();
     }
 
-    protected function mockComponents($config = [])
+    /**
+     * Mock a HTTP request
+     *
+     * @param string $url the relative request URL
+     * @param array $config configuration for the Request component
+     */
+    protected function mockRequest($url, $config = [])
     {
+        $url = $this->prepareUrl($url);
+        $_SERVER['REQUEST_URI'] = $url;
+        $_SERVER['SCRIPT_NAME'] = $this->baseUrl.'/index.php';
+        $_SERVER['SCRIPT_FILENAME'] = __DIR__ . $this->baseUrl.'/index.php';
+        $_SERVER['DOCUMENT_ROOT'] = __DIR__;
+        $parts = explode('?', $url);
+        if (isset($parts[1])) {
+            $_SERVER['QUERY_STRING'] = $parts[1];
+        }
+        $this->request = $config;
+    }
+
+    /**
+     * Mock a web application with given config for localeUrls component
+     *
+     * @param array $config for localeUrl component
+     */
+    public function mockLocaleUrl($config = []) {
         $this->mockWebApplication([
-            'components' => $config,
+            'components' => [
+                'localeUrls' => $config,
+            ]
         ]);
+    }
+
+    /**
+     * Expect a redirect exception with URL as defined in $redirects for method name
+     *
+     * @param string $method the full method name
+     */
+    protected function expectRedirect($method)
+    {
+        $parts = explode('::', $method);
+
+        $url = $this->redirects[$parts[1]];
+        $this->setExpectedException('\yii\base\Exception', $this->prepareUrl($url));
+    }
+
+    /**
+     * @param string $url
+     * @return string the URL with scriptName and baseUrl applied if enabled
+     */
+    protected function prepareUrl($url)
+    {
+        if ($this->showScriptName) {
+            $url = '/index.php' . $url;
+        }
+        return $this->baseUrl . $url;
     }
 
     protected function mockWebApplication($config = [], $appClass = '\yii\web\Application')
@@ -34,13 +103,11 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
                 'localeUrls' => [
                     'class' => 'codemix\localeurls\LocaleUrls',
                 ],
-                'request' => [
+                'request' => ArrayHelper::merge([
                     'cookieValidationKey' => '123456789abcdefg',
                     'isConsoleRequest' => false,
                     'hostInfo' => 'http://localhost',
-                    'scriptFile' => __DIR__.'/index.php',
-                    'scriptUrl' => '/index.php',
-                ],
+                ], $this->request),
                 'urlManager' => [
                     'class' => 'codemix\localeurls\UrlManager',
                     'showScriptName' => $this->showScriptName,
