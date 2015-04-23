@@ -62,7 +62,8 @@ return [
         'localeUrls' => [
             'class' => 'codemix\localeurls\LocaleUrls',
 
-            // List all supported languages here
+            // List all supported languages here.
+            // Make sure, you include your app's default language.
             'languages' => ['en-US', 'en', 'fr', 'de']
         ]
 
@@ -123,7 +124,8 @@ component.
 
 The default language is configured via the
 [language](http://www.yiiframework.com/doc-2.0/yii-base-application.html#$language-detail)
-parameter of your application configuration.
+parameter of your application configuration. You always have to include this
+language in the `$languages` configuration (see below).
 
 By default the URLs for the default language won't contain any language code. For example:
 
@@ -147,7 +149,7 @@ language code are no longer accessible:
 
 ### Language Configuration
 
-All languages including the default language must be configured in the `languages`
+All languages **including the default language** must be configured in the `languages`
 parameter of the `localeUrls` component. You should list more specific language
 codes before the similar looking generic ones (i.e. 'en-US' before 'en'):
 
