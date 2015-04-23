@@ -12,7 +12,7 @@ Yii2 Locale URLs
 Automatic locale/language management through URLs for Yii 2.
 
 > **IMPORTANT:** If you upgraded from version 1.0.* you have to modify your configuration.
-> Please check the **Upgrade** section below.
+> Please check the section on [Upgrading](#upgrading) below.
 
 ## Features
 
@@ -160,9 +160,9 @@ To allow for all country variants, you can also use a wildcard pattern:
 Now any URL that matches `en-??` or `de-??` would be accepted, like `en-us` or `de-at`.
 URLs without a country code like `en` and `de` will also still work.
 
-You can also use friendlier names in URLs, which are configured like so:
+You can also use friendlier names or aliases in URLs, which are configured like so:
 
-    'languages' => ['en','german'=>'de'],
+    'languages' => ['en','german'=>'de', 'br' => 'pt-BR'],
 
 ```php
 <?= Url:to(['demo/action', 'language'=>'de']) ?>
@@ -172,6 +172,11 @@ This will give you a URL like
 
     /german/demo/action
 
+and the URL
+
+    /br/demo/action
+
+will set the application language to `pt-BR`.
 
 ### Persistence
 
@@ -255,7 +260,7 @@ class LanguageDropdown extends Dropdown
 
         array_unshift($params, $route);
 
-        foreach (Yii::$app->localeUrls->languages as $language) {
+        foreach (Yii::$app->urlManager->languages as $language) {
             if ($language===$appLanguage) {
                 continue;   // Exclude the current language
             }
@@ -287,10 +292,10 @@ class LanguageDropdown extends Dropdown
 
 ### Changes from 1.0.* to 1.1.*
 
-If you upgrade from a 1.0.* you'll have to upgrade your configuration. There no longer is
-a `localeUrls` component now. Instead everything was merged into our custom `urlManager`
-component. So you should move any configuration for the `localeUrls` component into the
-`urlManager` component.
+If you upgrade from a 1.0.* version you'll have to modify your configuration. There no
+longer is a `localeUrls` component now. Instead everything was merged into our custom
+`urlManager` component. So you should move any configuration for the `localeUrls` component
+into the `urlManager` component.
 
 So if your configuration looked like this before:
 
