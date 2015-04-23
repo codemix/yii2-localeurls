@@ -27,8 +27,9 @@ You can also configure friendly names if you want:
 
 The language code is automatically added whenever you create a URL, and
 read back when a URL is parsed. For best user experience the language is
-autodetected from the browser settings - but the user can still access
-other languages simply by calling a URL with another language code.
+autodetected from the browser settings, if no language is used in the URL.
+The user can still access other languages, though, simply by calling a URL
+with another language code.
 
 The last requested language is also persisted in the user session and
 in a cookie. So if the user tries to access your site without a language
@@ -62,7 +63,7 @@ return [
             'class' => 'codemix\localeurls\LocaleUrls',
 
             // List all supported languages here
-            'languages' => ['en_us', 'en', 'fr', 'de']
+            'languages' => ['en-US', 'en', 'fr', 'de']
         ]
 
         // Override the urlManager component
@@ -148,9 +149,20 @@ language code are no longer accessible:
 
 All languages including the default language must be configured in the `languages`
 parameter of the `localeUrls` component. You should list more specific language
-codes before the similar looking generic ones (i.e. 'en_us' before 'en'):
+codes before the similar looking generic ones (i.e. 'en-US' before 'en'):
 
-    'languages' => ['en_us','en_uk','en','fr','de_at','de'],
+    'languages' => ['en-US','en-UK','en','fr','de-AT','de'],
+
+> **Note:** The URLs will always contain lowercase locales. If a URL with a code like `en-US`
+> is used, the user will be redirected to the `en-us` variant. Still the application language
+> will always use the correct `en-US` code.
+
+To allow for all country variants, you can also use a wildcard pattern:
+
+    'languages' => ['en-*','de-*'],
+
+Now any URL that matches `en-??` or `de-??` would be accepted, like `en-us` or `de-at`.
+URLs without a country code like `en` and `de` will also still work.
 
 You can also use friendlier names in URLs, which are configured like so:
 
@@ -163,6 +175,7 @@ You can also use friendlier names in URLs, which are configured like so:
 This will give you a URL like
 
     /german/demo/action
+
 
 ### Persistence
 
@@ -218,6 +231,11 @@ browser settings. If one of the preferred languages matches your language, it wi
 used as application language (and also persisted if persistenc is enabled).
 
 To disable this, you can set `enableLanguageDetection` to `false`. It's enabled by default.
+
+If the browser language contains a country code like `de-AT` and you only have `de` in your
+`$languages` configuration, it will fall back to that language. Only if you've used a wildcard
+like `de-*` or have explicitely configured `de-AT` or an alias like `'at' => 'de-AT'`, the
+browser language including the country code will be used.
 
 ## Example Language Selection Widget
 
