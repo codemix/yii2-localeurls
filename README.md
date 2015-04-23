@@ -11,6 +11,9 @@ Yii2 Locale URLs
 
 Automatic locale/language management through URLs for Yii 2.
 
+> **IMPORTANT:** If you upgraded from version 1.0.* you have to modify your configuration.
+> Please check the **Upgrade** section below.
+
 ## Features
 
 With this extension you can use URLs that contain a language code like:
@@ -50,25 +53,18 @@ And then add this to your application configuration:
 ```php
 <?php
 return [
-    // ...
-
-    'bootstrap' => ['localeUrls'],
 
     // ...
 
     'components' => [
         // ...
 
-        'localeUrls' => [
-            'class' => 'codemix\localeurls\LocaleUrls',
-
-            // List all supported languages here
-            'languages' => ['en-US', 'en', 'fr', 'de']
-        ]
-
         // Override the urlManager component
         'urlManager' => [
             'class' => 'codemix\localeurls\UrlManager',
+
+            // List all supported languages here
+            'languages' => ['en-US', 'en', 'fr', 'de', 'es-*']
         ]
 
         // ...
@@ -78,8 +74,8 @@ return [
 
 Now you're ready to use the extension.
 
-> Note: You can still configure custom URL rules as usual. Just ignore any `language`
-> parameter as it will get removed before parsing and added after creating a URL.
+> Note: You can still configure custom URL rules as usual. Just ignore any `language` parameter
+> in your URL rules as it will get removed before parsing and added after creating a URL.
 
 > Note 2: The language code will be removed from the
 > [pathInfo](http://www.yiiframework.com/doc-2.0/yii-web-request.html#$pathInfo-detail).
@@ -113,7 +109,7 @@ This will give you a URL like
     /fr/demo/action
 
 > Note: The URLs may look different if you use custom URL rules. In this case
-> the language parameter is always prepended/insterted to the final relative/absolute URL.
+> the language parameter is always prepended/inserted to the final relative/absolute URL.
 
 If for some reason you want to use a different name than `language` for that URL
 parameter you can configure it through the `languageParam` option of the `urlManager`
@@ -285,4 +281,46 @@ class LanguageDropdown extends Dropdown
         return isset(self::$_labels[$code]) ? self::$_labels[$code] : null;
     }
 }
+```
+
+## Upgrading
+
+### Changes from 1.0.* to 1.1.*
+
+If you upgrade from a 1.0.* you'll have to upgrade your configuration. There no longer is
+a `localeUrls` component now. Instead everything was merged into our custom `urlManager`
+component. So you should move any configuration for the `localeUrls` component into the
+`urlManager` component.
+
+So if your configuration looked like this before:
+
+```php
+<?php
+return [
+    'bootstrap' => ['localeUrls'],
+    'components' => [
+        'localeUrls' => [
+            'languages' => ['en-US', 'en', 'fr', 'de', 'es-*']
+            'enableDefaultSuffix' => true,
+        ],
+        'urlManager' => [
+            'class' => 'codemix\localeurls\UrlManager',
+        ]
+    ]
+];
+```
+
+you should now change it to:
+
+```php
+<?php
+return [
+    'components' => [
+        'urlManager' => [
+            'class' => 'codemix\localeurls\UrlManager',
+            'languages' => ['en-US', 'en', 'fr', 'de', 'es-*']
+            'enableDefaultSuffix' => true,
+        ]
+    ]
+];
 ```
