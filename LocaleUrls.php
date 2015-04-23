@@ -97,7 +97,9 @@ class LocaleUrls extends Component
         foreach ($this->languages as $k => $v) {
             $value = is_string($k) ? $k : $v;
             if (substr($value, -2)==='-*') {
-                $parts[] = substr($value, 0, -2) . '\-' . '[a-zA-Z]{2,3}';
+                $lng = substr($value, 0, -2);
+                $parts[] = "$lng\-[a-zA-Z]{2,3}";
+                $parts[] = $lng;
             } else {
                 $parts[] = $value;
             }

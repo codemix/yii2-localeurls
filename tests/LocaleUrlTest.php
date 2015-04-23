@@ -18,6 +18,8 @@ class LocaleUrlTest extends TestCase
             'languages' => ['en-US', 'en', 'de'],
         ]);
         $this->assertEquals('en', Yii::$app->language);
+        $request = Yii::$app->request;
+        $this->assertEquals('', $request->pathInfo);
     }
 
     public function testUsesLanguageFromUrl()
@@ -31,6 +33,8 @@ class LocaleUrlTest extends TestCase
         $cookie = Yii::$app->response->cookies->get('_language');
         $this->assertNotNull($cookie);
         $this->assertEquals('en-US', $cookie->value);
+        $request = Yii::$app->request;
+        $this->assertEquals('site/page', $request->pathInfo);
     }
 
     public function testUsesAliasFormUrl()
@@ -44,6 +48,8 @@ class LocaleUrlTest extends TestCase
         $cookie = Yii::$app->response->cookies->get('_language');
         $this->assertNotNull($cookie);
         $this->assertEquals('de', $cookie->value);
+        $request = Yii::$app->request;
+        $this->assertEquals('site/page', $request->pathInfo);
     }
 
     public function testAcceptsWildCardCountry()
@@ -57,6 +63,8 @@ class LocaleUrlTest extends TestCase
         $cookie = Yii::$app->response->cookies->get('_language');
         $this->assertNotNull($cookie);
         $this->assertEquals('es-BO', $cookie->value);
+        $request = Yii::$app->request;
+        $this->assertEquals('site/page', $request->pathInfo);
     }
 
     public function testRedirectsIfUpperCaseWildCardCountry()
