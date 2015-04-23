@@ -20,11 +20,11 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     protected $baseUrl = '';
 
     /**
-     * Destroy Yii app singleton, the DI container and the session
+     * Destroy Yii app singleton, DI container, session and cookies
      */
     protected function tearDown()
     {
-
+        $_COOKIE = [];
         \Yii::$app->session->destroy();
         \Yii::$app = null;
         \Yii::$container = new Container();
@@ -67,15 +67,12 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Expect a redirect exception with URL as defined in $redirects for method name
+     * Expect a redirect exception
      *
-     * @param string $method the full method name
+     * @param string $url the redirect URL
      */
-    protected function expectRedirect($method)
+    protected function expectRedirect($url)
     {
-        $parts = explode('::', $method);
-
-        $url = $this->redirects[$parts[1]];
         $this->setExpectedException('\yii\base\Exception', $this->prepareUrl($url));
     }
 
@@ -104,7 +101,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
                     'class' => 'codemix\localeurls\LocaleUrls',
                 ],
                 'request' => ArrayHelper::merge([
-                    'cookieValidationKey' => '123456789abcdefg',
+                    'enableCookieValidation' => false,
                     'isConsoleRequest' => false,
                     'hostInfo' => 'http://localhost',
                 ], $this->request),

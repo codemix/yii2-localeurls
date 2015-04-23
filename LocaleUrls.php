@@ -98,19 +98,19 @@ class LocaleUrls extends Component
             $value = is_string($k) ? $k : $v;
             if (substr($value, -2)==='-*') {
                 $lng = substr($value, 0, -2);
-                $parts[] = "$lng\-[a-zA-Z]{2,3}";
+                $parts[] = "$lng\-[a-z]{2,3}";
                 $parts[] = $lng;
             } else {
                 $parts[] = $value;
             }
         }
         $pattern = implode('|', $parts);
-        if (preg_match("#^($pattern)\b(/?)#", $pathInfo, $m)) {
+        if (preg_match("#^($pattern)\b(/?)#i", $pathInfo, $m)) {
             $pathInfo = mb_substr($pathInfo, mb_strlen($m[1].$m[2]));
             if (isset($this->languages[$m[1]])) {
                 // Replace alias with language code
                 $language = $this->languages[$m[1]];
-            } elseif (preg_match('/^(..)\-(...?)$/',$m[1], $lm) && in_array($lm[1].'-*',$this->languages)) {
+            } elseif (preg_match('/^(..)\-(...?)$/',$m[1], $lm)) {
                 // Convert wildcard country to uppercase (de-at -> de-AT)
                 $language = $lm[1].'-'.strtoupper($lm[2]);
 
@@ -184,7 +184,7 @@ class LocaleUrls extends Component
             if ($key && is_string($key)) {
                 $language = $key;
             }
-            $this->redirectToLanguage($language);
+            $this->redirectToLanguage(strtolower($language));
         }
     }
 
