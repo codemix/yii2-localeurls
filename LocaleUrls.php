@@ -106,20 +106,23 @@ class LocaleUrls extends Component
         }
         $pattern = implode('|', $parts);
         if (preg_match("#^($pattern)\b(/?)#i", $pathInfo, $m)) {
-            $pathInfo = mb_substr($pathInfo, mb_strlen($m[1].$m[2]));
-            if (isset($this->languages[$m[1]])) {
+            $request->setPathInfo(mb_substr($pathInfo, mb_strlen($m[1].$m[2])));
+            $code = $m[1];
+            if (isset($this->languages[$code])) {
                 // Replace alias with language code
-                $language = $this->languages[$m[1]];
-            } elseif (preg_match('/^(..)\-(...?)$/',$m[1], $lm)) {
-                // Convert wildcard country to uppercase (de-at -> de-AT)
-                $language = $lm[1].'-'.strtoupper($lm[2]);
-
-                // Redirect de-AT to de-at
-                if ($language===$m[1]) {
-                    $this->redirectToLanguage($lm[1].'-'.strtolower($lm[2]), '/'.$m[1]);
-                }
+                $language = $this->languages[$code];
             } else {
-                $language = $m[1];
+                list($language,$country) = $this->matchCode($code);
+                if ($country!==null) {
+                    if ($code==="$language-$country") {
+                        $this->redirectToLanguage(strtolower($code));
+                    } else {
+                        $language = "$language-$country";
+                    }
+                }
+                if ($language===null) {
+                    $language = $code;
+                }
             }
             Yii::$app->language = $language;
             if ($this->enablePersistence) {
@@ -138,9 +141,8 @@ class LocaleUrls extends Component
             // "Reset" case: We called e.g. /fr/demo/page so the persisted language was set back to "fr".
             // Now we can redirect to the URL without language prefix, if default prefixes are disabled.
             if (!$this->enableDefaultSuffix && $language===$this->_defaultLanguage) {
-                $this->redirectToLanguage('', '/'.$this->_defaultLanguage);
+                $this->redirectToLanguage('');
             }
-            $request->setPathInfo($pathInfo);
         } else {
             $language = null;
             if ($this->enablePersistence) {
@@ -151,24 +153,10 @@ class LocaleUrls extends Component
             }
             if ($language===null && $this->enableLanguageDetection) {
                 foreach ($request->getAcceptableLanguages() as $acceptable) {
-                    if (in_array($acceptable, $this->languages)) {
-                        $language = $acceptable;
+                    list($language,$country) = $this->matchCode($acceptable);
+                    if ($language!==null) {
+                        $language = $country===null ? $language : "$language-$country";
                         break;
-                    } else {
-                        $parts = explode('-', $acceptable);
-                        if (count($parts)===2) {
-                            // Some browsers send 'de-de' instead of 'de-DE'
-                            $acceptable = "$parts[0]-".strtoupper($parts[1]);
-                            if (in_array($acceptable, $this->languages)) {
-                                $language = $acceptable;
-                                break;
-                            }
-                            // Finally also try 'de' if 'de-DE' is not found
-                            if (in_array($parts[0], $this->languages)) {
-                                $language = $parts[0];
-                                break;
-                            }
-                        }
                     }
                 }
             }
@@ -189,12 +177,56 @@ class LocaleUrls extends Component
     }
 
     /**
+     * Tests whether the given code matches any of the configured languages.
+     *
+     * If the code is a single language code, and matches either
+     *
+     *  - an exact language as configured (ll)
+     *  - a language with a country wildcard (ll-*)
+     *
+     * this language code is returned.
+     *
+     * If the code also contains a country code, and matches either
+     *
+     *  - an exact language/country code as configured (ll-CC)
+     *  - a language with a country wildcard (ll-*)
+     *
+     * the code with uppercase country is returned. If only the language part matches
+     * a configured language, that language is returned.
+     *
+     * @param string $code the code to match
+     * @return array of [language, country] where both can be null if no match
+     */
+    protected function matchCode($code)
+    {
+        $language = $code;
+        $country = null;
+        $parts = explode('-', $code);
+        if (count($parts)===2) {
+            $language = $parts[0];
+            $country = strtoupper($parts[1]);
+        }
+
+        if (in_array($code, $this->languages)) {
+            return [$language, $country];
+        } elseif (
+            $country && in_array("$language-$country", $this->languages) ||
+            in_array("$language-*", $this->languages)
+        ) {
+            return [$language, $country];
+        } elseif (in_array($language, $this->languages)) {
+            return [$language, null];
+        } else {
+            return [null, null];
+        }
+    }
+
+    /**
      * Redirect to the current URL with given language code applied
      *
      * @param string $language the language code to add. Can also be empty to not add any language code.
-     * @param string|null $remove the language code to remove from the pathInfo
      */
-    protected function redirectToLanguage($language, $remove = null)
+    protected function redirectToLanguage($language)
     {
         $request = Yii::$app->getRequest();
 
@@ -228,11 +260,7 @@ class LocaleUrls extends Component
         // 4) some/page
         $pathInfo = $request->getPathInfo();
         if ($pathInfo) {
-            if ($remove) {
-                $redirectUrl .= '/'.substr($pathInfo, strlen($remove));
-            } else {
-                $redirectUrl .= '/'.$pathInfo;
-            }
+            $redirectUrl .= '/'.$pathInfo;
         }
 
         // 1) q=foo
