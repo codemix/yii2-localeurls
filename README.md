@@ -113,7 +113,7 @@ This will give you a URL like
     /fr/demo/action
 
 > Note: The URLs may look different if you use custom URL rules. In this case
-> the language parameter is always prepended/insterted to the final relative/absolute URL.
+> the language parameter is always prepended/inserted to the final relative/absolute URL.
 
 If for some reason you want to use a different name than `language` for that URL
 parameter you can configure it through the `languageParam` option of the `urlManager`
@@ -228,7 +228,7 @@ In this case, `fr` will first be stored as last used language before the user is
 If a user visits your site for the first time and there's no language stored in session
 or cookie (or persistence is turned off), then the language is detected from the visitor's
 browser settings. If one of the preferred languages matches your language, it will be
-used as application language (and also persisted if persistenc is enabled).
+used as application language (and also persisted if persistence is enabled).
 
 To disable this, you can set `enableLanguageDetection` to `false`. It's enabled by default.
 
@@ -260,8 +260,16 @@ class LanguageDropdown extends Dropdown
         array_unshift($params, $route);
 
         foreach (Yii::$app->localeUrls->languages as $language) {
-            if ($language===$appLanguage) {
+            $isWildcard = substr($language, -2)==='-*';
+            if (
+                $language===$appLanguage ||
+                // Also check for wildcard language
+                $isWildCard && substr($appLanguage,0,2)===substr($language,0,2)
+            ) {
                 continue;   // Exclude the current language
+            }
+            if ($isWildCard) {
+                $language = substr($language,0,2);
             }
             $params['language'] = $language;
             $this->items[] = [
