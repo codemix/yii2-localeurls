@@ -252,6 +252,32 @@ If the browser language contains a country code like `de-AT` and you only have `
 like `de-*` or have explicitely configured `de-AT` or an alias like `'at' => 'de-AT'`, the
 browser language including the country code will be used.
 
+Let's look at an example configuration to better understand, how the `$languages` configuration
+affects language detection and the created URLs.
+
+```php
+'languages' => [
+  'en',
+  'at' => 'de-AT',
+  'de',
+  'pt-*'
+];
+```
+
+Now say a user visits your site for the first time. Depending on his browser settings, he will
+be directed to different URLs.
+
+Accept-Language Header              | Resulting URL code    | Resulting Yii language
+------------------------------------|-----------------------|-----------------------
+`en`, `en-us`, `en-US`, ...         | `/en`                 | `en`
+`de-at`, `de-AT`                    | `/at`                 | `de-AT`
+`de`, `de-de`, `de-DE`, `de-ch`, ...| `/de`                 | `de`
+`pt-BR`, `pt-br`                    | `/pt-br`              | `pt-BR`
+`pt-PT`, `pt-pt`                    | `/pt-pt`              | `pt-PT`
+Any other `pt-CC` code              | `/pt-cc`              | `pt-CC`
+`pt`                                | `/pt`                 | `pt`
+
+
 ## Example Language Selection Widget
 
 There's no widget for language selection included, because there are simply too many options
