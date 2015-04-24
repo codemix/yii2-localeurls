@@ -14,8 +14,11 @@ use yii\web\Cookie;
 class LocaleUrls extends Component
 {
     /**
-     * @var array list of available language codes. More specific patterns should come first, e.g. 'en_us'
-     * before 'en'. This can also contain mapping of <url_value> => <language>, e.g. 'english' => 'en'.
+     * @var array list of available language codes. Languages with country code should contain the country
+     * in uppercase and come before the language without lanuge, like `'en-US', 'en', 'de-AT', 'de'`.
+     * To support any country variant in the URL, a wildcard can be used like `de-*` which would accept
+     * URL codes like `de-de`, `de-at`, and so on. A language can also be configured using an alias in the
+     * form of `<url_code> => <language>` like `'at' => 'de-AT'`
      */
     public $languages = [];
 
