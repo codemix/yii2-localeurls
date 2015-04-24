@@ -89,7 +89,7 @@ All created URLs will contain the code of the current application language. So i
 language was detected to be `de` and you use:
 
 ```php
-<?php $url = Url:to(['demo/action']) ?>
+<?php $url = Url::to(['demo/action']) ?>
 <?= Html::a('Click', ['demo/action']) ?>
 ```
 
@@ -101,7 +101,7 @@ To create a link to switch the application to a different language, you can
 explicitely add the `language` URL parameter:
 
 ```php
-<?= $url = Url:to(['demo/action', 'language'=>'fr']) ?>
+<?= $url = Url::to(['demo/action', 'language'=>'fr']) ?>
 <?= Html::a('Click', ['demo/action', 'language'=>'fr']) ?>
 ```
 
@@ -181,7 +181,7 @@ You can also use friendlier names or aliases in URLs, which are configured like 
     'languages' => ['en','german'=>'de', 'br' => 'pt-BR'],
 
 ```php
-<?= Url:to(['demo/action', 'language'=>'de']) ?>
+<?= Url::to(['demo/action', 'language'=>'de']) ?>
 ```
 
 This will give you URLs like
@@ -230,7 +230,7 @@ The answer is simple: To create a reset URL, you explicitely include the languag
 for the default language in the URL. For example if default language is `fr`:
 
 ```php
-<?= Url:to(['demo/action', 'language'=>'fr']) ?>
+<?= Url::to(['demo/action', 'language'=>'fr']) ?>
 ```
 
     /fr/demo/action -> Redirect to /demo/action
@@ -260,7 +260,7 @@ affects language detection and the created URLs.
   'at' => 'de-AT',
   'de',
   'pt-*'
-];
+],
 ```
 
 Now say a user visits your site for the first time. Depending on his browser settings, he will
