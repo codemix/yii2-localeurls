@@ -153,12 +153,25 @@ codes before the similar looking generic ones (i.e. 'en-US' before 'en'):
 > is used, the user will be redirected to the `en-us` variant. Still the application language
 > will always use the correct `en-US` code.
 
-To allow for all country variants, you can also use a wildcard pattern:
+If you want your URL to optionally contain *any* country variant you can also use a wildcard pattern:
 
     'languages' => ['en-*','de-*'],
 
-Now any URL that matches `en-??` or `de-??` would be accepted, like `en-us` or `de-at`.
-URLs without a country code like `en` and `de` will also still work.
+Now any URL that matches `en-??` or `de-??` could be used, like `en-us` or `de-at`.
+URLs without a country code like `en` and `de` will also still work:
+
+    /en/demo/action
+    /en-us/demo/action
+    /en-en/demo/action
+    /de/demo/action
+    /de-de/demo/action
+    /de-at/demo/action
+
+The URLs with a country code will set the full `ll-CC` code as Yii language whereas the
+URLs with a language code only, will lead to `ll` as configured language.
+
+> **Note:** You don't need this if all you want is a fallback of `de-AT` to `de` for
+> languages detected from the browser settings. See the section on [Language Detection](#language-detection) below.
 
 You can also use friendlier names or aliases in URLs, which are configured like so:
 
