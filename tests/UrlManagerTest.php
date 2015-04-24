@@ -156,6 +156,28 @@ class UrlManagerTest extends TestCase
         ]);
     }
 
+    public function testRedirectsIfNoLanguageInUrlAndAcceptedLanguageWithCountryMatchesCountryAlias()
+    {
+        $this->expectRedirect('/at/site/page');
+        $this->mockRequest('/site/page',[
+            'acceptableLanguages' => ['de-at', 'de'],
+        ]);
+        $this->mockComponent([
+            'languages' => ['de', 'at'=>'de-AT'],
+        ]);
+    }
+
+    public function testRedirectsIfNoLanguageInUrlAndAcceptedLanguageMatchesLanguageAndCountryAlias()
+    {
+        $this->expectRedirect('/de/site/page');
+        $this->mockRequest('/site/page',[
+            'acceptableLanguages' => ['en-US', 'en', 'de'],
+        ]);
+        $this->mockComponent([
+            'languages' => ['de', 'at'=>'de-AT'],
+        ]);
+    }
+
     public function testRedirectsIfNoLanguageInUrlAndAcceptedLanguageWithLowercaseCountryMatches()
     {
         $this->expectRedirect('/de-at/site/page');
