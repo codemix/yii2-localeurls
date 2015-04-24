@@ -57,6 +57,21 @@ class LocaleUrlTest extends TestCase
         $this->assertEquals('site/page', $request->pathInfo);
     }
 
+    public function testCanUseCountryAliasInUrl()
+    {
+        $this->mockRequest('/at/site/page');
+        $this->mockLocaleUrl([
+            'languages' => ['en-US', 'en', 'at' => 'de-AT', 'de'],
+        ]);
+        $this->assertEquals('de-AT', Yii::$app->language);
+        $this->assertEquals('de-AT', Yii::$app->session->get('_language'));
+        $cookie = Yii::$app->response->cookies->get('_language');
+        $this->assertNotNull($cookie);
+        $this->assertEquals('de-AT', $cookie->value);
+        $request = Yii::$app->request;
+        $this->assertEquals('site/page', $request->pathInfo);
+    }
+
     public function testCanUseLanguageWithWildcardCountryInUrl()
     {
         $this->mockRequest('/es-bo/site/page');
@@ -150,6 +165,28 @@ class LocaleUrlTest extends TestCase
         ]);
         $this->mockLocaleUrl([
             'languages' => ['en-US', 'en', 'de-*'],
+        ]);
+    }
+
+    public function testRedirectsIfNoLanguageInUrlAndAcceptedLanguageWithCountryMatchesCountryAlias()
+    {
+        $this->expectRedirect('/at/site/page');
+        $this->mockRequest('/site/page',[
+            'acceptableLanguages' => ['de-at', 'de'],
+        ]);
+        $this->mockLocaleUrl([
+            'languages' => ['de', 'at'=>'de-AT'],
+        ]);
+    }
+
+    public function testRedirectsIfNoLanguageInUrlAndAcceptedLanguageMatchesLanguageAndCountryAlias()
+    {
+        $this->expectRedirect('/de/site/page');
+        $this->mockRequest('/site/page',[
+            'acceptableLanguages' => ['en-US', 'en', 'de'],
+        ]);
+        $this->mockLocaleUrl([
+            'languages' => ['de', 'at'=>'de-AT'],
         ]);
     }
 
