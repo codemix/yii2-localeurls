@@ -29,7 +29,6 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         \Yii::$app = null;
         \Yii::$container = new Container();
         $this->request = [];
-        $this->localeUrls = [];
         parent::tearDown();
     }
 
@@ -54,16 +53,17 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Mock a web application with given config for localeUrls component
+     * Mock a web application with given config for urlManager component and let it resolve the request
      *
-     * @param array $config for localeUrl component
+     * @param array $config for urlManager component
      */
-    public function mockLocaleUrl($config = []) {
+    public function mockComponent($config = []) {
         $this->mockWebApplication([
             'components' => [
-                'localeUrls' => $config,
+                'urlManager' => $config,
             ]
         ]);
+        Yii::$app->request->resolve();
     }
 
     /**
@@ -95,11 +95,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
             'language' => 'en',
             'basePath' => __DIR__,
             'vendorPath' => __DIR__.'/../vendor/',
-            'bootstrap' => ['localeUrls'],
             'components' => [
-                'localeUrls' => [
-                    'class' => 'codemix\localeurls\LocaleUrls',
-                ],
                 'request' => ArrayHelper::merge([
                     'enableCookieValidation' => false,
                     'isConsoleRequest' => false,
