@@ -90,7 +90,7 @@ class UrlManagerTest extends TestCase
         $this->mockRequest('/site/page');
         $this->mockComponent([
             'languages' => ['en-US', 'en', 'de'],
-            'enableDefaultSuffix' => true,
+            'enableDefaultLanguageUrlCode' => true,
         ]);
     }
 
@@ -261,7 +261,7 @@ class UrlManagerTest extends TestCase
         $this->mockRequest('/en-us/site/page');
         $this->mockComponent([
             'languages' => ['en-US', 'en', 'de'],
-            'enablePersistence' => false,
+            'enableLanguagePersistence' => false,
         ]);
         $this->assertEquals('en-US', Yii::$app->language);
         $this->assertNull(Yii::$app->session->get('_language'));

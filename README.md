@@ -134,8 +134,8 @@ redirected to the URLs without language code. For example if default language is
     /fr/            -> Redirect to /
     /fr/some/page   -> Redirect to /some/page
 
-If `enableDefaultSuffix` is changed to `true` it's vice versa. Each language including
-the default language now uses an explicit language code in the URL. URLs without
+If `enableDefaultLanguageUrlCode` is changed to `true` it's vice versa. The default language
+is now treated like any other configured language. Requests with URL that don't contain a
 language code are no longer accessible:
 
     /fr
@@ -151,9 +151,10 @@ codes before the similar looking generic ones (i.e. 'en-US' before 'en'):
 
     'languages' => ['en-US','en-UK','en','fr','de-AT','de'],
 
-> **Note:** The URLs will always contain lowercase locales. If a URL with a code like `en-US`
-> is used, the user will be redirected to the `en-us` variant. Still the application language
-> will always use the correct `en-US` code.
+> **Note:** If you use country codes, they should always be configured in upper case letters
+> as shown above. The URLs will still always use lowercase codes. If a URL with an uppercase
+> code like `en-US` is used, the user will be redirected to the lowercase `en-us` variant.
+> The application language will always use the correct `en-US` code.
 
 If you want your URL to optionally contain *any* country variant you can also use a wildcard pattern:
 
@@ -183,15 +184,12 @@ You can also use friendlier names or aliases in URLs, which are configured like 
 <?= Url:to(['demo/action', 'language'=>'de']) ?>
 ```
 
-This will give you a URL like
+This will give you URLs like
 
     /german/demo/action
-
-and the URL
-
     /br/demo/action
 
-will set the application language to `pt-BR`.
+and set the respective language to `de` or `pt-PR` if matched.
 
 ### Persistence
 
@@ -211,7 +209,7 @@ then after some time comes back to one of the following URLs:
 
 In the last case, `dk` will be stored as last language.
 
-Persistence is enabled by default and can be disabled by setting `enablePersistence`
+Persistence is enabled by default and can be disabled by setting `enableLanguagePersistence`
 to `false` in the `localeUrls` component.
 
 You can modify other persistence settings with:
@@ -223,7 +221,7 @@ You can modify other persistence settings with:
 
 #### Reset To Default Language
 
-You'll notice, that there's one problem, if `enableDefaultSuffix` is `false` (which
+You'll notice, that there's one problem, if `enableDefaultLanguageUrlCode` is `false` (which
 is the default) and the user has e.g. stored `de` as last language. How can we now
 access the site in the default language? Because if we try `/` we'd be redirected 
 to `/de/`.
@@ -346,6 +344,11 @@ longer is a `localeUrls` component now. Instead everything was merged into our c
 `urlManager` component. So you should move any configuration for the `localeUrls` component
 into the `urlManager` component.
 
+Two options also have been renamed for more clarity:
+
+ * `enableDefaultSuffix` is now `enableDefaultLanguageUrlCode`
+ * `enablePersistence` is now `enableLanguagePersistence`
+
 So if your configuration looked like this before:
 
 ```php
@@ -356,6 +359,7 @@ return [
         'localeUrls' => [
             'languages' => ['en-US', 'en', 'fr', 'de', 'es-*']
             'enableDefaultSuffix' => true,
+            'enablePersistence' => false,
         ],
         'urlManager' => [
             'class' => 'codemix\localeurls\UrlManager',
@@ -373,7 +377,8 @@ return [
         'urlManager' => [
             'class' => 'codemix\localeurls\UrlManager',
             'languages' => ['en-US', 'en', 'fr', 'de', 'es-*']
-            'enableDefaultSuffix' => true,
+            'enableDefaultLanguageUrlCode' => true,
+            'enableLanguagePersistence' => false,
         ]
     ]
 ];

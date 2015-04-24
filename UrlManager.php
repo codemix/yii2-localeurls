@@ -27,13 +27,20 @@ class UrlManager extends BaseUrlManager
     public $enableLocaleUrls = true;
 
     /**
-     * @var bool whether to use a suffix for the default language. If this is `true`, then the default language
-     * will always use a URL suffix e.g. `/fr`, and requests to `/` will be redirected. If this is `false`
-     * then `/` will be used for the default language. Any request to `/fr` will then get redirected to `/`.
-     * In this case the latter URL can also be used to "reset" the cookie value to the default language.
-     * Default is `false`.
+     * @var bool whether the default language should use an URL code like any other configured language.
+     *
+     * By default this is `false`, so for URLs without a language code the default language is assumed.
+     * In addition any request to an URL that contains the default language code will be redirected to
+     * the same URL without a language code. So if the default language is `fr` and a user requests
+     * `/fr/some/page` he gets redirected to `/some/page`. This way the persistet language can be reset
+     * to the default language.
+     *
+     * If this is `true`, then an URL that does not contain any language code will be redirected to the
+     * same URL with default language code. So if for example the default language is `fr`, then
+     * any request to `/some/page` will be redirected to `/fr/some/page`.
+     *
      */
-    public $enableDefaultSuffix = false;
+    public $enableDefaultLanguageUrlCode = false;
 
     /**
      * @var bool whether to detect the app language from the HTTP headers (i.e. browser settings).
@@ -46,7 +53,7 @@ class UrlManager extends BaseUrlManager
      * is `true` (default) and a returning user tries to access any URL without a language prefix,
      * he'll be redirected to the respective stored language URL (e.g. /some/page -> /fr/some/page).
      */
-    public $enablePersistence = true;
+    public $enableLanguagePersistence = true;
 
     /**
      * @var string the name of the session key that is used to store the language. Default is '_language'.
@@ -60,7 +67,7 @@ class UrlManager extends BaseUrlManager
 
     /**
      * @var int number of seconds how long the language information should be stored in cookie,
-     * if `$enablePersistence` is true. Set to `false` to disable the language cookie completely.
+     * if `$enableLanguagePersistence` is true. Set to `false` to disable the language cookie completely.
      * Default is 30 days.
      */
     public $languageCookieDuration = 2592000;
@@ -143,7 +150,7 @@ class UrlManager extends BaseUrlManager
             // Unless a language was explicitely specified in the parameters we can return a URL without any prefix
             // for the default language, if suffixes are disabled for the default language. In any other case we
             // always add the suffix, e.g. to create "reset" URLs that explicitely contain the default language.
-            if (!$languageRequired && !$this->enableDefaultSuffix && $language===$this->getDefaultLanguage()) {
+            if (!$languageRequired && !$this->enableDefaultLanguageUrlCode && $language===$this->getDefaultLanguage()) {
                 return  $url;
             } else {
                 $key = array_search($language, $this->languages);
@@ -202,7 +209,7 @@ class UrlManager extends BaseUrlManager
                 }
             }
             Yii::$app->language = $language;
-            if ($this->enablePersistence) {
+            if ($this->enableLanguagePersistence) {
                 Yii::$app->session[$this->languageSessionKey] = $language;
                 if ($this->languageCookieDuration) {
                     $cookie = new Cookie([
@@ -217,12 +224,12 @@ class UrlManager extends BaseUrlManager
 
             // "Reset" case: We called e.g. /fr/demo/page so the persisted language was set back to "fr".
             // Now we can redirect to the URL without language prefix, if default prefixes are disabled.
-            if (!$this->enableDefaultSuffix && $language===$this->_defaultLanguage) {
+            if (!$this->enableDefaultLanguageUrlCode && $language===$this->_defaultLanguage) {
                 $this->redirectToLanguage('');
             }
         } else {
             $language = null;
-            if ($this->enablePersistence) {
+            if ($this->enableLanguagePersistence) {
                 $language = Yii::$app->session->get($this->languageSessionKey);
                 if ($language===null) {
                     $language = $request->getCookies()->get($this->languageCookieName);
@@ -238,7 +245,7 @@ class UrlManager extends BaseUrlManager
                 }
             }
             if ($language===null || $language===$this->_defaultLanguage) {
-                if (!$this->enableDefaultSuffix) {
+                if (!$this->enableDefaultLanguageUrlCode) {
                     return;
                 } else {
                     $language = $this->_defaultLanguage;
