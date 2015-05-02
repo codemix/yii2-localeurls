@@ -242,6 +242,19 @@ class UrlManagerTest extends TestCase
         ]);
     }
 
+    public function testDoesNothingIfNoLanguagesConfigured()
+    {
+        $this->mockRequest('/site/page',[
+            'acceptableLanguages' => ['de'],
+        ]);
+        $this->mockComponent([
+            'languages' => [],
+        ]);
+        $this->assertEquals('en', Yii::$app->language);
+        $request = Yii::$app->request;
+        $this->assertEquals('site/page', $request->pathInfo);
+    }
+
     public function testCanDisableLanguageDetection()
     {
         $this->mockRequest('/site/page',[
@@ -282,6 +295,15 @@ class UrlManagerTest extends TestCase
         $this->assertNull(Yii::$app->response->cookies->get('_language'));
         $request = Yii::$app->request;
         $this->assertEquals('site/page', $request->pathInfo);
+    }
+
+    public function testCreateNormalUrlIfNoLanguagesConfigured()
+    {
+        $this->mockRequest('/site/page');
+        $this->mockComponent([
+            'languages' => [],
+        ]);
+        $this->assertEquals($this->prepareUrl('/demo/action'), Url::to(['/demo/action']));
     }
 
     public function testCreateUrlWithoutLanguageIfNoLanguageInUrl()

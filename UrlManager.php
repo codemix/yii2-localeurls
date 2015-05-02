@@ -99,7 +99,7 @@ class UrlManager extends BaseUrlManager
      */
     public function init()
     {
-        if ($this->enableLocaleUrls) {
+        if ($this->enableLocaleUrls && $this->languages) {
             if (!$this->enablePrettyUrl) {
                 throw new InvalidConfigException('Locale URL support requires enablePrettyUrl to be set to true.');
             }
@@ -122,7 +122,7 @@ class UrlManager extends BaseUrlManager
      */
     public function parseRequest($request)
     {
-        if ($this->enableLocaleUrls) {
+        if ($this->enableLocaleUrls && $this->languages) {
             $this->processLocaleUrl($request);
         }
         return parent::parseRequest($request);
@@ -133,7 +133,7 @@ class UrlManager extends BaseUrlManager
      */
     public function createUrl($params)
     {
-        if ($this->enableLocaleUrls) {
+        if ($this->enableLocaleUrls && $this->languages) {
             $params = (array) $params;
 
             if (isset($params[$this->languageParam])) {
