@@ -360,7 +360,7 @@ class UrlManager extends BaseUrlManager
 
         Yii::$app->getResponse()->redirect($redirectUrl);
         if (YII_ENV_TEST) {
-            throw new \yii\base\Exception($redirectUrl);
+            throw new \yii\base\Exception(\yii\helpers\Url::to($redirectUrl));
         } else {
             Yii::$app->end();
         }
