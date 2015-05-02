@@ -345,6 +345,10 @@ class UrlManager extends BaseUrlManager
             $redirectUrl .= '/'.$pathInfo;
         }
 
+        if ($redirectUrl === '') {
+            $redirectUrl = '/';
+        }
+
         // 1) q=foo
         // 2) q=foo
         // 3)
