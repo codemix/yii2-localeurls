@@ -251,6 +251,20 @@ class UrlManagerTest extends TestCase
         ]);
     }
 
+    public function testDoesNothingIfLocaleUrlsDisabled()
+    {
+        $this->mockRequest('/site/page',[
+            'acceptableLanguages' => ['de'],
+        ]);
+        $this->mockComponent([
+            'enableLocaleUrls' => false,
+            'languages' => ['en-US', 'en', 'de'],
+        ]);
+        $this->assertEquals('en', Yii::$app->language);
+        $request = Yii::$app->request;
+        $this->assertEquals('site/page', $request->pathInfo);
+    }
+
     public function testDoesNothingIfNoLanguagesConfigured()
     {
         $this->mockRequest('/site/page',[
@@ -306,13 +320,23 @@ class UrlManagerTest extends TestCase
         $this->assertEquals('site/page', $request->pathInfo);
     }
 
+    public function testCreateNormalUrlIfLocaleUrlsDisabled()
+    {
+        $this->mockRequest('/site/page');
+        $this->mockComponent([
+            'enableLocaleUrls' => false,
+            'languages' => ['en-us', 'en', 'de'],
+        ]);
+        $this->assertEquals($this->prepareUrl('/demo/action?language=de'), Url::to(['/demo/action', 'language' => 'de']));
+    }
+
     public function testCreateNormalUrlIfNoLanguagesConfigured()
     {
         $this->mockRequest('/site/page');
         $this->mockComponent([
             'languages' => [],
         ]);
-        $this->assertEquals($this->prepareUrl('/demo/action'), Url::to(['/demo/action']));
+        $this->assertEquals($this->prepareUrl('/demo/action?language=de'), Url::to(['/demo/action', 'language' => 'de']));
     }
 
     public function testCreateUrlWithoutLanguageIfNoLanguageInUrl()
