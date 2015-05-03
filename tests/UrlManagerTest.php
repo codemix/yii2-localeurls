@@ -94,6 +94,15 @@ class UrlManagerTest extends TestCase
         ]);
     }
 
+    public function testRedirectsIfDefaultLanguageInUrl()
+    {
+        $this->expectRedirect('');
+        $this->mockRequest('/en');
+        $this->mockComponent([
+            'languages' => ['en'],
+        ]);
+    }
+
     public function testRedirectsIfLanguageWithUpperCaseCountryInUrl()
     {
         $this->expectRedirect('/es-bo/site/page');

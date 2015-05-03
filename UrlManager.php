@@ -345,6 +345,10 @@ class UrlManager extends BaseUrlManager
             $redirectUrl .= '/'.$pathInfo;
         }
 
+        if ($redirectUrl === '') {
+            $redirectUrl = '/';
+        }
+
         // 1) q=foo
         // 2) q=foo
         // 3)
@@ -356,7 +360,7 @@ class UrlManager extends BaseUrlManager
 
         Yii::$app->getResponse()->redirect($redirectUrl);
         if (YII_ENV_TEST) {
-            throw new \yii\base\Exception($redirectUrl);
+            throw new \yii\base\Exception(\yii\helpers\Url::to($redirectUrl));
         } else {
             Yii::$app->end();
         }
