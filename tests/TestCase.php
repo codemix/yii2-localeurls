@@ -73,7 +73,8 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
      */
     protected function expectRedirect($url)
     {
-        $this->setExpectedException('\yii\base\Exception', $this->prepareUrl($url));
+        $url = $this->prepareUrl($url) ?: '/';
+        $this->setExpectedExceptionRegExp('\yii\base\Exception', '#^' . $url . '$#');
     }
 
     /**

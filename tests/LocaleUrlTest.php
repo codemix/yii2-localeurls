@@ -106,6 +106,15 @@ class LocaleUrlTest extends TestCase
         ]);
     }
 
+    public function testRedirectsIfDefaultLanguageInUrl()
+    {
+        $this->expectRedirect('');
+        $this->mockRequest('/en');
+        $this->mockLocaleUrl([
+            'languages' => ['en'],
+        ]);
+    }
+
     public function testRedirectsIfLanguageWithUpperCaseCountryInUrl()
     {
         $this->expectRedirect('/es-bo/site/page');
