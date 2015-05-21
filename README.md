@@ -65,7 +65,7 @@ return [
 
             // List all supported languages here
             // Make sure, you include your app's default language.
-            'languages' => ['en-US', 'en', 'fr', 'de', 'es-*']
+            'languages' => ['en-US', 'en', 'fr', 'de', 'es-*'],
         ]
 
         // ...
@@ -357,7 +357,7 @@ return [
     'bootstrap' => ['localeUrls'],
     'components' => [
         'localeUrls' => [
-            'languages' => ['en-US', 'en', 'fr', 'de', 'es-*']
+            'languages' => ['en-US', 'en', 'fr', 'de', 'es-*'],
             'enableDefaultSuffix' => true,
             'enablePersistence' => false,
         ],
@@ -376,7 +376,7 @@ return [
     'components' => [
         'urlManager' => [
             'class' => 'codemix\localeurls\UrlManager',
-            'languages' => ['en-US', 'en', 'fr', 'de', 'es-*']
+            'languages' => ['en-US', 'en', 'fr', 'de', 'es-*'],
             'enableDefaultLanguageUrlCode' => true,
             'enableLanguagePersistence' => false,
         ]
