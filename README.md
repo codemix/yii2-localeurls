@@ -357,12 +357,12 @@ return [
     'bootstrap' => ['localeUrls'],
     'components' => [
         'localeUrls' => [
-            'languages' => ['en-US', 'en', 'fr', 'de', 'es-*']
+            'languages' => ['en-US', 'en', 'fr', 'de', 'es-*'],
             'enableDefaultSuffix' => true,
-            'enablePersistence' => false,
+            'enablePersistence' => false
         ],
         'urlManager' => [
-            'class' => 'codemix\localeurls\UrlManager',
+            'class' => 'codemix\localeurls\UrlManager'
         ]
     ]
 ];
@@ -376,9 +376,9 @@ return [
     'components' => [
         'urlManager' => [
             'class' => 'codemix\localeurls\UrlManager',
-            'languages' => ['en-US', 'en', 'fr', 'de', 'es-*']
+            'languages' => ['en-US', 'en', 'fr', 'de', 'es-*'],
             'enableDefaultLanguageUrlCode' => true,
-            'enableLanguagePersistence' => false,
+            'enableLanguagePersistence' => false
         ]
     ]
 ];
