@@ -91,7 +91,7 @@ class UrlManager extends BaseUrlManager
 
     /**
      * Array of filtered URL route strings
-     * @param array
+     * @var array
      */
     public $filter = array();
 
@@ -177,7 +177,7 @@ class UrlManager extends BaseUrlManager
      * If no parameter is found it will try to detect the language from persistent storage (session /
      * cookie) or from browser settings.
      *
-     * @var \yii\web\Request $request
+     * @param \yii\web\Request $request
      */
     protected function processLocaleUrl($request)
     {
