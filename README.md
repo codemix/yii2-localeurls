@@ -299,16 +299,16 @@ class LanguageDropdown extends Dropdown
 
         array_unshift($params, $route);
 
-        foreach (Yii::$app->localeUrls->languages as $language) {
+        foreach (Yii::$app->urlManager->languages as $language) {
             $isWildcard = substr($language, -2)==='-*';
             if (
                 $language===$appLanguage ||
                 // Also check for wildcard language
-                $isWildCard && substr($appLanguage,0,2)===substr($language,0,2)
+                $isWildcard && substr($appLanguage,0,2)===substr($language,0,2)
             ) {
                 continue;   // Exclude the current language
             }
-            if ($isWildCard) {
+            if ($isWildcard) {
                 $language = substr($language,0,2);
             }
             $params['language'] = $language;
