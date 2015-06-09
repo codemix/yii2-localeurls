@@ -237,6 +237,23 @@ for the default language in the URL. For example if default language is `fr`:
 
 In this case, `fr` will first be stored as last used language before the user is redirected.
 
+#### Filter urlRoutes for exclusion
+To exclude urlRoutes, like in a API case, define a filter array in your configuration. 
+Language detection will not trigger for those URLs. 
+
+
+    'components' => [
+   
+        // Override the urlManager component
+        'urlManager' => [
+            'class' => 'codemix\localeurls\UrlManager',
+            'languages' => ['en-US', 'en', 'fr', 'de', 'es-*'],
+        ],
+        'filter' => [
+            'api/'
+        ]
+    ]
+
 ### Language Detection
 
 If a user visits your site for the first time and there's no language stored in session

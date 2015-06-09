@@ -90,6 +90,12 @@ class UrlManager extends BaseUrlManager
     public $languageParam = 'language';
 
     /**
+     * Array of filtered URL route strings
+     * @var array
+     */
+    public $filter = array();
+
+    /**
      * @var \yii\web\Request
      */
     protected $_request;
@@ -134,7 +140,7 @@ class UrlManager extends BaseUrlManager
     public function createUrl($params)
     {
         if ($this->enableLocaleUrls && $this->languages) {
-            $params = (array) $params;
+            $params = (array)$params;
 
             if (isset($params[$this->languageParam])) {
                 $language = $params[$this->languageParam];
@@ -150,8 +156,8 @@ class UrlManager extends BaseUrlManager
             // Unless a language was explicitely specified in the parameters we can return a URL without any prefix
             // for the default language, if suffixes are disabled for the default language. In any other case we
             // always add the suffix, e.g. to create "reset" URLs that explicitely contain the default language.
-            if (!$languageRequired && !$this->enableDefaultLanguageUrlCode && $language===$this->getDefaultLanguage()) {
-                return  $url;
+            if (!$languageRequired && !$this->enableDefaultLanguageUrlCode && $language === $this->getDefaultLanguage()) {
+                return $url;
             } else {
                 $key = array_search($language, $this->languages);
                 $base = $this->showScriptName ? $this->getScriptUrl() : $this->getBaseUrl();
@@ -171,16 +177,25 @@ class UrlManager extends BaseUrlManager
      * If no parameter is found it will try to detect the language from persistent storage (session /
      * cookie) or from browser settings.
      *
-     * @var \yii\web\Request $request
+     * @param \yii\web\Request $request
      */
     protected function processLocaleUrl($request)
     {
+        //Init
         $this->_request = $request;
         $pathInfo = $request->getPathInfo();
         $parts = [];
+
+        //filter routes
+        foreach ($this->filter as $filter) {
+            if (preg_match("#^($filter)\b(/?)#i", $pathInfo)) {
+                return true; //proceed with application
+            }
+        }
+
         foreach ($this->languages as $k => $v) {
             $value = is_string($k) ? $k : $v;
-            if (substr($value, -2)==='-*') {
+            if (substr($value, -2) === '-*') {
                 $lng = substr($value, 0, -2);
                 $parts[] = "$lng\-[a-z]{2,3}";
                 $parts[] = $lng;
@@ -189,22 +204,23 @@ class UrlManager extends BaseUrlManager
             }
         }
         $pattern = implode('|', $parts);
+
         if (preg_match("#^($pattern)\b(/?)#i", $pathInfo, $m)) {
-            $request->setPathInfo(mb_substr($pathInfo, mb_strlen($m[1].$m[2])));
+            $request->setPathInfo(mb_substr($pathInfo, mb_strlen($m[1] . $m[2])));
             $code = $m[1];
             if (isset($this->languages[$code])) {
                 // Replace alias with language code
                 $language = $this->languages[$code];
             } else {
-                list($language,$country) = $this->matchCode($code);
-                if ($country!==null) {
-                    if ($code==="$language-$country") {
+                list($language, $country) = $this->matchCode($code);
+                if ($country !== null) {
+                    if ($code === "$language-$country") {
                         $this->redirectToLanguage(strtolower($code));
                     } else {
                         $language = "$language-$country";
                     }
                 }
-                if ($language===null) {
+                if ($language === null) {
                     $language = $code;
                 }
             }
@@ -217,34 +233,34 @@ class UrlManager extends BaseUrlManager
                         'httpOnly' => true
                     ]);
                     $cookie->value = $language;
-                    $cookie->expire = time() + (int) $this->languageCookieDuration;
+                    $cookie->expire = time() + (int)$this->languageCookieDuration;
                     Yii::$app->getResponse()->getCookies()->add($cookie);
                 }
             }
 
             // "Reset" case: We called e.g. /fr/demo/page so the persisted language was set back to "fr".
             // Now we can redirect to the URL without language prefix, if default prefixes are disabled.
-            if (!$this->enableDefaultLanguageUrlCode && $language===$this->_defaultLanguage) {
+            if (!$this->enableDefaultLanguageUrlCode && $language === $this->_defaultLanguage) {
                 $this->redirectToLanguage('');
             }
         } else {
             $language = null;
             if ($this->enableLanguagePersistence) {
                 $language = Yii::$app->session->get($this->languageSessionKey);
-                if ($language===null) {
+                if ($language === null) {
                     $language = $request->getCookies()->get($this->languageCookieName);
                 }
             }
-            if ($language===null && $this->enableLanguageDetection) {
+            if ($language === null && $this->enableLanguageDetection) {
                 foreach ($request->getAcceptableLanguages() as $acceptable) {
-                    list($language,$country) = $this->matchCode($acceptable);
-                    if ($language!==null) {
-                        $language = $country===null ? $language : "$language-$country";
+                    list($language, $country) = $this->matchCode($acceptable);
+                    if ($language !== null) {
+                        $language = $country === null ? $language : "$language-$country";
                         break;
                     }
                 }
             }
-            if ($language===null || $language===$this->_defaultLanguage) {
+            if ($language === null || $language === $this->_defaultLanguage) {
                 if (!$this->enableDefaultLanguageUrlCode) {
                     return;
                 } else {
@@ -286,7 +302,7 @@ class UrlManager extends BaseUrlManager
         $language = $code;
         $country = null;
         $parts = explode('-', $code);
-        if (count($parts)===2) {
+        if (count($parts) === 2) {
             $language = $parts[0];
             $country = strtoupper($parts[1]);
         }
@@ -333,7 +349,7 @@ class UrlManager extends BaseUrlManager
         }
 
         if ($language) {
-            $redirectUrl .= '/'.$language;
+            $redirectUrl .= '/' . $language;
         }
 
         // 1) some/page
@@ -342,7 +358,7 @@ class UrlManager extends BaseUrlManager
         // 4) some/page
         $pathInfo = $this->_request->getPathInfo();
         if ($pathInfo) {
-            $redirectUrl .= '/'.$pathInfo;
+            $redirectUrl .= '/' . $pathInfo;
         }
 
         if ($redirectUrl === '') {
@@ -355,7 +371,7 @@ class UrlManager extends BaseUrlManager
         // 4) q=foo
         $queryString = $this->_request->getQueryString();
         if ($queryString) {
-            $redirectUrl .= '?'.$queryString;
+            $redirectUrl .= '?' . $queryString;
         }
 
         Yii::$app->getResponse()->redirect($redirectUrl);
