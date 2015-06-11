@@ -251,6 +251,18 @@ class UrlManagerTest extends TestCase
         ]);
     }
 
+    public function testRedirectsIfUrlDoesNotMatchIgnoresUrls()
+    {
+        $this->expectRedirect('/site/page');
+        $this->mockRequest('/en/site/page');
+        $this->mockComponent([
+            'languages' => ['en-US', 'en', 'de'],
+            'ignoreLanguageUrlPatterns' => [
+                '#not/used#' => '#^site/other#'
+            ],
+        ]);
+    }
+
     public function testDoesNothingIfLocaleUrlsDisabled()
     {
         $this->mockRequest('/site/page',[
@@ -272,6 +284,22 @@ class UrlManagerTest extends TestCase
         ]);
         $this->mockComponent([
             'languages' => [],
+        ]);
+        $this->assertEquals('en', Yii::$app->language);
+        $request = Yii::$app->request;
+        $this->assertEquals('site/page', $request->pathInfo);
+    }
+
+    public function testDoesNothingIfUrlMatchesIgnoresUrls()
+    {
+        $this->mockRequest('/site/page',[
+            'acceptableLanguages' => ['de'],
+        ]);
+        $this->mockComponent([
+            'languages' => ['en-US', 'en', 'de'],
+            'ignoreLanguageUrlPatterns' => [
+                '#not/used#' => '#^site/page#'
+            ],
         ]);
         $this->assertEquals('en', Yii::$app->language);
         $request = Yii::$app->request;
@@ -373,5 +401,29 @@ class UrlManagerTest extends TestCase
             'languages' => ['fr', 'en', 'deutsch' => 'de'],
         ]);
         $this->assertEquals($this->prepareUrl('/deutsch/demo/action'), Url::to(['/demo/action', 'language' => 'de']));
+    }
+
+    public function testCreateNormalUrlIfIgnoreRoutesMatches()
+    {
+        $this->mockRequest('/de/site/page');
+        $this->mockComponent([
+            'languages' => ['en-us', 'en', 'de'],
+            'ignoreLanguageUrlPatterns' => [
+                '#^demo/.*#' => '#not/used#'
+            ],
+        ]);
+        $this->assertEquals($this->prepareUrl('/demo/action'), Url::to(['/demo/action']));
+    }
+
+    public function testCreateUrlWithLanguageFromUrlIfIgnoreRouteDoesNotMatch()
+    {
+        $this->mockRequest('/de/site/page');
+        $this->mockComponent([
+            'languages' => ['en-us', 'en', 'de'],
+            'ignoreLanguageUrlPatterns' => [
+                '#^other/.*#' => '#not/used#'
+            ],
+        ]);
+        $this->assertEquals($this->prepareUrl('/de/demo/action'), Url::to(['/demo/action']));
     }
 }
