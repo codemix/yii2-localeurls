@@ -159,6 +159,7 @@ class UrlManager extends BaseUrlManager
                 if (is_string($key)) {
                     $language = $key;
                 }
+                $language = strtolower($language);
                 return $length ? substr_replace($url, "$base/$language", 0, $length) : "/$language$url";
             }
         } else {

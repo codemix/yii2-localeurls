@@ -325,7 +325,7 @@ class UrlManagerTest extends TestCase
         $this->mockRequest('/site/page');
         $this->mockComponent([
             'enableLocaleUrls' => false,
-            'languages' => ['en-us', 'en', 'de'],
+            'languages' => ['en-US', 'en', 'de'],
         ]);
         $this->assertEquals($this->prepareUrl('/demo/action?language=de'), Url::to(['/demo/action', 'language' => 'de']));
     }
@@ -343,7 +343,7 @@ class UrlManagerTest extends TestCase
     {
         $this->mockRequest('/site/page');
         $this->mockComponent([
-            'languages' => ['en-us', 'en', 'de'],
+            'languages' => ['en-US', 'en', 'de'],
         ]);
         $this->assertEquals($this->prepareUrl('/demo/action'), Url::to(['/demo/action']));
     }
@@ -352,7 +352,7 @@ class UrlManagerTest extends TestCase
     {
         $this->mockRequest('/de/site/page');
         $this->mockComponent([
-            'languages' => ['en-us', 'en', 'de'],
+            'languages' => ['en-US', 'en', 'de'],
         ]);
         $this->assertEquals($this->prepareUrl('/de/demo/action'), Url::to(['/demo/action']));
     }
@@ -361,9 +361,9 @@ class UrlManagerTest extends TestCase
     {
         $this->mockRequest('/de/site/page');
         $this->mockComponent([
-            'languages' => ['en-us', 'en', 'de'],
+            'languages' => ['en-US', 'en', 'de'],
         ]);
-        $this->assertEquals($this->prepareUrl('/en-us/demo/action'), Url::to(['/demo/action', 'language' => 'en-us']));
+        $this->assertEquals($this->prepareUrl('/en-us/demo/action'), Url::to(['/demo/action', 'language' => 'en-US']));
     }
 
     public function testCreateUrlWithSpecificAliasedLanguage()
