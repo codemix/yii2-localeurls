@@ -291,13 +291,16 @@ class LanguageDropdown extends Dropdown
 {
     private static $_labels;
 
+    private $_isError;
+
     public function init()
     {
-        $route = '/'.Yii::$app->controller->route;
+        $route = Yii::$app->controller->route;
         $appLanguage = Yii::$app->language;
         $params = $_GET;
+        $this->_isError = $route === Yii::$app->errroHandler->errorAction;
 
-        array_unshift($params, $route);
+        array_unshift($params, '/'.$route);
 
         foreach (Yii::$app->urlManager->languages as $language) {
             $isWildcard = substr($language, -2)==='-*';
@@ -318,6 +321,16 @@ class LanguageDropdown extends Dropdown
             ];
         }
         parent::init();
+    }
+
+    public function run()
+    {
+        // Only show this widget if we're not on the error page
+        if ($this->_isError) {
+            return '';
+        } else {
+            return parent::run();
+        }
     }
 
     public static function label($code)
