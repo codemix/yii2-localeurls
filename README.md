@@ -298,7 +298,7 @@ class LanguageDropdown extends Dropdown
         $route = Yii::$app->controller->route;
         $appLanguage = Yii::$app->language;
         $params = $_GET;
-        $this->_isError = $route === Yii::$app->errroHandler->errorAction;
+        $this->_isError = $route === Yii::$app->errorHandler->errorAction;
 
         array_unshift($params, '/'.$route);
 
