@@ -73,6 +73,22 @@ class UrlManager extends BaseUrlManager
     public $languageCookieDuration = 2592000;
 
     /**
+     * @var array list of route and URL regex patterns to ignore during language processing. The keys
+     * of the array are patterns for routes, the values are patterns for URLs. Route patterns are checked
+     * during URL creation. If a pattern matches, no language parameter will be added to the created URL.
+     * URL patterns are checked during processing incoming requests. If a pattern matches, the language
+     * processing will be skipped for that URL. Examples:
+     *
+     * ~~~php
+     * [
+     *     '#^site/(login|register)#' => '#^(login|register)#'
+     *     '#^api/#' => '#^api/#',
+     * ]
+     * ~~~
+     */
+    public $ignoreLanguageUrlPatterns = [];
+
+    /**
      * @var string the language that was initially set in the application configuration
      */
     protected $_defaultLanguage;
@@ -123,7 +139,18 @@ class UrlManager extends BaseUrlManager
     public function parseRequest($request)
     {
         if ($this->enableLocaleUrls && $this->languages) {
-            $this->processLocaleUrl($request);
+            $process = true;
+            if ($this->ignoreLanguageUrlPatterns) {
+                $pathInfo = $request->getPathInfo();
+                foreach ($this->ignoreLanguageUrlPatterns as $k => $pattern) {
+                    if (preg_match($pattern, $pathInfo)) {
+                        $process = false;
+                    }
+                }
+            }
+            if ($process) {
+                $this->processLocaleUrl($request);
+            }
         }
         return parent::parseRequest($request);
     }
@@ -133,6 +160,16 @@ class UrlManager extends BaseUrlManager
      */
     public function createUrl($params)
     {
+        if ($this->ignoreLanguageUrlPatterns) {
+            $params = (array) $params;
+            $route = trim($params[0], '/');
+            foreach ($this->ignoreLanguageUrlPatterns as $pattern => $v) {
+                if (preg_match($pattern, $route)) {
+                    return parent::createUrl($params);
+                }
+            }
+        }
+
         if ($this->enableLocaleUrls && $this->languages) {
             $params = (array) $params;
 

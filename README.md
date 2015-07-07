@@ -277,6 +277,26 @@ Any other `pt-CC` code              | `/pt-cc`              | `pt-CC`
 `pt`                                | `/pt`                 | `pt`
 
 
+### Excluding Routes / URLs
+
+You may want to disable the language processing for some routes and URLs with the
+`$ignoreLanguageUrlPatterns` option:
+
+```php
+<?php
+    'ignoreLanguageUrlPatterns' => [
+        '#^site/(login|register)#' => '#^(login|register)#'
+        '#^api/#' => '#^api/#',
+    ],
+```
+
+Both, keys and values are regular expressions. The keys are patterns that describe routes
+to exclude from language processing during *URL creation*, whereas the values are patterns
+to exclude during *URL parsing*.
+
+> Note: Keys and values don't neccessarily have to relate to each other. It's just for
+> convenience, that the configuration is combined into a single option.
+
 ## Example Language Selection Widget
 
 There's no widget for language selection included, because there are simply too many options
