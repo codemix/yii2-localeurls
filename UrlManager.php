@@ -289,6 +289,10 @@ class UrlManager extends BaseUrlManager
                     $language = $this->_defaultLanguage;
                 }
             }
+            // #35: Only redirect if a valid language was found
+            if ($this->matchCode($language)===[null, null]) {
+                return;
+            }
 
             $key = array_search($language, $this->languages);
             if ($key && is_string($key)) {

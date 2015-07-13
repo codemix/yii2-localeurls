@@ -306,6 +306,25 @@ class UrlManagerTest extends TestCase
         $this->assertEquals('site/page', $request->pathInfo);
     }
 
+    public function testDoesNothingIfInvalidLanguageInCookie()
+    {
+        $_COOKIE['_language'] = 'fr';
+        $this->mockRequest('/site/page');
+        $this->mockComponent( [
+            'languages' => ['en-US', 'en', 'de'],
+        ]);
+    }
+
+    public function testDoesNothingIfInvalidLanguageInSession()
+    {
+        @session_start();
+        $_SESSION['_language'] = 'fr';
+        $this->mockRequest('/site/page');
+        $this->mockComponent( [
+            'languages' => ['en-US', 'en', 'de'],
+        ]);
+    }
+
     public function testCanDisableLanguageDetection()
     {
         $this->mockRequest('/site/page',[
