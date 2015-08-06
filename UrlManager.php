@@ -270,7 +270,7 @@ class UrlManager extends BaseUrlManager
             if ($this->enableLanguagePersistence) {
                 $language = Yii::$app->session->get($this->languageSessionKey);
                 if ($language===null) {
-                    $language = $request->getCookies()->get($this->languageCookieName);
+                    $language = $request->getCookies()->getValue($this->languageCookieName);
                 }
             }
             if ($language===null && $this->enableLanguageDetection) {
