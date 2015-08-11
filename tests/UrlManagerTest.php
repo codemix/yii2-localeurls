@@ -86,7 +86,7 @@ class UrlManagerTest extends TestCase
 
     public function testRedirectsToRootIfOnlyDefaultLanguageInUrlAndDefaultLanguageUsesNoSuffix()
     {
-        $this->expectRedirect('');
+        $this->expectRedirect('/');
         $this->mockRequest('/en');
         $this->mockComponent([
             'languages' => ['en-US', 'en', 'de'],
@@ -105,7 +105,7 @@ class UrlManagerTest extends TestCase
 
     public function testRedirectsIfDefaultLanguageInUrl()
     {
-        $this->expectRedirect('');
+        $this->expectRedirect('/');
         $this->mockRequest('/en');
         $this->mockComponent([
             'languages' => ['en'],

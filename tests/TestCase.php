@@ -69,15 +69,11 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * Expect a redirect exception
      *
-     * If an empty string is passed, `showScriptName` is `false` and the `baseUrl` is empty, a `/`
-     * is expected. In all other cases a URL depending on `showScriptName` and `baseUrl` without a
-     * trailing slash is expected.
-     *
      * @param string $url the redirect URL
      */
     protected function expectRedirect($url)
     {
-        $url = $this->prepareUrl($url) ? : '/';
+        $url = $this->prepareUrl($url);
         $this->setExpectedExceptionRegExp('\yii\base\Exception', '#^' . $url . '$#');
     }
 
