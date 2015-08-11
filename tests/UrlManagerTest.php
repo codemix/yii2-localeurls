@@ -84,6 +84,15 @@ class UrlManagerTest extends TestCase
         ]);
     }
 
+    public function testRedirectsToRootIfOnlyDefaultLanguageInUrlAndDefaultLanguageUsesNoSuffix()
+    {
+        $this->expectRedirect('');
+        $this->mockRequest('/en');
+        $this->mockComponent([
+            'languages' => ['en-US', 'en', 'de'],
+        ]);
+    }
+
     public function testRedirectsIfNoLanguageInUrlAndDefaultLanguageUsesSuffix()
     {
         $this->expectRedirect('/en/site/page');
@@ -402,6 +411,18 @@ class UrlManagerTest extends TestCase
             'languages' => ['en-US', 'en', 'de'],
         ]);
         $this->assertEquals($this->prepareUrl('/de/demo/action'), Url::to(['/demo/action']));
+    }
+
+    public function testCreateHomeUrlWithLanguageFromUrl()
+    {
+        $this->mockRequest('/de/site/page');
+        $this->mockComponent([
+            'languages' => ['en-US', 'en', 'de'],
+            'rules' => [
+                '' => 'site/index',
+            ],
+        ]);
+        $this->assertEquals($this->prepareUrl('/de'), Url::to(['/site/index']));
     }
 
     public function testCreateUrlWithSpecificLanguage()
