@@ -363,6 +363,8 @@ class UrlManager extends BaseUrlManager
         if($language){
             $params[$this->languageParam]=$language;
         }
+        // See Yii Issues #8291 and #9161:
+        $params = $params + $this->_request->getQueryParams();
         array_unshift($params, $route);
         $url = $this->createUrl($params);
         Yii::$app->getResponse()->redirect($url);
