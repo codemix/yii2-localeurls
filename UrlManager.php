@@ -111,6 +111,11 @@ class UrlManager extends BaseUrlManager
     protected $_request;
 
     /**
+     * @var bool whether locale URL was processed
+     */
+    protected $_processed = false;
+
+    /**
      * @inheritdoc
      */
     public function init()
@@ -148,7 +153,8 @@ class UrlManager extends BaseUrlManager
                     }
                 }
             }
-            if ($process) {
+            if ($process && !$this->_processed) {
+                $this->_processed = true;
                 $this->processLocaleUrl($request);
             }
         }
