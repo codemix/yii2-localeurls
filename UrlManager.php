@@ -149,6 +149,7 @@ class UrlManager extends BaseUrlManager
                 $pathInfo = $request->getPathInfo();
                 foreach ($this->ignoreLanguageUrlPatterns as $k => $pattern) {
                     if (preg_match($pattern, $pathInfo)) {
+                        Yii::trace("Ignore pattern '$pattern' matches '$pathInfo.' Skipping language processing.", __METHOD__);
                         $process = false;
                     }
                 }
@@ -254,8 +255,10 @@ class UrlManager extends BaseUrlManager
                 }
             }
             Yii::$app->language = $language;
+            Yii::trace("Language code found in URL. Setting application language to '$language'.", __METHOD__);
             if ($this->enableLanguagePersistence) {
                 Yii::$app->session[$this->languageSessionKey] = $language;
+                Yii::trace("Persisting language '$language' in session.", __METHOD__);
                 if ($this->languageCookieDuration) {
                     $cookie = new Cookie([
                         'name' => $this->languageCookieName,
@@ -264,6 +267,7 @@ class UrlManager extends BaseUrlManager
                     $cookie->value = $language;
                     $cookie->expire = time() + (int) $this->languageCookieDuration;
                     Yii::$app->getResponse()->getCookies()->add($cookie);
+                    Yii::trace("Persisting language '$language' in cookie.", __METHOD__);
                 }
             }
 
@@ -276,8 +280,10 @@ class UrlManager extends BaseUrlManager
             $language = null;
             if ($this->enableLanguagePersistence) {
                 $language = Yii::$app->session->get($this->languageSessionKey);
+                $language!==null && Yii::trace("Found persisted language '$language' in session.", __METHOD__);
                 if ($language===null) {
                     $language = $request->getCookies()->getValue($this->languageCookieName);
+                    $language!==null && Yii::trace("Found persisted language '$language' in cookie.", __METHOD__);
                 }
             }
             if ($language===null && $this->enableLanguageDetection) {
@@ -285,6 +291,7 @@ class UrlManager extends BaseUrlManager
                     list($language,$country) = $this->matchCode($acceptable);
                     if ($language!==null) {
                         $language = $country===null ? $language : "$language-$country";
+                        Yii::trace("Detected browser language '$language'.", __METHOD__);
                         break;
                     }
                 }
@@ -367,12 +374,13 @@ class UrlManager extends BaseUrlManager
         }
         list ($route, $params) = $result;
         if($language){
-            $params[$this->languageParam]=$language;
+            $params[$this->languageParam] = $language;
         }
         // See Yii Issues #8291 and #9161:
         $params = $params + $this->_request->getQueryParams();
         array_unshift($params, $route);
         $url = $this->createUrl($params);
+        Yii::trace("Redirecting to $url.", __METHOD__);
         Yii::$app->getResponse()->redirect($url);
         if (YII_ENV_TEST) {
             // Response::redirect($url) above will call `Url::to()` internally. So to really
