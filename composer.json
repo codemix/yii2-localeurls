@@ -1,5 +1,5 @@
 {
-    "name": "codemix/yii2-localeurls",
+    "name": "meshzp/yii2-localeurls",
     "description": "Automatic locale/language management for URLs.",
     "keywords": ["yii2", "i18n", "locale"],
     "type": "yii2-extension",
@@ -11,11 +11,12 @@
         }
     ],
     "require": {
-      "yiisoft/yii2": "*"
+        "yiisoft/yii2": "*",
+        "yiisoft/yii2-bootstrap": "*"
     },
     "autoload": {
         "psr-4": {
-            "codemix\\localeurls\\": ""
+            "meshzp\\localeurls\\": ""
         }
     }
 }
