@@ -103,7 +103,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
                     'hostInfo' => 'http://localhost',
                 ], $this->request),
                 'urlManager' => [
-                    'class' => 'codemix\localeurls\UrlManager',
+                    'class' => 'meshzp\localeurls\UrlManager',
                     'showScriptName' => $this->showScriptName,
                 ],
             ],

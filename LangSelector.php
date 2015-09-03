@@ -16,6 +16,8 @@ class LangSelector extends Dropdown
 
     private static $_labels;
 
+    private static $_currentLanguageLabel;
+
     private $_isError;
 
     public function init()
@@ -34,6 +36,7 @@ class LangSelector extends Dropdown
                 // Also check for wildcard language
                 $isWildcard && substr($appLanguage,0,2)===substr($language,0,2)
             ) {
+                self::$_currentLanguageLabel = $language;
                 continue;   // Exclude the current language
             }
             if ($isWildcard) {
@@ -54,7 +57,12 @@ class LangSelector extends Dropdown
         if ($this->_isError) {
             return '';
         } else {
-            return parent::run();
+
+            $html = '<div class="dropdown"><a href="#" data-toggle="dropdown" class="dropdown-toggle">'.PHP_EOL.
+                self::label(self::$_currentLanguageLabel).'<b class="caret"></b></a>'.PHP_EOL;
+            $html .= parent::run();
+            $html .= '</div>';
+            return $html;
         }
     }
 
@@ -62,9 +70,8 @@ class LangSelector extends Dropdown
     {
         if (self::$_labels===null) {
             self::$_labels = [
-                'de' => Yii::t('language', 'German'),
-                'fr' => Yii::t('language', 'French'),
-                'en' => Yii::t('language', 'English'),
+                'ru-RU' => Yii::t(Yii::$app->urlManager->translateCategory, 'Русский'),
+                'en-US' => Yii::t(Yii::$app->urlManager->translateCategory, 'Английский'),
             ];
         }
 

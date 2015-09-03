@@ -106,6 +106,11 @@ class UrlManager extends BaseUrlManager
     public $languageParam = 'language';
 
     /**
+     * @var We should translate languages labels translations could be stored with custom translation category
+     */
+    public $translateCategory;
+
+    /**
      * @var \yii\web\Request
      */
     protected $_request;

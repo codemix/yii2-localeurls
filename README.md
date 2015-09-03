@@ -1,18 +1,11 @@
 Yii2 Locale URLs
 ================
 
-[![Build Status](https://secure.travis-ci.org/codemix/yii2-localeurls.png)](http://travis-ci.org/codemix/yii2-localeurls)
-[![Latest Stable Version](https://poser.pugx.org/codemix/yii2-localeurls/v/stable.svg)](https://packagist.org/packages/codemix/yii2-localeurls)
-[![Total Downloads](https://poser.pugx.org/codemix/yii2-localeurls/downloads)](https://packagist.org/packages/codemix/yii2-localeurls)
-[![Latest Unstable Version](https://poser.pugx.org/codemix/yii2-localeurls/v/unstable.svg)](https://packagist.org/packages/codemix/yii2-localeurls)
-[![HHVM Status](http://hhvm.h4cc.de/badge/yiisoft/yii2-dev.png)](http://hhvm.h4cc.de/package/codemix/yii2-localeurls)
-[![License](https://poser.pugx.org/codemix/yii2-localeurls/license.svg)](https://packagist.org/packages/codemix/yii2-localeurls)
+
+[![Forked from](https://poser.pugx.org/codemix/yii2-localeurls/v/stable.svg)](https://packagist.org/packages/codemix/yii2-localeurls)
 
 
 Automatic locale/language management through URLs for Yii 2.
-
-> **IMPORTANT:** If you upgraded from version 1.0.* you have to modify your configuration.
-> Please check the section on [Upgrading](#upgrading) below.
 
 ## Features
 
@@ -41,12 +34,13 @@ his last visit.
 
 All the above (and more) is configurable of course.
 
+Widget for choosing language
 
 ## Installation
 
 Install the package through [composer](http://getcomposer.org):
 
-    composer require codemix/yii2-localeurls
+    composer require meshzp/yii2-localeurls
 
 And then add this to your application configuration:
 
@@ -297,122 +291,3 @@ to exclude during *URL parsing*.
 > Note: Keys and values don't neccessarily have to relate to each other. It's just for
 > convenience, that the configuration is combined into a single option.
 
-## Example Language Selection Widget
-
-There's no widget for language selection included, because there are simply too many options
-for the markup and behavior of such a widget. But it's very easy to build. Here's the basic idea:
-
-```php
-<?php
-use Yii;
-use yii\bootstrap\Dropdown;
-
-class LanguageDropdown extends Dropdown
-{
-    private static $_labels;
-
-    private $_isError;
-
-    public function init()
-    {
-        $route = Yii::$app->controller->route;
-        $appLanguage = Yii::$app->language;
-        $params = $_GET;
-        $this->_isError = $route === Yii::$app->errorHandler->errorAction;
-
-        array_unshift($params, '/'.$route);
-
-        foreach (Yii::$app->urlManager->languages as $language) {
-            $isWildcard = substr($language, -2)==='-*';
-            if (
-                $language===$appLanguage ||
-                // Also check for wildcard language
-                $isWildcard && substr($appLanguage,0,2)===substr($language,0,2)
-            ) {
-                continue;   // Exclude the current language
-            }
-            if ($isWildcard) {
-                $language = substr($language,0,2);
-            }
-            $params['language'] = $language;
-            $this->items[] = [
-                'label' => self::label($language),
-                'url' => $params,
-            ];
-        }
-        parent::init();
-    }
-
-    public function run()
-    {
-        // Only show this widget if we're not on the error page
-        if ($this->_isError) {
-            return '';
-        } else {
-            return parent::run();
-        }
-    }
-
-    public static function label($code)
-    {
-        if (self::$_labels===null) {
-            self::$_labels = [
-                'de' => Yii::t('language', 'German'),
-                'fr' => Yii::t('language', 'French'),
-                'en' => Yii::t('language', 'English'),
-            ];
-        }
-
-        return isset(self::$_labels[$code]) ? self::$_labels[$code] : null;
-    }
-}
-```
-
-## Upgrading
-
-### Changes from 1.0.* to 1.1.*
-
-If you upgrade from a 1.0.* version you'll have to modify your configuration. There no
-longer is a `localeUrls` component now. Instead everything was merged into our custom
-`urlManager` component. So you should move any configuration for the `localeUrls` component
-into the `urlManager` component.
-
-Two options also have been renamed for more clarity:
-
- * `enableDefaultSuffix` is now `enableDefaultLanguageUrlCode`
- * `enablePersistence` is now `enableLanguagePersistence`
-
-So if your configuration looked like this before:
-
-```php
-<?php
-return [
-    'bootstrap' => ['localeUrls'],
-    'components' => [
-        'localeUrls' => [
-            'languages' => ['en-US', 'en', 'fr', 'de', 'es-*'],
-            'enableDefaultSuffix' => true,
-            'enablePersistence' => false,
-        ],
-        'urlManager' => [
-            'class' => 'codemix\localeurls\UrlManager',
-        ]
-    ]
-];
-```
-
-you should now change it to:
-
-```php
-<?php
-return [
-    'components' => [
-        'urlManager' => [
-            'class' => 'codemix\localeurls\UrlManager',
-            'languages' => ['en-US', 'en', 'fr', 'de', 'es-*'],
-            'enableDefaultLanguageUrlCode' => true,
-            'enableLanguagePersistence' => false,
-        ]
-    ]
-];
-```
