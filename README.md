@@ -1,4 +1,4 @@
-Yii2 Locale URLs1
+Yii2 Locale URLs
 ================
 
 [![Build Status](https://secure.travis-ci.org/codemix/yii2-localeurls.png)](http://travis-ci.org/codemix/yii2-localeurls)
