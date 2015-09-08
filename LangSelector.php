@@ -58,10 +58,10 @@ class LangSelector extends Dropdown
             return '';
         } else {
 
-            $html = '<div class="dropdown"><a href="#" data-toggle="dropdown" class="dropdown-toggle">'.PHP_EOL.
+            $html = '<li class="dropdown"><a href="#" data-toggle="dropdown" class="dropdown-toggle">'.PHP_EOL.
                 self::label(self::$_currentLanguageLabel).'<b class="caret"></b></a>'.PHP_EOL;
             $html .= parent::run();
-            $html .= '</div>';
+            $html .= '</li>';
             return $html;
         }
     }
