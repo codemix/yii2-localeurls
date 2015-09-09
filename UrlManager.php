@@ -197,7 +197,14 @@ class UrlManager extends BaseUrlManager
             if (!$languageRequired && !$this->enableDefaultLanguageUrlCode && $language===$this->getDefaultLanguage()) {
                 return  $url;
             } else {
-                $url = rtrim($url, '/');
+                foreach ($this->rules as $rule) {
+                    if(in_array($rule->route, $params)) {
+                        if($rule->name=='' && $rule->suffix!='/') {
+                            $url = rtrim($url, '/');
+                        }
+                        break;
+                    }
+                }
                 $key = array_search($language, $this->languages);
                 $base = $this->showScriptName ? $this->getScriptUrl() : $this->getBaseUrl();
                 $length = strlen($base);

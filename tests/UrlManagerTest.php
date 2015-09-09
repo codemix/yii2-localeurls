@@ -433,6 +433,18 @@ class UrlManagerTest extends TestCase
         $this->assertEquals($this->prepareUrl('/de'), Url::to(['/site/index']));
     }
 
+    public function testCreateHomeUrlWithLanguageFromUrlAndTrailingSlash()
+    {
+        $this->mockRequest('/de/site/page');
+        $this->mockComponent([
+            'languages' => ['en-US', 'en', 'de'],
+            'rules' => [
+                ['pattern' => '', 'route' => 'site/index', 'suffix' => '/']
+            ],
+        ]);
+        $this->assertEquals($this->prepareUrl('/de/'), Url::to(['/site/index']));
+    }
+
     public function testCreateUrlWithSpecificLanguage()
     {
         $this->mockUrlManager([
