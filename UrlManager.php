@@ -3,7 +3,6 @@ namespace codemix\localeurls;
 
 use Yii;
 use yii\base\InvalidConfigException;
-use yii\helpers\ArrayHelper;
 use yii\web\Cookie;
 use yii\web\UrlManager as BaseUrlManager;
 
