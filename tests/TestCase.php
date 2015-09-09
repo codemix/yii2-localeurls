@@ -5,9 +5,9 @@ use yii\di\Container;
 abstract class TestCase extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var array Request component configuration for each test method
+     * @var array UrlManager component configuration for each test method
      */
-    protected $request = [];
+    protected $urlManager = [];
 
     /**
      * @var bool show script name configuration for each test method
@@ -28,15 +28,19 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         \Yii::$app->session->destroy();
         \Yii::$app = null;
         \Yii::$container = new Container();
-        $this->request = [];
+        $this->urlManager = [];
         parent::tearDown();
     }
 
     /**
      * Mock a HTTP request
      *
+     * This will set all required variables in the PHP environment to mock a HTTP
+     * request with the given URL. It will then initialize a Yii web app and let
+     * it resolve the request.
+     *
      * @param string $url the relative request URL
-     * @param array $config configuration for the Request component
+     * @param array $config optional configuration for the `request` application component
      */
     protected function mockRequest($url, $config = [])
     {
@@ -49,7 +53,15 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         if (isset($parts[1])) {
             $_SERVER['QUERY_STRING'] = $parts[1];
         }
-        $this->request = $config;
+        if ($config!==[]) {
+            $config = [
+                'components' => [
+                    'request' => $config,
+                ],
+            ];
+        }
+        $this->mockWebApplication($config);
+        Yii::$app->request->resolve();
     }
 
     /**
@@ -57,13 +69,8 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
      *
      * @param array $config for urlManager component
      */
-    public function mockComponent($config = []) {
-        $this->mockWebApplication([
-            'components' => [
-                'urlManager' => $config,
-            ]
-        ]);
-        Yii::$app->request->resolve();
+    public function mockUrlManager($config = []) {
+        $this->urlManager = $config;
     }
 
     /**
@@ -89,6 +96,16 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         return $this->baseUrl . $url;
     }
 
+    /**
+     * Mock a Yii web application
+     *
+     * This will create a new Yii application object and configure it with some default options.
+     * For the `urlManager` component it will use the options that where set with `mockUrlManager()`.
+     * Extra configuration passed via `$config` will override any of the above options.
+     *
+     * @param array $config application configuration
+     * @param string $appClass default is `\yii\web\Application`
+     */
     protected function mockWebApplication($config = [], $appClass = '\yii\web\Application')
     {
         new $appClass(ArrayHelper::merge([
@@ -97,15 +114,15 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
             'basePath' => __DIR__,
             'vendorPath' => __DIR__.'/../vendor/',
             'components' => [
-                'request' => ArrayHelper::merge([
+                'request' => [
                     'enableCookieValidation' => false,
                     'isConsoleRequest' => false,
                     'hostInfo' => 'http://localhost',
-                ], $this->request),
-                'urlManager' => [
+                ],
+                'urlManager' => ArrayHelper::merge([
                     'class' => 'codemix\localeurls\UrlManager',
                     'showScriptName' => $this->showScriptName,
-                ],
+                ], $this->urlManager),
             ],
         ], $config));
     }
