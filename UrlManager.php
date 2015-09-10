@@ -106,7 +106,7 @@ class UrlManager extends BaseUrlManager
     public $languageParam = 'language';
 
     /**
-     * @var We should translate languages labels translations could be stored with custom translation category
+     * @var string We should translate languages labels translations could be stored with custom translation category
      */
     public $translateCategory;
 
@@ -172,6 +172,9 @@ class UrlManager extends BaseUrlManager
      */
     public function createUrl($params)
     {
+//        if ($this->_request->isPost)
+//            return parent::createUrl($params);
+
         if ($this->ignoreLanguageUrlPatterns) {
             $params = (array) $params;
             $route = trim($params[0], '/');
@@ -209,7 +212,6 @@ class UrlManager extends BaseUrlManager
                 if (is_string($key)) {
                     $language = $key;
                 }
-                $language = strtolower($language);
                 return $length ? substr_replace($url, "$base/$language", 0, $length) : "/$language$url";
             }
         } else {
@@ -250,7 +252,7 @@ class UrlManager extends BaseUrlManager
                 list($language,$country) = $this->matchCode($code);
                 if ($country!==null) {
                     if ($code==="$language-$country") {
-                        $this->redirectToLanguage(strtolower($code));
+                        $this->redirectToLanguage($code);
                     } else {
                         $language = "$language-$country";
                     }
@@ -317,7 +319,7 @@ class UrlManager extends BaseUrlManager
             if ($key && is_string($key)) {
                 $language = $key;
             }
-            $this->redirectToLanguage(strtolower($language));
+            $this->redirectToLanguage($language);
         }
     }
 
