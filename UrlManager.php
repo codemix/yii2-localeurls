@@ -153,7 +153,7 @@ class UrlManager extends BaseUrlManager
             if ($this->ignoreLanguageUrlPatterns) {
                 $pathInfo = $request->getPathInfo();
                 foreach ($this->ignoreLanguageUrlPatterns as $k => $pattern) {
-                    if (preg_match($pattern, $pathInfo)) {
+                    if (preg_match($pattern.'i', $pathInfo)) {
                         Yii::trace("Ignore pattern '$pattern' matches '$pathInfo.' Skipping language processing.", __METHOD__);
                         $process = false;
                     }
@@ -179,7 +179,7 @@ class UrlManager extends BaseUrlManager
             $params = (array) $params;
             $route = trim($params[0], '/');
             foreach ($this->ignoreLanguageUrlPatterns as $pattern => $v) {
-                if (preg_match($pattern, $route)) {
+                if (preg_match($pattern.'i', $route)) {
                     return parent::createUrl($params);
                 }
             }
@@ -248,6 +248,8 @@ class UrlManager extends BaseUrlManager
             if (isset($this->languages[$code])) {
                 // Replace alias with language code
                 $language = $this->languages[$code];
+            } elseif (in_array($code, $this->languages)) {
+                $language = $code;
             } else {
                 list($language,$country) = $this->matchCode($code);
                 if ($country!==null) {
