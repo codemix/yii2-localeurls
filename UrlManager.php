@@ -313,7 +313,7 @@ class UrlManager extends BaseUrlManager
                 }
             }
             // #35: Only redirect if a valid language was found
-            if ($this->matchCode($language)===[null, null]) {
+            if ($this->matchCode($language)===[null, null] || $this->_request->isAjax) {
                 return;
             }
 
