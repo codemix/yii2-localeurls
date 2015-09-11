@@ -307,12 +307,14 @@ class UrlManager extends BaseUrlManager
             }
             if ($language===null || $language===$this->_defaultLanguage) {
                 if (!$this->enableDefaultLanguageUrlCode) {
+                    Yii::$app->language = $this->_defaultLanguage;
                     return;
                 } else {
                     $language = $this->_defaultLanguage;
                 }
             }
-            // #35: Only redirect if a valid language was found
+
+            Yii::$app->language = $language;
             if ($this->matchCode($language)===[null, null] || $this->_request->isAjax) {
                 return;
             }
