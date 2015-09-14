@@ -205,7 +205,8 @@ class UrlManager extends BaseUrlManager
                     $language = $key;
                 }
                 $language = strtolower($language);
-                return $length ? substr_replace($url, "$base/$language", 0, $length) : "/$language$url";
+                $url = $length ? substr_replace($url, "$base/$language", 0, $length) : "/$language$url";
+                return $url . ($this->suffix==='/' ? '/' : '');
             }
         } else {
             return parent::createUrl($params);
