@@ -116,9 +116,6 @@ If for some reason you want to use a different name than `language` for that URL
 parameter you can configure it through the `languageParam` option of the `urlManager`
 component.
 
-By default, all URLs will be created without a trailing slash. If you want a trailing slash,
-you can set `'trailingSlash' => true`.
-
 ### Default Language
 
 The default language is configured via the

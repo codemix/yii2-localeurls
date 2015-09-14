@@ -451,20 +451,6 @@ class UrlManagerTest extends TestCase
         $this->assertEquals($this->prepareUrl('/deutsch/demo/action'), Url::to(['/demo/action', 'language' => 'de']));
     }
 
-    public function testCreateUrlWithTrailingSlashIfEnabled()
-    {
-        $this->mockUrlManager([
-            'trailingSlash' => true,
-            'languages' => ['en-US', 'en', 'de'],
-            'rules' => [
-                '' => 'site/index',
-            ],
-        ]);
-        $this->mockRequest('/de/site/page');
-        $this->assertEquals($this->prepareUrl('/de/'), Url::to(['/site/index']));
-        $this->assertEquals($this->prepareUrl('/de/site/test/'), Url::to(['/site/test']));
-    }
-
     public function testCreateNormalUrlIfIgnoreRoutesMatches()
     {
         $this->mockUrlManager([

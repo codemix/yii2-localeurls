@@ -89,12 +89,6 @@ class UrlManager extends BaseUrlManager
     public $ignoreLanguageUrlPatterns = [];
 
     /**
-     * @var bool whether to always add a trailing slash to generated URLs. Default is `false` which
-     * will remove any trailing slash from all URLs.
-     */
-    public $trailingSlash = false;
-
-    /**
      * @var string the language that was initially set in the application configuration
      */
     protected $_defaultLanguage;
@@ -211,8 +205,7 @@ class UrlManager extends BaseUrlManager
                     $language = $key;
                 }
                 $language = strtolower($language);
-                $url = $length ? substr_replace($url, "$base/$language", 0, $length) : "/$language$url";
-                return $url . ($this->trailingSlash ? '/' : '');
+                return $length ? substr_replace($url, "$base/$language", 0, $length) : "/$language$url";
             }
         } else {
             return parent::createUrl($params);
