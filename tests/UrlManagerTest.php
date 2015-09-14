@@ -4,6 +4,9 @@ use yii\helpers\Url;
 
 class UrlManagerTest extends TestCase
 {
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Generic tests:
+
     public function testSetsDefaultLanguageIfNoLanguageSpecified()
     {
         $this->mockUrlManager( [
@@ -75,6 +78,18 @@ class UrlManagerTest extends TestCase
         $this->assertEquals('site/page', $request->pathInfo);
     }
 
+
+
+
+
+
+
+
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Redirect tests:
+
     public function testRedirectsIfDefaultLanguageInUrlAndDefaultLanguageUsesNoSuffix()
     {
         $this->expectRedirect('/site/page');
@@ -91,6 +106,16 @@ class UrlManagerTest extends TestCase
             'languages' => ['en-US', 'en', 'de'],
         ]);
         $this->mockRequest('/en');
+    }
+
+    public function testRedirectsRootToDefaultLanguageIfDefaultLanguageUsesSuffix()
+    {
+        $this->expectRedirect('/en');
+        $this->mockUrlManager([
+            'languages' => ['en-US', 'en', 'de'],
+            'enableDefaultLanguageUrlCode' => true,
+        ]);
+        $this->mockRequest('/');
     }
 
     public function testRedirectsIfNoLanguageInUrlAndDefaultLanguageUsesSuffix()
@@ -272,6 +297,49 @@ class UrlManagerTest extends TestCase
         $this->mockRequest('/en/site/page');
     }
 
+    public function testRedirectsIfDefaultLanguageInUrlAndDefaultLanguageUsesNoSuffixAndTrailingSlashEnabled()
+    {
+        $this->expectRedirect('/site/page/');
+        $this->mockUrlManager([
+            'languages' => ['en-US', 'en', 'de'],
+            'suffix' => '/'
+        ]);
+        $this->mockRequest('/en/site/page/');
+    }
+
+    public function testRedirectsToRootIfOnlyDefaultLanguageInUrlAndDefaultLanguageUsesNoSuffixAndTrailingSlashEnabled()
+    {
+        $this->expectRedirect('/');
+        $this->mockUrlManager([
+            'languages' => ['en-US', 'en', 'de'],
+            'suffix' => '/',
+        ]);
+        $this->mockRequest('/en');
+    }
+
+    public function testRedirectsRootToDefaultLanguageIfDefaultLanguageUsesSuffixAndTrailingSlashEnabled()
+    {
+        $this->expectRedirect('/en/');
+        $this->mockUrlManager([
+            'languages' => ['en-US', 'en', 'de'],
+            'enableDefaultLanguageUrlCode' => true,
+            'suffix' => '/',
+        ]);
+        $this->mockRequest('/');
+    }
+
+
+
+
+
+
+
+
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Tests for situations where no action is expected:
+
     public function testDoesNothingIfLocaleUrlsDisabled()
     {
         $this->mockUrlManager([
@@ -344,6 +412,18 @@ class UrlManagerTest extends TestCase
         $this->mockRequest('/site/page');
     }
 
+
+
+
+
+
+
+
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Tests for disabled features:
+
     public function testCanDisableLanguageDetection()
     {
         $this->mockUrlManager([
@@ -385,6 +465,18 @@ class UrlManagerTest extends TestCase
         $request = Yii::$app->request;
         $this->assertEquals('site/page', $request->pathInfo);
     }
+
+
+
+
+
+
+
+
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Tests for URL creation
 
     public function testCreateNormalUrlIfLocaleUrlsDisabled()
     {
