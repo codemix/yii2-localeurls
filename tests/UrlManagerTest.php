@@ -290,8 +290,10 @@ class UrlManagerTest extends TestCase
 
         // If a URL rule is configured for the home URL, it will always have a trailing slash
         $this->assertEquals($this->prepareUrl('/'), Url::to(['/site/index']));
+        $this->assertEquals($this->prepareUrl('/?x=y'), Url::to(['/site/index', 'x' => 'y']));
         // Other URLs have no trailing slash
         $this->assertEquals($this->prepareUrl('/site/test'), Url::to(['/site/test']));
+        $this->assertEquals($this->prepareUrl('/site/test?x=y'), Url::to(['/site/test', 'x' => 'y']));
     }
 
     public function testDoesNothingIfNoLanguagesConfigured()
@@ -410,6 +412,7 @@ class UrlManagerTest extends TestCase
         ]);
         $this->mockRequest('/site/page');
         $this->assertEquals($this->prepareUrl('/demo/action'), Url::to(['/demo/action']));
+        $this->assertEquals($this->prepareUrl('/demo/action?x=y'), Url::to(['/demo/action', 'x' => 'y']));
     }
 
     public function testCreateUrlWithLanguageFromUrl()
@@ -419,6 +422,7 @@ class UrlManagerTest extends TestCase
         ]);
         $this->mockRequest('/de/site/page');
         $this->assertEquals($this->prepareUrl('/de/demo/action'), Url::to(['/demo/action']));
+        $this->assertEquals($this->prepareUrl('/de/demo/action?x=y'), Url::to(['/demo/action', 'x' => 'y']));
     }
 
     public function testCreateHomeUrlWithLanguageFromUrl()
@@ -431,6 +435,7 @@ class UrlManagerTest extends TestCase
         ]);
         $this->mockRequest('/de/site/page');
         $this->assertEquals($this->prepareUrl('/de'), Url::to(['/site/index']));
+        $this->assertEquals($this->prepareUrl('/de?x=y'), Url::to(['/site/index', 'x' => 'y']));
     }
 
     public function testCreateUrlWithSpecificLanguage()
@@ -440,6 +445,7 @@ class UrlManagerTest extends TestCase
         ]);
         $this->mockRequest('/de/site/page');
         $this->assertEquals($this->prepareUrl('/en-us/demo/action'), Url::to(['/demo/action', 'language' => 'en-US']));
+        $this->assertEquals($this->prepareUrl('/en-us/demo/action?x=y'), Url::to(['/demo/action', 'language' => 'en-US', 'x'=>'y']));
     }
 
     public function testCreateUrlWithSpecificAliasedLanguage()
@@ -449,6 +455,7 @@ class UrlManagerTest extends TestCase
         ]);
         $this->mockRequest('/fr/site/page');
         $this->assertEquals($this->prepareUrl('/deutsch/demo/action'), Url::to(['/demo/action', 'language' => 'de']));
+        $this->assertEquals($this->prepareUrl('/deutsch/demo/action?x=y'), Url::to(['/demo/action', 'language' => 'de','x'=>'y']));
     }
 
     public function testCreateNormalUrlIfIgnoreRoutesMatches()
@@ -461,6 +468,7 @@ class UrlManagerTest extends TestCase
         ]);
         $this->mockRequest('/de/site/page');
         $this->assertEquals($this->prepareUrl('/demo/action'), Url::to(['/demo/action']));
+        $this->assertEquals($this->prepareUrl('/demo/action?x=y'), Url::to(['/demo/action', 'x'=>'y']));
     }
 
     public function testCreateUrlWithLanguageFromUrlIfIgnoreRouteDoesNotMatch()
@@ -472,7 +480,7 @@ class UrlManagerTest extends TestCase
             ],
         ]);
         $this->mockRequest('/de/site/page');
-        $this->assertEquals($this->prepareUrl('/de/demo/action'), Url::to(['/demo/action']));
+        $this->assertEquals($this->prepareUrl('/de/demo/action?x=y'), Url::to(['/demo/action', 'x'=>'y']));
     }
 
     public function testCreateUrlWithLanguageAndTrailingSlashFromUrl()
@@ -483,6 +491,7 @@ class UrlManagerTest extends TestCase
         ]);
         $this->mockRequest('/de/site/page/');
         $this->assertEquals($this->prepareUrl('/de/demo/action/'), Url::to(['/demo/action']));
+        $this->assertEquals($this->prepareUrl('/de/demo/action/?x=y'), Url::to(['/demo/action', 'x'=>'y']));
     }
 
     public function testCreateHomeUrlWithTrailingSlashWithLanguageFromUrl()
@@ -496,6 +505,7 @@ class UrlManagerTest extends TestCase
         ]);
         $this->mockRequest('/de/site/page/');
         $this->assertEquals($this->prepareUrl('/de/'), Url::to(['/site/index']));
+        $this->assertEquals($this->prepareUrl('/de/?x=y'), Url::to(['/site/index', 'x'=>'y']));
     }
 
     public function testCreateUrlWithSpecificLanguageWithTrailingSlash()
@@ -506,5 +516,6 @@ class UrlManagerTest extends TestCase
         ]);
         $this->mockRequest('/de/site/page/');
         $this->assertEquals($this->prepareUrl('/en-us/demo/action/'), Url::to(['/demo/action', 'language' => 'en-US']));
+        $this->assertEquals($this->prepareUrl('/en-us/demo/action/?x=y'), Url::to(['/demo/action', 'language' => 'en-US', 'x'=>'y']));
     }
 }
