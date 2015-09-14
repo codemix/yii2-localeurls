@@ -474,4 +474,37 @@ class UrlManagerTest extends TestCase
         $this->mockRequest('/de/site/page');
         $this->assertEquals($this->prepareUrl('/de/demo/action'), Url::to(['/demo/action']));
     }
+
+    public function testCreateUrlWithLanguageAndTrailingSlashFromUrl()
+    {
+        $this->mockUrlManager([
+            'languages' => ['en-US', 'en', 'de'],
+            'suffix' => '/',
+        ]);
+        $this->mockRequest('/de/site/page/');
+        $this->assertEquals($this->prepareUrl('/de/demo/action/'), Url::to(['/demo/action']));
+    }
+
+    public function testCreateHomeUrlWithTrailingSlashWithLanguageFromUrl()
+    {
+        $this->mockUrlManager([
+            'languages' => ['en-US', 'en', 'de'],
+            'rules' => [
+                '' => 'site/index',
+            ],
+            'suffix' => '/',
+        ]);
+        $this->mockRequest('/de/site/page/');
+        $this->assertEquals($this->prepareUrl('/de/'), Url::to(['/site/index']));
+    }
+
+    public function testCreateUrlWithSpecificLanguageWithTrailingSlash()
+    {
+        $this->mockUrlManager([
+            'languages' => ['en-US', 'en', 'de'],
+            'suffix' => '/',
+        ]);
+        $this->mockRequest('/de/site/page/');
+        $this->assertEquals($this->prepareUrl('/en-us/demo/action/'), Url::to(['/demo/action', 'language' => 'en-US']));
+    }
 }
