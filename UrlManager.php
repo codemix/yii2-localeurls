@@ -197,7 +197,9 @@ class UrlManager extends BaseUrlManager
             if (!$languageRequired && !$this->enableDefaultLanguageUrlCode && $language===$this->getDefaultLanguage()) {
                 return  $url;
             } else {
-                $url = rtrim($url, '/');
+                if ($this->suffix!=='/') {
+                    $url = rtrim($url, '/');
+                }
                 $key = array_search($language, $this->languages);
                 $base = $this->showScriptName ? $this->getScriptUrl() : $this->getBaseUrl();
                 $length = strlen($base);
@@ -205,8 +207,7 @@ class UrlManager extends BaseUrlManager
                     $language = $key;
                 }
                 $language = strtolower($language);
-                $url = $length ? substr_replace($url, "$base/$language", 0, $length) : "/$language$url";
-                return $url . ($this->suffix==='/' ? '/' : '');
+                return $length ? substr_replace($url, "$base/$language", 0, $length) : "/$language$url";
             }
         } else {
             return parent::createUrl($params);
