@@ -212,6 +212,10 @@ class UrlManager extends BaseUrlManager
                         $url = rtrim($url, '/');
                     }
                 }
+                // Required to prevent double slashes on generated URLs
+                if ($this->suffix==='/'){
+                    $url = preg_replace('#//#', '/', $url);
+                }
                 return $length ? substr_replace($url, "$base/$language", 0, $length) : "/$language$url";
             }
         } else {
