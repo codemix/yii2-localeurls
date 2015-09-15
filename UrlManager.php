@@ -214,9 +214,7 @@ class UrlManager extends BaseUrlManager
                 }
                 // Required to prevent double slashes on generated URLs
                 if ($this->suffix==='/'){
-                    if(substr($url, 0, 2)==='//'){
-                        $url = substr($url, 1);
-                    }
+                    $url = preg_replace('#//#', '/', $url);
                 }
                 return $length ? substr_replace($url, "$base/$language", 0, $length) : "/$language$url";
             }
@@ -393,6 +391,10 @@ class UrlManager extends BaseUrlManager
         $params = $params + $this->_request->getQueryParams();
         array_unshift($params, $route);
         $url = $this->createUrl($params);
+        // Required to prevent double slashes on generated URLs
+        if ($this->suffix==='/' && $route==='') {
+            $url = rtrim($url, '/').'/';
+        }
         Yii::trace("Redirecting to $url.", __METHOD__);
         Yii::$app->getResponse()->redirect($url);
         if (YII_ENV_TEST) {
