@@ -217,6 +217,7 @@ You can modify other persistence settings with:
  * `languageCookieDuration`: How long in seconds to store the language information in a cookie.
    Set to `false` to disable the cookie.
  * `languageCookieName`: The name of the language cookie. Default is `_language`.
+ * `languageCookieOptions`: Other options to set on the language cookie.
  * `languageSessionKey`: The name of the language session key. Default is `_language`.
 
 #### Reset To Default Language

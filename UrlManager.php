@@ -73,6 +73,12 @@ class UrlManager extends BaseUrlManager
     public $languageCookieDuration = 2592000;
 
     /**
+     * @var array configuration options for the language cookie. Note that `$languageCookieName`
+     * and `$languageCookeDuration` will override any `name` and `expire` settings provided here.
+     */
+    public $languageCookieOptions = [];
+
+    /**
      * @var array list of route and URL regex patterns to ignore during language processing. The keys
      * of the array are patterns for routes, the values are patterns for URLs. Route patterns are checked
      * during URL creation. If a pattern matches, no language parameter will be added to the created URL.
@@ -267,12 +273,15 @@ class UrlManager extends BaseUrlManager
                 Yii::$app->session[$this->languageSessionKey] = $language;
                 Yii::trace("Persisting language '$language' in session.", __METHOD__);
                 if ($this->languageCookieDuration) {
-                    $cookie = new Cookie([
-                        'name' => $this->languageCookieName,
-                        'httpOnly' => true
-                    ]);
-                    $cookie->value = $language;
-                    $cookie->expire = time() + (int) $this->languageCookieDuration;
+                    $cookie = new Cookie(array_merge(
+                        ['httpOnly' => true],
+                        $this->languageCookieOptions,
+                        [
+                            'name' => $this->languageCookieName,
+                            'value' => $language,
+                            'expire' => time() + (int) $this->languageCookieDuration,
+                        ]
+                    ));
                     Yii::$app->getResponse()->getCookies()->add($cookie);
                     Yii::trace("Persisting language '$language' in cookie.", __METHOD__);
                 }
