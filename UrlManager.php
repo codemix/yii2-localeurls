@@ -20,6 +20,10 @@ class UrlManager extends BaseUrlManager
      * before 'en'. This can also contain mapping of <url_value> => <language>, e.g. 'english' => 'en'.
      */
     public $languages = [];
+    /**
+     * @var array enable to set params for multi language cookies.
+     */
+    public $languageCookieDomain = null;
 
     /**
      * @var bool whether to enable locale URL specific features
@@ -271,7 +275,8 @@ class UrlManager extends BaseUrlManager
                 if ($this->languageCookieDuration) {
                     $cookie = new Cookie([
                         'name' => $this->languageCookieName,
-                        'httpOnly' => true
+                        'httpOnly' => true,
+                        'domain' => is_null($this->languageCookieDomain) ? Yii::$app->request->serverName : $this->languageCookieDomain,
                     ]);
                     $cookie->value = $language;
                     $cookie->expire = time() + (int) $this->languageCookieDuration;
