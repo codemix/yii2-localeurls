@@ -54,7 +54,7 @@ class LangSelector extends Dropdown
     public function run()
     {
         // Only show this widget if we're not on the error page
-        if ($this->_isError) {
+        if ($this->_isError || count(Yii::$app->urlManager->languages) < 2) {
             return '';
         } else {
 
