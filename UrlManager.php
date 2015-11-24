@@ -19,7 +19,7 @@ class UrlManager extends BaseUrlManager
      * @var array list of available language codes. More specific patterns should come first, e.g. 'en_us'
      * before 'en'. This can also contain mapping of <url_value> => <language>, e.g. 'english' => 'en'.
      */
-    public $languages = [];
+    public $languages;
 
     /**
      * @var bool whether to enable locale URL specific features
@@ -131,6 +131,14 @@ class UrlManager extends BaseUrlManager
                 throw new InvalidConfigException('Locale URL support requires enablePrettyUrl to be set to true.');
             }
         }
+
+
+        if (empty($this->languages)) {
+            throw new \yii\base\InvalidConfigException('Missing languages');
+        } else if (is_callable($this->languages)) {
+            $this->languages = call_user_func($this->languages);
+        }
+        
         $this->_defaultLanguage = Yii::$app->language;
         return parent::init();
     }
