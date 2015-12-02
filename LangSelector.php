@@ -73,7 +73,7 @@ class LangSelector extends Dropdown
                 'ru-RU' => Yii::t(Yii::$app->urlManager->translateCategory, 'lang-russian'),
                 'en-US' => Yii::t(Yii::$app->urlManager->translateCategory, 'lang-english'),
                 'fr-FR' => Yii::t(Yii::$app->urlManager->translateCategory, 'lang-france'),
-                'zh-Cn' => Yii::t(Yii::$app->urlManager->translateCategory, 'lang-chinese'),
+                'zh-CN' => Yii::t(Yii::$app->urlManager->translateCategory, 'lang-chinese'),
             ];
         }
 
