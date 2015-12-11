@@ -302,6 +302,18 @@ class UrlManager extends BaseUrlManager
             }
             if ($language===null && $this->enableLanguageDetection) {
                 foreach ($request->getAcceptableLanguages() as $acceptable) {
+                    if ($acceptable == "ru") {
+                        $acceptable = "ru-RU";
+                    }
+                    if ($acceptable == "en") {
+                        $acceptable = "en-US";
+                    }
+                    if ($acceptable == "fr") {
+                        $acceptable = "fr-FR";
+                    }
+                    if ($acceptable == "zh") {
+                        $acceptable = "zh-CN";
+                    }
                     list($language,$country) = $this->matchCode($acceptable);
                     if ($language!==null) {
                         $language = $country===null ? $language : "$language-$country";
