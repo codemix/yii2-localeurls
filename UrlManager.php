@@ -224,7 +224,7 @@ class UrlManager extends BaseUrlManager
             $params = (array) $params;
             $route = trim($params[0], '/');
             foreach ($this->slugRoutes as $pattern => $slug) {
-                if (preg_match($pattern, $route)) {
+                if (preg_match("#^$pattern#", $route)) {
                     return parent::createUrl($params[$slug]);
                 }
             }
