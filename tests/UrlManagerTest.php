@@ -33,6 +33,22 @@ class UrlManagerTest extends TestCase
         $this->assertEquals('site/page', $request->pathInfo);
     }
 
+    public function testSetsLanguageFromUrlIfUppercaseEnabled()
+    {
+        $this->mockUrlManager([
+            'languages' => ['en-US', 'en', 'de'],
+            'keepUppercaseLanguageCode' => true,
+        ]);
+        $this->mockRequest('/en-US/site/page');
+        $this->assertEquals('en-US', Yii::$app->language);
+        $this->assertEquals('en-US', Yii::$app->session->get('_language'));
+        $cookie = Yii::$app->response->cookies->get('_language');
+        $this->assertNotNull($cookie);
+        $this->assertEquals('en-US', $cookie->value);
+        $request = Yii::$app->request;
+        $this->assertEquals('site/page', $request->pathInfo);
+    }
+
     public function testSetsLanguageFromUrlIfItMatchesWildcard()
     {
         $this->mockUrlManager([

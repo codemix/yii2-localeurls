@@ -51,7 +51,7 @@ class RedirectTest extends TestCase
         $this->mockRequest('/en');
     }
 
-    public function testRedirectsIfLanguageWithUpperCaseCountryInUrl()
+    public function testRedirectsIfLanguageWithUppercaseCountryInUrl()
     {
         $this->expectRedirect('/es-bo/site/page');
         $this->mockUrlManager([
@@ -60,16 +60,16 @@ class RedirectTest extends TestCase
         $this->mockRequest('/es-BO/site/page');
     }
 
-    public function testNoRedirectIfLanguageWithUpperCaseCountryInUrlAndUppercaseEnabled()
+    public function testNoRedirectIfLanguageWithUppercaseCountryInUrlAndUppercaseEnabled()
     {
         $this->mockUrlManager([
             'languages' => ['en-US', 'deutsch' => 'de', 'es-BO'],
-            'keepUpperCaseLanguageCode' => true,
+            'keepUppercaseLanguageCode' => true,
         ]);
         $this->mockRequest('/es-BO/site/page');
     }
 
-    public function testRedirectsIfLanguageWithUpperCaseWildcardCountryInUrl()
+    public function testRedirectsIfLanguageWithUppercaseWildcardCountryInUrl()
     {
         $this->expectRedirect('/es-bo/site/page');
         $this->mockUrlManager([

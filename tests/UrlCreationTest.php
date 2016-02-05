@@ -61,6 +61,22 @@ class UrlCreationTest extends TestCase
         $this->assertEquals($this->prepareUrl('/de/foo/baz/bar?x=y'), Url::to(['/slug/action', 'x' => 'y', 'term' => 'baz']));
     }
 
+    public function testCreateUrlWithLanguageFromUrlIfUppercaseEnabled()
+    {
+        $this->mockUrlManager([
+            'languages' => ['en-US', 'en', 'de'],
+            'keepUppercaseLanguageCode' => true,
+            'rules' => [
+                '/foo/<term:.+>/bar' => 'slug/action',
+            ],
+        ]);
+        $this->mockRequest('/en-US/site/page');
+        $this->assertEquals($this->prepareUrl('/en-US/demo/action'), Url::to(['/demo/action']));
+        $this->assertEquals($this->prepareUrl('/en-US/demo/action?x=y'), Url::to(['/demo/action', 'x' => 'y']));
+        $this->assertEquals($this->prepareUrl('/en-US/foo/baz/bar'), Url::to(['/slug/action', 'term' => 'baz']));
+        $this->assertEquals($this->prepareUrl('/en-US/foo/baz/bar?x=y'), Url::to(['/slug/action', 'x' => 'y', 'term' => 'baz']));
+    }
+
     public function testCreateHomeUrlWithLanguageFromUrl()
     {
         $this->mockUrlManager([
@@ -192,7 +208,7 @@ class UrlCreationTest extends TestCase
     {
         $this->mockUrlManager([
             'languages' => ['en-US', 'en', 'de'],
-            'keepUpperCaseLanguageCode' => true,
+            'keepUppercaseLanguageCode' => true,
             'rules' => [
                 '/foo/<term:.+>/bar' => 'slug/action',
             ],
