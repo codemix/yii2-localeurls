@@ -56,6 +56,12 @@ class UrlManager extends BaseUrlManager
     public $enableLanguagePersistence = true;
 
     /**
+     * @var bool whether to keep upper case language codes in URL. Default is `false` wich will e.g.
+     * redirect `de-AT` to `de-at`.
+     */
+    public $keepUpperCaseLanguageCode = false;
+
+    /**
      * @var string the name of the session key that is used to store the language. Default is '_language'.
      */
     public $languageSessionKey = '_language';
@@ -209,7 +215,9 @@ class UrlManager extends BaseUrlManager
                 if (is_string($key)) {
                     $language = $key;
                 }
-                $language = strtolower($language);
+                if (!$this->keepUpperCaseLanguageCode) {
+                    $language = strtolower($language);
+                }
                 // Remove any trailing slashes unless one is configured as suffix
                 if ($this->suffix!=='/') {
                     if (count($params)!==1) {
@@ -255,9 +263,10 @@ class UrlManager extends BaseUrlManager
                 // Replace alias with language code
                 $language = $this->languages[$code];
             } else {
+                // lowercase language, uppercase country
                 list($language,$country) = $this->matchCode($code);
                 if ($country!==null) {
-                    if ($code==="$language-$country") {
+                    if ($code==="$language-$country" && !$this->keepUpperCaseLanguageCode) {
                         $this->redirectToLanguage(strtolower($code));
                     } else {
                         $language = "$language-$country";

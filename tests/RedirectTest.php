@@ -60,6 +60,15 @@ class RedirectTest extends TestCase
         $this->mockRequest('/es-BO/site/page');
     }
 
+    public function testNoRedirectIfLanguageWithUpperCaseCountryInUrlAndUppercaseEnabled()
+    {
+        $this->mockUrlManager([
+            'languages' => ['en-US', 'deutsch' => 'de', 'es-BO'],
+            'keepUpperCaseLanguageCode' => true,
+        ]);
+        $this->mockRequest('/es-BO/site/page');
+    }
+
     public function testRedirectsIfLanguageWithUpperCaseWildcardCountryInUrl()
     {
         $this->expectRedirect('/es-bo/site/page');
