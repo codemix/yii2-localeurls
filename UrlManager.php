@@ -138,7 +138,7 @@ class UrlManager extends BaseUrlManager
             }
         }
         $this->_defaultLanguage = Yii::$app->language;
-        return parent::init();
+        parent::init();
     }
 
     /**
@@ -198,6 +198,15 @@ class UrlManager extends BaseUrlManager
                 $languageRequired = true;
             } else {
                 $language = Yii::$app->language;
+                $languageRequired = false;
+            }
+
+            // Do not use prefix for default language to prevent unnecessary redirect
+            if ($languageRequired
+                && $language === $this->getDefaultLanguage()
+                && !$this->enableDefaultLanguageUrlCode
+                && !$this->enableLanguagePersistence
+            ) {
                 $languageRequired = false;
             }
 
