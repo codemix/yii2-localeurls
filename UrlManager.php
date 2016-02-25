@@ -201,11 +201,10 @@ class UrlManager extends BaseUrlManager
                 $languageRequired = false;
             }
 
-            // Do not use prefix for default language to prevent unnecessary redirect
-            if ($languageRequired
-                && $language === $this->getDefaultLanguage()
-                && !$this->enableDefaultLanguageUrlCode
-                && !$this->enableLanguagePersistence
+            // Do not use prefix for default language to prevent unnecessary redirect if there's no persistence and no detection
+            if (
+                $languageRequired && $language===$this->getDefaultLanguage() &&
+                !$this->enableDefaultLanguageUrlCode && !$this->enableLanguagePersistence && !$this->enableLanguageDetection
             ) {
                 $languageRequired = false;
             }

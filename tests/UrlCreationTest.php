@@ -221,4 +221,67 @@ class UrlCreationTest extends TestCase
         $this->assertEquals($this->prepareUrl('/en-US/foo/baz/bar?x=y'), Url::to(['/slug/action', 'language' => 'en-US', 'x' => 'y', 'term' => 'baz']));
     }
 
+    public function testCreateResetUrlWithLanguageIfPersistenceAndDetectionEnabled()
+    {
+        $this->mockUrlManager([
+            'languages' => ['en-US', 'en', 'de'],
+            'rules' => [
+                '/foo/<term:.+>/bar' => 'slug/action',
+            ],
+        ]);
+        $this->mockRequest('/de/site/page');
+        $this->assertEquals($this->prepareUrl('/en/demo/action'), Url::to(['/demo/action', 'language' => 'en']));
+        $this->assertEquals($this->prepareUrl('/en/demo/action?x=y'), Url::to(['/demo/action', 'x' => 'y', 'language' => 'en']));
+        $this->assertEquals($this->prepareUrl('/en/foo/baz/bar'), Url::to(['/slug/action', 'term' => 'baz', 'language' => 'en']));
+        $this->assertEquals($this->prepareUrl('/en/foo/baz/bar?x=y'), Url::to(['/slug/action', 'x' => 'y', 'term' => 'baz', 'language' => 'en']));
+    }
+
+    public function testCreateResetUrlWithLanguageIfPersistenceDisabled()
+    {
+        $this->mockUrlManager([
+            'languages' => ['en-US', 'en', 'de'],
+            'enableLanguagePersistence' => false,
+            'rules' => [
+                '/foo/<term:.+>/bar' => 'slug/action',
+            ],
+        ]);
+        $this->mockRequest('/de/site/page');
+        $this->assertEquals($this->prepareUrl('/en/demo/action'), Url::to(['/demo/action', 'language' => 'en']));
+        $this->assertEquals($this->prepareUrl('/en/demo/action?x=y'), Url::to(['/demo/action', 'x' => 'y', 'language' => 'en']));
+        $this->assertEquals($this->prepareUrl('/en/foo/baz/bar'), Url::to(['/slug/action', 'term' => 'baz', 'language' => 'en']));
+        $this->assertEquals($this->prepareUrl('/en/foo/baz/bar?x=y'), Url::to(['/slug/action', 'x' => 'y', 'term' => 'baz', 'language' => 'en']));
+    }
+
+    public function testCreateResetUrlWithLanguageIfDetectionDisabled()
+    {
+        $this->mockUrlManager([
+            'languages' => ['en-US', 'en', 'de'],
+            'enableLanguageDetection' => false,
+            'rules' => [
+                '/foo/<term:.+>/bar' => 'slug/action',
+            ],
+        ]);
+        $this->mockRequest('/de/site/page');
+        $this->assertEquals($this->prepareUrl('/en/demo/action'), Url::to(['/demo/action', 'language' => 'en']));
+        $this->assertEquals($this->prepareUrl('/en/demo/action?x=y'), Url::to(['/demo/action', 'x' => 'y', 'language' => 'en']));
+        $this->assertEquals($this->prepareUrl('/en/foo/baz/bar'), Url::to(['/slug/action', 'term' => 'baz', 'language' => 'en']));
+        $this->assertEquals($this->prepareUrl('/en/foo/baz/bar?x=y'), Url::to(['/slug/action', 'x' => 'y', 'term' => 'baz', 'language' => 'en']));
+    }
+
+    public function testCreateUrlWithoutDefaultLanguageIfPersistenceAndDetectionDisabled()
+    {
+        $this->mockUrlManager([
+            'languages' => ['en-US', 'en', 'de'],
+            'enableLanguagePersistence' => false,
+            'enableLanguageDetection' => false,
+            'rules' => [
+                '/foo/<term:.+>/bar' => 'slug/action',
+            ],
+        ]);
+        $this->mockRequest('/de/site/page');
+        $this->assertEquals($this->prepareUrl('/demo/action'), Url::to(['/demo/action', 'language' => 'en']));
+        $this->assertEquals($this->prepareUrl('/demo/action?x=y'), Url::to(['/demo/action', 'x' => 'y', 'language' => 'en']));
+        $this->assertEquals($this->prepareUrl('/foo/baz/bar'), Url::to(['/slug/action', 'term' => 'baz', 'language' => 'en']));
+        $this->assertEquals($this->prepareUrl('/foo/baz/bar?x=y'), Url::to(['/slug/action', 'x' => 'y', 'term' => 'baz', 'language' => 'en']));
+    }
 }

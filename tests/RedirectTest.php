@@ -166,6 +166,16 @@ class RedirectTest extends TestCase
         ]);
     }
 
+    public function testNoRedirectIfNoLanguageInUrlAndAcceptedLanguageMatchesDefaultLanguage()
+    {
+        $this->mockUrlManager([
+            'languages' => ['en-US', 'en', 'de'],
+        ]);
+        $this->mockRequest('/site/page',[
+            'acceptableLanguages' => ['en'],
+        ]);
+    }
+
     public function testRedirectsIfNoLanguageInUrlAndLanguageInSession()
     {
         $this->expectRedirect('/de/site/page');
