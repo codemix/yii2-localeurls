@@ -275,7 +275,7 @@ class UrlManager extends BaseUrlManager
                 list($language,$country) = $this->matchCode($code);
                 if ($country!==null) {
                     if ($code==="$language-$country" && !$this->keepUppercaseLanguageCode) {
-                        $this->redirectToLanguage(strtolower($code));
+                        $this->redirectToLanguage(strtolower($code));   // Redirect ll-CC to ll-cc
                     } else {
                         $language = "$language-$country";
                     }
@@ -345,7 +345,7 @@ class UrlManager extends BaseUrlManager
             if ($key && is_string($key)) {
                 $language = $key;
             }
-            $this->redirectToLanguage(strtolower($language));
+            $this->redirectToLanguage($this->keepUppercaseLanguageCode ? $language : strtolower($language));
         }
     }
 
@@ -368,7 +368,7 @@ class UrlManager extends BaseUrlManager
      * a configured language, that language is returned.
      *
      * @param string $code the code to match
-     * @return array of [language, country] where both can be null if no match
+     * @return array of [language, country], [language, null] or [null, null] if no match
      */
     protected function matchCode($code)
     {

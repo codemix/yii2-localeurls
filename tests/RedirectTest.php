@@ -208,6 +208,17 @@ class RedirectTest extends TestCase
         $this->mockRequest('/site/page');
     }
 
+    public function testRedirectsNoLanguageInUrlAndUppercaseLanguageInCookieAndUppercaseEnabled()
+    {
+        $this->expectRedirect('/en-US/site/page');
+        $_COOKIE['_language'] = 'en-US';
+        $this->mockUrlManager( [
+            'languages' => ['en-US', 'en', 'de'],
+            'keepUppercaseLanguageCode' => true,
+        ]);
+        $this->mockRequest('/site/page');
+    }
+
     public function testRedirectsIfNoLanguageInUrlAndLanguageInCookieMatchesWildcard()
     {
         $this->expectRedirect('/de/site/page');
