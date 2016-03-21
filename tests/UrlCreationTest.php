@@ -76,6 +76,19 @@ class UrlCreationTest extends TestCase
         $this->assertEquals('http://localhost'.$this->prepareUrl('/de/foo/baz/bar?x=y'), Url::to(['/slug/action', 'x' => 'y', 'term' => 'baz'], 'http'));
     }
 
+    public function testCreateServerNameUrlWithLanguageFromUrl()
+    {
+        $this->mockUrlManager([
+            'languages' => ['en-US', 'en', 'de'],
+            'rules' => [
+                'http://www.example.com/foo/<term:.+>/bar' => 'slug/action',
+            ],
+        ]);
+        $this->mockRequest('/de/site/page');
+        $this->assertEquals('http://www.example.com'.$this->prepareUrl('/de/foo/baz/bar'), Url::to(['/slug/action', 'term' => 'baz']));
+        $this->assertEquals('http://www.example.com'.$this->prepareUrl('/de/foo/baz/bar?x=y'), Url::to(['/slug/action', 'x' => 'y', 'term' => 'baz']));
+    }
+
     public function testCreateUrlWithLanguageFromUrlIfUppercaseEnabled()
     {
         $this->mockUrlManager([
@@ -120,6 +133,18 @@ class UrlCreationTest extends TestCase
         $this->assertEquals('http://localhost'.$this->prepareUrl('/de?x=y'), Url::to(['/site/index', 'x' => 'y'], 'http'));
     }
 
+    public function testCreateServerNameHomeUrlWithLanguageFromUrl()
+    {
+        $this->mockUrlManager([
+            'languages' => ['en-US', 'en', 'de'],
+            'rules' => [
+                'http://www.example.com' => 'site/index',
+            ],
+        ]);
+        $this->mockRequest('/de/site/page');
+        $this->assertEquals('http://www.example.com'.$this->prepareUrl('/de'), Url::to(['/site/index']));
+    }
+
     public function testCreateUrlWithSpecificLanguage()
     {
         $this->mockUrlManager([
@@ -150,6 +175,19 @@ class UrlCreationTest extends TestCase
         $this->assertEquals('http://localhost'.$this->prepareUrl('/en-us/demo/action?x=y'), Url::to(['/demo/action', 'language' => 'en-US', 'x'=>'y'], 'http'));
         $this->assertEquals('http://localhost'.$this->prepareUrl('/en-us/foo/baz/bar'), Url::to(['/slug/action', 'language' => 'en-US', 'term' => 'baz'], 'http'));
         $this->assertEquals('http://localhost'.$this->prepareUrl('/en-us/foo/baz/bar?x=y'), Url::to(['/slug/action', 'language' => 'en-US', 'x' => 'y', 'term' => 'baz'], 'http'));
+    }
+
+    public function testCreateServerNameUrlWithSpecificLanguage()
+    {
+        $this->mockUrlManager([
+            'languages' => ['en-US', 'en', 'de'],
+            'rules' => [
+                'http://www.example.com/foo/<term:.+>/bar' => 'slug/action',
+            ],
+        ]);
+        $this->mockRequest('/de/site/page');
+        $this->assertEquals('http://www.example.com'.$this->prepareUrl('/en-us/foo/baz/bar'), Url::to(['/slug/action', 'language' => 'en-US', 'term' => 'baz']));
+        $this->assertEquals('http://www.example.com'.$this->prepareUrl('/en-us/foo/baz/bar?x=y'), Url::to(['/slug/action', 'language' => 'en-US', 'x' => 'y', 'term' => 'baz']));
     }
 
     public function testCreateUrlWithSpecificAliasedLanguage()
@@ -232,6 +270,20 @@ class UrlCreationTest extends TestCase
         $this->assertEquals('http://localhost'.$this->prepareUrl('/de/demo/action/?x=y'), Url::to(['/demo/action', 'x'=>'y'], 'http'));
         $this->assertEquals('http://localhost'.$this->prepareUrl('/de/foo/baz/bar/'), Url::to(['/slug/action', 'term' => 'baz'], 'http'));
         $this->assertEquals('http://localhost'.$this->prepareUrl('/de/foo/baz/bar/?x=y'), Url::to(['/slug/action', 'x' => 'y', 'term' => 'baz'], 'http'));
+    }
+
+    public function testCreateServerNameUrlWithTralingSlashWithLanguageFromUrl()
+    {
+        $this->mockUrlManager([
+            'languages' => ['en-US', 'en', 'de'],
+            'suffix' => '/',
+            'rules' => [
+                'http://www.example.com/foo/<term:.+>/bar' => 'slug/action',
+            ],
+        ]);
+        $this->mockRequest('/de/site/page/');
+        $this->assertEquals('http://www.example.com'.$this->prepareUrl('/de/foo/baz/bar/'), Url::to(['/slug/action', 'term' => 'baz']));
+        $this->assertEquals('http://www.example.com'.$this->prepareUrl('/de/foo/baz/bar/?x=y'), Url::to(['/slug/action', 'x' => 'y', 'term' => 'baz']));
     }
 
     public function testCreateHomeUrlWithTrailingSlashWithLanguageFromUrl()

@@ -218,8 +218,6 @@ class UrlManager extends BaseUrlManager
                 return  $url;
             } else {
                 $key = array_search($language, $this->languages);
-                $base = $this->showScriptName ? $this->getScriptUrl() : $this->getBaseUrl();
-                $length = strlen($base);
                 if (is_string($key)) {
                     $language = $key;
                 }
@@ -234,7 +232,22 @@ class UrlManager extends BaseUrlManager
                         $url = rtrim($url, '/');
                     }
                 }
-                return $length ? substr_replace($url, "$base/$language", 0, $length) : "/$language$url";
+
+                // /foo/bar -> /de/foo/bar
+                // /base/url/foo/bar -> /base/url/de/foo/bar
+                // /base/index.php/foo/bar -> /base/index.php/de/foo/bar
+                // http://www.example.com/base/url/foo/bar -> http://www.example.com/base/de/foo/bar
+                $needle = $this->showScriptName ? $this->getScriptUrl() : $this->getBaseUrl();
+                // Check for server name URL
+                if (strpos($url, '://')!==false) {
+                    if (($pos = strpos($url, '/', 8))!==false || ($pos = strpos($url, '?', 8))!==false) {
+                        $needle = substr($url, 0, $pos) . $needle;
+                    } else {
+                        $needle = $url . $needle;
+                    }
+                }
+                $needleLength = strlen($needle);
+                return $needleLength ? substr_replace($url, "$needle/$language", 0, $needleLength) : "/$language$url";
             }
         } else {
             return parent::createUrl($params);
