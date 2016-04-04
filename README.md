@@ -288,7 +288,7 @@ You may want to disable the language processing for some routes and URLs with th
 ```php
 <?php
     'ignoreLanguageUrlPatterns' => [
-        '#^site/(login|register)#' => '#^(login|register)#'
+        '#^site/(login|register)#' => '#^(login|register)#',
         '#^api/#' => '#^api/#',
     ],
 ```
