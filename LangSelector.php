@@ -44,8 +44,11 @@ class LangSelector extends Dropdown
             }
             $params['language'] = $language;
             $this->items[] = [
-                'label' => self::label($language),
-                'url' => $params,
+                'label'   => self::label($language),
+                'url'     => $params,
+                'options' => ['class' => [
+                    $language
+                ]],
             ];
         }
         parent::init();
