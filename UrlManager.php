@@ -430,6 +430,9 @@ class UrlManager extends BaseUrlManager
         if ($this->suffix==='/' && $route==='') {
             $url = rtrim($url, '/').'/';
         }
+        if (substr($url, 0, 2) == '//') {
+            $url = str_replace("//", "/", $url);
+        }
         Yii::trace("Redirecting to $url.", __METHOD__);
         Yii::$app->getResponse()->redirect($url);
         if (YII_ENV_TEST) {
