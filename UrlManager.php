@@ -247,7 +247,12 @@ class UrlManager extends BaseUrlManager
                     }
                 }
                 $needleLength = strlen($needle);
-                return $needleLength ? substr_replace($url, "$needle/$language", 0, $needleLength) : "/$language$url";
+                $cleanUrl = $needleLength ? substr_replace($url, "$needle/$language", 0, $needleLength) : "/$language$url";
+                if (substr($cleanUrl, 0, 2) == '//') {
+                    Yii::trace("Cleaning...", __METHOD__);
+                    $cleanUrl = str_replace("//", "/", $cleanUrl);
+                }
+                return $cleanUrl;
             }
         } else {
             return parent::createUrl($params);
