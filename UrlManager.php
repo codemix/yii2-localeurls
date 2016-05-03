@@ -249,7 +249,7 @@ class UrlManager extends BaseUrlManager
         if (preg_match("#^($pattern)\b(/?)#i", $pathInfo, $m)) {
             $request->setPathInfo(mb_substr($pathInfo, mb_strlen($m[1].$m[2])));
             $code = explode("-", $m[1]);
-            $code = implode("-", [mb_strtolower($code[0]), mb_strtoupper($code[0])]);
+            $code = implode("-", [mb_strtolower($code[0]), mb_strtoupper($code[1])]);
             if (isset($this->languages[$code])) {
                 // Replace alias with language code
                 $language = $this->languages[$code];
