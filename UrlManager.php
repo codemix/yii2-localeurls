@@ -128,6 +128,12 @@ class UrlManager extends BaseUrlManager
     protected $_processed = false;
 
     /**
+     * @var bool whether to decode the creating URL in redirectToLanguage()
+     */
+
+    public $decodeRedirectUrl = false;
+
+    /**
      * @inheritdoc
      */
     public function init()
@@ -430,8 +436,9 @@ class UrlManager extends BaseUrlManager
         if ($this->suffix==='/' && $route==='') {
             $url = rtrim($url, '/').'/';
         }
+        $url = $this->decodeRedirectUrl ? urldecode($url) : $url;
         Yii::trace("Redirecting to $url.", __METHOD__);
-        Yii::$app->getResponse()->redirect(urldecode($url));
+        Yii::$app->getResponse()->redirect($url);
         if (YII_ENV_TEST) {
             // Response::redirect($url) above will call `Url::to()` internally. So to really
             // test for the same final redirect URL here, we need to call Url::to(), too.
