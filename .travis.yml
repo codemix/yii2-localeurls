@@ -7,6 +7,6 @@ php:
 install:
   - sudo apt-get update
   - travis_retry composer self-update && composer --version
-  - travis_retry composer global require --no-progress "fxp/composer-asset-plugin:1.1.3"
+  - travis_retry composer global require --no-progress "fxp/composer-asset-plugin:^1.2.0"
   - export PATH="$HOME/.composer/vendor/bin:$PATH"
   - travis_retry composer install --prefer-dist --no-interaction --no-progress
