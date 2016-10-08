@@ -1,6 +1,8 @@
 <?php
 namespace codemix\localeurls;
 
+defined('YII2_LOCALEURLS_TEST') || define('YII2_LOCALEURLS_TEST', false);
+
 use Yii;
 use yii\base\InvalidConfigException;
 use yii\web\Cookie;
