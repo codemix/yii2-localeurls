@@ -98,11 +98,11 @@ you'll get URLs like
     /de/demo/action
 
 To create a link to switch the application to a different language, you can
-explicitely add the `language` URL parameter:
+explicitly add the `language` URL parameter:
 
 ```php
-<?= $url = Url::to(['demo/action', 'language'=>'fr']) ?>
-<?= Html::a('Click', ['demo/action', 'language'=>'fr']) ?>
+<?= $url = Url::to(['demo/action', 'language' => 'fr']) ?>
+<?= Html::a('Click', ['demo/action', 'language' => 'fr']) ?>
 ```
 
 This will give you a URL like
@@ -149,7 +149,7 @@ All languages **including the default language** must be configured in the `lang
 parameter of the `localeUrls` component. You should list more specific language
 codes before the similar looking generic ones (i.e. 'en-US' before 'en'):
 
-    'languages' => ['en-US','en-UK','en','fr','de-AT','de'],
+    'languages' => ['en-US', 'en-UK', 'en', 'fr', 'de-AT', 'de'],
 
 > **Note:** If you use country codes, they should always be configured in upper case letters
 > as shown above. The URLs will still always use lowercase codes. If a URL with an uppercase
@@ -160,7 +160,7 @@ codes before the similar looking generic ones (i.e. 'en-US' before 'en'):
 
 If you want your URL to optionally contain *any* country variant you can also use a wildcard pattern:
 
-    'languages' => ['en-*','de-*'],
+    'languages' => ['en-*', 'de-*'],
 
 Now any URL that matches `en-??` or `de-??` could be used, like `en-us` or `de-at`.
 URLs without a country code like `en` and `de` will also still work:
@@ -180,10 +180,10 @@ URLs with a language code only, will lead to `ll` as configured language.
 
 You can also use friendlier names or aliases in URLs, which are configured like so:
 
-    'languages' => ['en','german'=>'de', 'br' => 'pt-BR'],
+    'languages' => ['en', 'german' => 'de', 'br' => 'pt-BR'],
 
 ```php
-<?= Url::to(['demo/action', 'language'=>'de']) ?>
+<?= Url::to(['demo/action', 'language' => 'de']) ?>
 ```
 
 This will give you URLs like
@@ -229,11 +229,11 @@ is the default) and the user has e.g. stored `de` as last language. How can we n
 access the site in the default language? Because if we try `/` we'd be redirected 
 to `/de/`.
 
-The answer is simple: To create a reset URL, you explicitely include the language code
+The answer is simple: To create a reset URL, you explicitly include the language code
 for the default language in the URL. For example if default language is `fr`:
 
 ```php
-<?= Url::to(['demo/action', 'language'=>'fr']) ?>
+<?= Url::to(['demo/action', 'language' => 'fr']) ?>
 ```
 
     /fr/demo/action -> Redirect to /demo/action
@@ -251,7 +251,7 @@ To disable this, you can set `enableLanguageDetection` to `false`. It's enabled 
 
 If the browser language contains a country code like `de-AT` and you only have `de` in your
 `$languages` configuration, it will fall back to that language. Only if you've used a wildcard
-like `de-*` or have explicitely configured `de-AT` or an alias like `'at' => 'de-AT'`, the
+like `de-*` or have explicitly configured `de-AT` or an alias like `'at' => 'de-AT'`, the
 browser language including the country code will be used.
 
 Let's look at an example configuration to better understand, how the `$languages` configuration
@@ -297,7 +297,7 @@ Both, keys and values are regular expressions. The keys are patterns that descri
 to exclude from language processing during *URL creation*, whereas the values are patterns
 to exclude during *URL parsing*.
 
-> Note: Keys and values don't neccessarily have to relate to each other. It's just for
+> Note: Keys and values don't necessarily have to relate to each other. It's just for
 > convenience, that the configuration is combined into a single option.
 
 ## Example Language Selection Widget
@@ -323,19 +323,19 @@ class LanguageDropdown extends Dropdown
         $params = $_GET;
         $this->_isError = $route === Yii::$app->errorHandler->errorAction;
 
-        array_unshift($params, '/'.$route);
+        array_unshift($params, '/' . $route);
 
         foreach (Yii::$app->urlManager->languages as $language) {
-            $isWildcard = substr($language, -2)==='-*';
+            $isWildcard = substr($language, -2) === '-*';
             if (
-                $language===$appLanguage ||
+                $language === $appLanguage ||
                 // Also check for wildcard language
-                $isWildcard && substr($appLanguage,0,2)===substr($language,0,2)
+                $isWildcard && substr($appLanguage, 0, 2) === substr($language, 0, 2)
             ) {
                 continue;   // Exclude the current language
             }
             if ($isWildcard) {
-                $language = substr($language,0,2);
+                $language = substr($language, 0, 2);
             }
             $params['language'] = $language;
             $this->items[] = [
@@ -358,7 +358,7 @@ class LanguageDropdown extends Dropdown
 
     public static function label($code)
     {
-        if (self::$_labels===null) {
+        if (self::$_labels === null) {
             self::$_labels = [
                 'de' => Yii::t('language', 'German'),
                 'fr' => Yii::t('language', 'French'),
