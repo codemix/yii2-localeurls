@@ -223,6 +223,14 @@ class UrlManager extends BaseUrlManager
         }
     }
 
+    public function createAbsoluteUrl($params, $scheme = null)
+    {
+        if (Yii::$app->language != Yii::$app->sourceLanguage) {
+            $params += ['language' => Yii::$app->language];
+        }
+        return parent::createAbsoluteUrl($params, $scheme);
+    }
+
     /**
      * Checks for a language or locale parameter in the URL and rewrites the pathInfo if found.
      * If no parameter is found it will try to detect the language from persistent storage (session /
