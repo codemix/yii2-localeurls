@@ -288,14 +288,16 @@ You may want to disable the language processing for some routes and URLs with th
 ```php
 <?php
     'ignoreLanguageUrlPatterns' => [
-        '#^site/(login|register)#' => '#^(login|register)#',
+        // route pattern => url pattern
+        '#^site/(login|register)#' => '#^(signin|signup)#',
         '#^api/#' => '#^api/#',
     ],
 ```
 
-Both, keys and values are regular expressions. The keys are patterns that describe routes
+Both, keys and values are regular expressions. The keys are patterns that match routes
 to exclude from language processing during *URL creation*, whereas the values are patterns
-to exclude during *URL parsing*.
+for [pathInfo](http://www.yiiframework.com/doc-2.0/yii-web-request.html#$pathInfo-detail)
+that should be excluded during *URL parsing*.
 
 > Note: Keys and values don't necessarily have to relate to each other. It's just for
 > convenience, that the configuration is combined into a single option.
