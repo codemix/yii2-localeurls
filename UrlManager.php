@@ -249,7 +249,12 @@ class UrlManager extends BaseUrlManager
                     }
                 }
                 $needleLength = strlen($needle);
-                return $needleLength ? substr_replace($url, "$needle/$language", 0, $needleLength) : "/$language$url";
+                $cleanUrl = $needleLength ? substr_replace($url, "$needle/$language", 0, $needleLength) : "/$language$url";
+                if (substr($cleanUrl, 0, 2) == '//') {
+                    Yii::trace("Cleaning...", __METHOD__);
+                    $cleanUrl = str_replace("//", "/", $cleanUrl);
+                }
+                return $cleanUrl;
             }
         } else {
             return parent::createUrl($params);
@@ -431,6 +436,9 @@ class UrlManager extends BaseUrlManager
         // Required to prevent double slashes on generated URLs
         if ($this->suffix==='/' && $route==='') {
             $url = rtrim($url, '/').'/';
+        }
+        if (substr($url, 0, 2) == '//') {
+            $url = str_replace("//", "/", $url);
         }
         Yii::trace("Redirecting to $url.", __METHOD__);
         Yii::$app->getResponse()->redirect($url);
