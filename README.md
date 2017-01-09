@@ -240,6 +240,18 @@ for the default language in the URL. For example if default language is `fr`:
 
 In this case, `fr` will first be stored as last used language before the user is redirected.
 
+If you explicitely need to create a URL to the default language without any language code,
+you can also pass an empty string as language:
+
+```php
+<?= Url::to(['demo/action', 'language' => '']) ?>
+```
+
+This will give you:
+
+    /demo/action
+
+
 ### Language Detection
 
 If a user visits your site for the first time and there's no language stored in session

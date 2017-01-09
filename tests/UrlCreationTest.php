@@ -115,6 +115,7 @@ class UrlCreationTest extends TestCase
             ],
         ]);
         $this->mockRequest('/de/site/page');
+        $this->assertEquals($this->prepareUrl('/'), Url::to(['/site/index', 'language' => '']));
         $this->assertEquals($this->prepareUrl('/de'), Url::to(['/site/index']));
         $this->assertEquals($this->prepareUrl('/de?x=y'), Url::to(['/site/index', 'x' => 'y']));
     }
@@ -129,6 +130,7 @@ class UrlCreationTest extends TestCase
             ],
         ]);
         $this->mockRequest('/de/site/page');
+        $this->assertEquals('http://localhost'.$this->prepareUrl('/'), Url::to(['/site/index', 'language' => ''], 'http'));
         $this->assertEquals('http://localhost'.$this->prepareUrl('/de'), Url::to(['/site/index'], 'http'));
         $this->assertEquals('http://localhost'.$this->prepareUrl('/de?x=y'), Url::to(['/site/index', 'x' => 'y'], 'http'));
     }
@@ -154,6 +156,10 @@ class UrlCreationTest extends TestCase
             ],
         ]);
         $this->mockRequest('/de/site/page');
+        $this->assertEquals($this->prepareUrl('/'), Url::to(['/', 'language' => '']));
+        $this->assertEquals($this->prepareUrl('/demo/action'), Url::to(['/demo/action', 'language' => '']));
+        $this->assertEquals($this->prepareUrl('/en'), Url::to(['/', 'language' => 'en']));
+        $this->assertEquals($this->prepareUrl('/en/demo/action'), Url::to(['/demo/action', 'language' => 'en']));
         $this->assertEquals($this->prepareUrl('/en-us'), Url::to(['/', 'language' => 'en-US']));
         $this->assertEquals($this->prepareUrl('/en-us/demo/action'), Url::to(['/demo/action', 'language' => 'en-US']));
         $this->assertEquals($this->prepareUrl('/en-us/demo/action?x=y'), Url::to(['/demo/action', 'language' => 'en-US', 'x'=>'y']));
@@ -388,10 +394,12 @@ class UrlCreationTest extends TestCase
             'enableLanguagePersistence' => false,
             'enableLanguageDetection' => false,
             'rules' => [
+                '' => 'site/index',
                 '/foo/<term:.+>/bar' => 'slug/action',
             ],
         ]);
         $this->mockRequest('/de/site/page');
+        $this->assertEquals($this->prepareUrl('/'), Url::to(['/site/index', 'language' => 'en']));
         $this->assertEquals($this->prepareUrl('/demo/action'), Url::to(['/demo/action', 'language' => 'en']));
         $this->assertEquals($this->prepareUrl('/demo/action?x=y'), Url::to(['/demo/action', 'x' => 'y', 'language' => 'en']));
         $this->assertEquals($this->prepareUrl('/foo/baz/bar'), Url::to(['/slug/action', 'term' => 'baz', 'language' => 'en']));

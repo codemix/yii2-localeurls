@@ -194,31 +194,29 @@ class UrlManager extends BaseUrlManager
         if ($this->enableLocaleUrls && $this->languages) {
             $params = (array) $params;
 
-            if (isset($params[$this->languageParam])) {
-                $language = $params[$this->languageParam];
-                unset($params[$this->languageParam]);
-                $languageRequired = true;
-            } else {
-                $language = Yii::$app->language;
-                $languageRequired = false;
-            }
+            $addLanguage = false;
+            $isLanguageGiven = isset($params[$this->languageParam]);
+            $language = $isLanguageGiven ? $params[$this->languageParam] : Yii::$app->language;
+            $isDefaultLanguage = $language===$this->getDefaultLanguage();
 
-            // Do not use prefix for default language to prevent unnecessary redirect if there's no persistence and no detection
-            if (
-                $languageRequired && $language===$this->getDefaultLanguage() &&
-                !$this->enableDefaultLanguageUrlCode && !$this->enableLanguagePersistence && !$this->enableLanguageDetection
-            ) {
-                $languageRequired = false;
+            if ($isLanguageGiven) {
+                unset($params[$this->languageParam]);
             }
 
             $url = parent::createUrl($params);
 
-            // Unless a language was explicitely specified in the parameters we can return a URL without any prefix
-            // for the default language, if suffixes are disabled for the default language. In any other case we
-            // always add the suffix, e.g. to create "reset" URLs that explicitely contain the default language.
-            if (!$languageRequired && !$this->enableDefaultLanguageUrlCode && $language===$this->getDefaultLanguage()) {
-                return  $url;
-            } else {
+            if (
+                // Only add language if it's not empty and ...
+                $language!=='' && (
+
+                    // ... it's not the default language or default language uses URL code ...
+                    !$isDefaultLanguage || $this->enableDefaultLanguageUrlCode ||
+
+                    // ... or if a language is explicitely given, but only if either persistence or detection is enabled.
+                    // This way a "reset URL" can be created for the default language.
+                    $isLanguageGiven && ($this->enableLanguagePersistence || $this->enableLanguageDetection)
+                )
+            ) {
                 $key = array_search($language, $this->languages);
                 if (is_string($key)) {
                     $language = $key;
@@ -250,6 +248,8 @@ class UrlManager extends BaseUrlManager
                 }
                 $needleLength = strlen($needle);
                 return $needleLength ? substr_replace($url, "$needle/$language", 0, $needleLength) : "/$language$url";
+            } else {
+                return $url;
             }
         } else {
             return parent::createUrl($params);
