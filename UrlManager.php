@@ -194,7 +194,6 @@ class UrlManager extends BaseUrlManager
         if ($this->enableLocaleUrls && $this->languages) {
             $params = (array) $params;
 
-            $addLanguage = false;
             $isLanguageGiven = isset($params[$this->languageParam]);
             $language = $isLanguageGiven ? $params[$this->languageParam] : Yii::$app->language;
             $isDefaultLanguage = $language===$this->getDefaultLanguage();
