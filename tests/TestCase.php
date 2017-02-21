@@ -25,9 +25,11 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     protected function tearDown()
     {
         $_COOKIE = [];
-        \Yii::$app->session->destroy();
-        \Yii::$app = null;
-        \Yii::$container = new Container();
+        if (isset(\Yii::$app)) {
+            \Yii::$app->session->destroy();
+            \Yii::$app = null;
+            \Yii::$container = new Container();
+        }
         $this->urlManager = [];
         parent::tearDown();
     }

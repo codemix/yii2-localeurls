@@ -4,271 +4,168 @@ use yii\helpers\Url;
 
 class RedirectTest extends TestCase
 {
-    public function testRedirectsIfDefaultLanguageInUrlAndDefaultLanguageUsesNoSuffix()
-    {
-        $this->expectRedirect('/site/page');
-        $this->mockUrlManager([
-            'languages' => ['en-US', 'en', 'de'],
-        ]);
-        $this->mockRequest('/en/site/page');
-    }
-
-    public function testRedirectsToRootIfOnlyDefaultLanguageInUrlAndDefaultLanguageUsesNoSuffix()
-    {
-        $this->expectRedirect('/');
-        $this->mockUrlManager([
-            'languages' => ['en-US', 'en', 'de'],
-        ]);
-        $this->mockRequest('/en');
-    }
-
-    public function testRedirectsRootToDefaultLanguageIfDefaultLanguageUsesSuffix()
-    {
-        $this->expectRedirect('/en');
-        $this->mockUrlManager([
-            'languages' => ['en-US', 'en', 'de'],
-            'enableDefaultLanguageUrlCode' => true,
-        ]);
-        $this->mockRequest('/');
-    }
-
-    public function testRedirectsIfNoLanguageInUrlAndDefaultLanguageUsesSuffix()
-    {
-        $this->expectRedirect('/en/site/page');
-        $this->mockUrlManager([
-            'languages' => ['en-US', 'en', 'de'],
-            'enableDefaultLanguageUrlCode' => true,
-        ]);
-        $this->mockRequest('/site/page');
-    }
-
-    public function testRedirectsIfDefaultLanguageInUrl()
-    {
-        $this->expectRedirect('/');
-        $this->mockUrlManager([
-            'languages' => ['en'],
-        ]);
-        $this->mockRequest('/en');
-    }
-
-    public function testRedirectsIfLanguageWithUppercaseCountryInUrl()
-    {
-        $this->expectRedirect('/es-bo/site/page');
-        $this->mockUrlManager([
-            'languages' => ['en-US', 'deutsch' => 'de', 'es-BO'],
-        ]);
-        $this->mockRequest('/es-BO/site/page');
-    }
-
-    public function testNoRedirectIfLanguageWithUppercaseCountryInUrlAndUppercaseEnabled()
-    {
-        $this->mockUrlManager([
-            'languages' => ['en-US', 'deutsch' => 'de', 'es-BO'],
-            'keepUppercaseLanguageCode' => true,
-        ]);
-        $this->mockRequest('/es-BO/site/page');
-    }
-
-    public function testRedirectsIfLanguageWithUppercaseWildcardCountryInUrl()
-    {
-        $this->expectRedirect('/es-bo/site/page');
-        $this->mockUrlManager([
-            'languages' => ['en-US', 'deutsch' => 'de', 'es-*'],
-        ]);
-        $this->mockRequest('/es-BO/site/page');
-    }
-
-    public function testRedirectsIfNoLanguageInUrlAndAcceptedLanguageMatches()
-    {
-        $this->expectRedirect('/de/site/page');
-        $this->mockUrlManager([
-            'languages' => ['en-US', 'en', 'de'],
-        ]);
-        $this->mockRequest('/site/page',[
-            'acceptableLanguages' => ['de'],
-        ]);
-    }
-
-    public function testRedirectsIfNoLanguageInUrlAndAcceptedLanguageMatchesWildcard()
-    {
-        $this->expectRedirect('/de/site/page');
-        $this->mockUrlManager([
-            'languages' => ['en-US', 'en', 'de-*'],
-        ]);
-        $this->mockRequest('/site/page',[
-            'acceptableLanguages' => ['de'],
-        ]);
-    }
-
-    public function testRedirectsIfNoLanguageInUrlAndAcceptedLanguageWithCountryMatches()
-    {
-        $this->expectRedirect('/de-at/site/page');
-        $this->mockUrlManager([
-            'languages' => ['en-US', 'en', 'de', 'de-AT'],
-        ]);
-        $this->mockRequest('/site/page',[
-            'acceptableLanguages' => ['de-AT', 'de', 'en'],
-        ]);
-    }
-
-    public function testRedirectsIfNoLanguageInUrlAndAcceptedLanguageWithCountryMatchesWildcard()
-    {
-        $this->expectRedirect('/de-at/site/page');
-        $this->mockUrlManager([
-            'languages' => ['en-US', 'en', 'de-*'],
-        ]);
-        $this->mockRequest('/site/page',[
-            'acceptableLanguages' => ['de-AT', 'de', 'en'],
-        ]);
-    }
-
-    public function testRedirectsIfNoLanguageInUrlAndAcceptedLanguageWithCountryMatchesCountryAlias()
-    {
-        $this->expectRedirect('/at/site/page');
-        $this->mockUrlManager([
-            'languages' => ['de', 'at'=>'de-AT'],
-        ]);
-        $this->mockRequest('/site/page',[
-            'acceptableLanguages' => ['de-at', 'de'],
-        ]);
-    }
-
-    public function testRedirectsIfNoLanguageInUrlAndAcceptedLanguageMatchesLanguageAndCountryAlias()
-    {
-        $this->expectRedirect('/de/site/page');
-        $this->mockUrlManager([
-            'languages' => ['de', 'at'=>'de-AT'],
-        ]);
-        $this->mockRequest('/site/page',[
-            'acceptableLanguages' => ['en-US', 'en', 'de'],
-        ]);
-    }
-
-    public function testRedirectsIfNoLanguageInUrlAndAcceptedLanguageWithLowercaseCountryMatches()
-    {
-        $this->expectRedirect('/de-at/site/page');
-        $this->mockUrlManager([
-            'languages' => ['en-US', 'en', 'de', 'de-AT'],
-        ]);
-        $this->mockRequest('/site/page',[
-            'acceptableLanguages' => ['de-at', 'de', 'en'],
-        ]);
-    }
-
-    public function testRedirectsIfNoLanguageInUrlAndAcceptedLanguageWithCountryMatchesLanguage()
-    {
-        $this->expectRedirect('/de/site/page');
-        $this->mockUrlManager([
-            'languages' => ['en-US', 'en', 'de'],
-        ]);
-        $this->mockRequest('/site/page',[
-            'acceptableLanguages' => ['de-at'],
-        ]);
-    }
-
-    public function testNoRedirectIfNoLanguageInUrlAndAcceptedLanguageMatchesDefaultLanguage()
-    {
-        $this->mockUrlManager([
-            'languages' => ['en-US', 'en', 'de'],
-        ]);
-        $this->mockRequest('/site/page',[
-            'acceptableLanguages' => ['en'],
-        ]);
-    }
-
-    public function testRedirectsIfNoLanguageInUrlAndLanguageInSession()
-    {
-        $this->expectRedirect('/de/site/page');
-        @session_start();
-        $_SESSION['_language'] = 'de';
-        $this->mockUrlManager( [
-            'languages' => ['en-US', 'en', 'de'],
-        ]);
-        $this->mockRequest('/site/page');
-    }
-
-    public function testRedirectsIfNoLanguageInUrlAndLanguageInSessionMatchesWildcard()
-    {
-        $this->expectRedirect('/de/site/page');
-        @session_start();
-        $_SESSION['_language'] = 'de';
-        $this->mockUrlManager( [
-            'languages' => ['en-US', 'en', 'de-*'],
-        ]);
-        $this->mockRequest('/site/page');
-    }
-
-    public function testRedirectsIfNoLanguageInUrlAndLanguageInCookie()
-    {
-        $this->expectRedirect('/de/site/page');
-        $_COOKIE['_language'] = 'de';
-        $this->mockUrlManager( [
-            'languages' => ['en-US', 'en', 'de'],
-        ]);
-        $this->mockRequest('/site/page');
-    }
-
-    public function testRedirectsNoLanguageInUrlAndUppercaseLanguageInCookieAndUppercaseEnabled()
-    {
-        $this->expectRedirect('/en-US/site/page');
-        $_COOKIE['_language'] = 'en-US';
-        $this->mockUrlManager( [
-            'languages' => ['en-US', 'en', 'de'],
-            'keepUppercaseLanguageCode' => true,
-        ]);
-        $this->mockRequest('/site/page');
-    }
-
-    public function testRedirectsIfNoLanguageInUrlAndLanguageInCookieMatchesWildcard()
-    {
-        $this->expectRedirect('/de/site/page');
-        $_COOKIE['_language'] = 'de';
-        $this->mockUrlManager( [
-            'languages' => ['en-US', 'en', 'de-*'],
-        ]);
-        $this->mockRequest('/site/page');
-    }
-
-    public function testRedirectsIfUrlDoesNotMatchIgnoresUrls()
-    {
-        $this->expectRedirect('/site/page');
-        $this->mockUrlManager([
-            'languages' => ['en-US', 'en', 'de'],
-            'ignoreLanguageUrlPatterns' => [
-                '#not/used#' => '#^site/other#'
+    public $testConfigs = [
+        [
+            'urlManager' => [
+                'languages' => ['en-US', 'en', 'de', 'pt', 'at' => 'de-AT', 'alias' => 'fr', 'es-BO', 'wc-*'],
             ],
-        ]);
-        $this->mockRequest('/en/site/page');
+            'redirects' => [
+                // from => to
+                '/en/site/page' => '/site/page',
+                '/en' => '/',
+                '/es-BO/site/page' => '/es-bo/site/page',
+                '/wc-BB/site/page' => '/wc-bb/site/page',
+
+                // Requests with params in session, cookie or request headers
+                '/site/page' => [
+
+                    // Acceptable languages in request
+                    '/de/site/page' => ['request' => ['acceptableLanguages' => ['de']]],
+                    '/at/site/page' => ['request' => ['acceptableLanguages' => ['de-at', 'de']]],
+                    '/wc/site/page' => ['request' => ['acceptableLanguages' => ['wc']]],
+                    '/es-bo/site/page' => ['request' => ['acceptableLanguages' => ['es-BO', 'es', 'en']]],
+                    '/es-bo/site/page' => ['request' => ['acceptableLanguages' => ['es-bo', 'es', 'en']]],
+                    '/wc-at/site/page' => ['request' => ['acceptableLanguages' => ['wc-AT', 'de', 'en']]],
+                    '/pt/site/page' => ['request' => ['acceptableLanguages' => ['pt-br']]],
+                    '/alias/site/page' => ['request' => ['acceptableLanguages' => ['fr']]],
+                    // no redirect
+                    false => ['request' => ['acceptableLanguages' => ['en']]], // default language
+
+                    // Language in session
+                    '/de/site/page' => ['session' => ['_language' => 'de']],
+                    '/at/site/page' => ['session' => ['_language' => 'de-AT']],
+                    '/wc/site/page' => ['session' => ['_language' => 'wc']],
+                    '/es-bo/site/page' => ['session' => ['_language' => 'es-BO']],
+                    '/wc-at/site/page' => ['session' => ['_language' => 'wc-AT']],
+                    '/pt/site/page' => ['session' => ['_language' => 'pt']],
+                    '/alias/site/page' => ['session' => ['_language' => 'fr']],
+
+                    // Language in cookie
+                    '/de/site/page' => ['cookie' => ['_language' => 'de']],
+                    '/at/site/page' => ['cookie' => ['_language' => 'de-AT']],
+                    '/wc/site/page' => ['cookie' => ['_language' => 'wc']],
+                    '/es-bo/site/page' => ['cookie' => ['_language' => 'es-BO']],
+                    '/wc-at/site/page' => ['cookie' => ['_language' => 'wc-AT']],
+                    '/pt/site/page' => ['cookie' => ['_language' => 'pt']],
+                    '/alias/site/page' => ['cookie' => ['_language' => 'fr']],
+                ],
+            ],
+        ],
+
+        // Default language uses language code
+        [
+            'urlManager' => [
+                'languages' => ['en-US', 'en', 'de'],
+                'enableDefaultLanguageUrlCode' => true,
+            ],
+            'redirects' => [
+                '/' => '/en',
+                '/site/page' => '/en/site/page',
+            ],
+        ],
+
+        // Upper case language codes allowed in URL
+        [
+            'urlManager' => [
+                'languages' => ['en-US', 'deutsch' => 'de', 'es-BO'],
+                'keepUppercaseLanguageCode' => true,
+            ],
+            'redirects' => [
+                '/es-BO/site/page' => false,
+                '/site/page' => [
+                    '/en-US/site/page' => ['session' => ['_language' => 'en-US']],
+                    '/en-US/site/page' => ['cookie' => ['_language' => 'en-US']],
+                ]
+            ],
+        ],
+
+        // Ignore patterns
+        [
+            'urlManager' => [
+                'languages' => ['en-US', 'en', 'de'],
+                'enableDefaultLanguageUrlCode' => true,
+                'ignoreLanguageUrlPatterns' => [
+                    '#not/used#' => '#^site/other#'
+                ],
+            ],
+            'redirects' => [
+                '/site/page' => '/en/site/page',
+                '/site/other' => false,
+            ],
+        ],
+
+        // Suffix URLs
+        [
+            'urlManager' => [
+                'languages' => ['en-US', 'en', 'de'],
+                'suffix' => '/'
+            ],
+            'redirects' => [
+                '/en' => '/',
+                '/en/site/page/' => '/site/page/',
+            ],
+        ],
+        [
+            'urlManager' => [
+                'languages' => ['en-US', 'en', 'de'],
+                'enableDefaultLanguageUrlCode' => true,
+                'suffix' => '/'
+            ],
+            'redirects' => [
+                '/' => '/en/',
+                '/site/page/' => '/en/site/page/',
+            ],
+        ],
+    ];
+
+    public function testRedirects()
+    {
+        foreach ($this->testConfigs as $config) {
+            $urlManager = isset($config['urlManager']) ? $config['urlManager'] : [];
+            foreach ($config['redirects'] as $from => $to) {
+                if (is_array($to)) {
+                    foreach ($to as $url => $params) {
+                        $request = isset($params['request']) ? $params['request'] : [];
+                        $session = isset($params['session']) ? $params['session'] : [];
+                        $cookie = isset($params['cookie']) ? $params['cookie'] : [];
+                        $this->performRedirectTest($from, $url, $urlManager, $request, $session, $cookie);
+                    }
+                } else {
+                    $this->performRedirectTest($from, $to, $urlManager);
+                }
+            }
+        }
     }
 
-    public function testRedirectsIfDefaultLanguageInUrlAndDefaultLanguageUsesNoSuffixAndTrailingSlashEnabled()
+    /**
+     * Tests for a redirect
+     *
+     * @param string $from the request URL
+     * @param mixed $to the expected redirect URL or a falsey value for no redirect
+     * @param array $urlManager the urlManager configuration
+     * @param array $request the configuration for the request component
+     * @param array $session the session variables
+     * @param array $cookie the cookies
+     */
+    public function performRedirectTest($from, $to, $urlManager, $request = [], $session = [], $cookie = [])
     {
-        $this->expectRedirect('/site/page/');
-        $this->mockUrlManager([
-            'languages' => ['en-US', 'en', 'de'],
-            'suffix' => '/'
-        ]);
-        $this->mockRequest('/en/site/page/');
+        $this->tearDown();
+        $this->mockUrlManager($urlManager);
+        if ($session!==null) {
+            @session_start();
+            $_SESSION = $session;
+        }
+        if ($cookie!==null) {
+            $_COOKIE = $cookie;
+        }
+        try {
+            $this->mockRequest($from, $request);
+            if ($to) {
+                $this->fail("No redirect for $from");
+            }
+        } catch (\yii\base\Exception $e) {
+            $this->assertEquals($this->prepareUrl($to), $e->getMessage());
+        }
     }
 
-    public function testRedirectsToRootIfOnlyDefaultLanguageInUrlAndDefaultLanguageUsesNoSuffixAndTrailingSlashEnabled()
-    {
-        $this->expectRedirect('/');
-        $this->mockUrlManager([
-            'languages' => ['en-US', 'en', 'de'],
-            'suffix' => '/',
-        ]);
-        $this->mockRequest('/en');
-    }
-
-    public function testRedirectsRootToDefaultLanguageIfDefaultLanguageUsesSuffixAndTrailingSlashEnabled()
-    {
-        $this->expectRedirect('/en/');
-        $this->mockUrlManager([
-            'languages' => ['en-US', 'en', 'de'],
-            'enableDefaultLanguageUrlCode' => true,
-            'suffix' => '/',
-        ]);
-        $this->mockRequest('/');
-    }
 }
