@@ -169,6 +169,11 @@ class UrlManager extends BaseUrlManager
                 }
             }
             if ($process && !$this->_processed) {
+                // If a normalizer is configured, let it do it's job
+                if ($this->normalizer!==false) {
+                    parent::parseRequest($request);
+                }
+                // Still here, so parent::parseRequest() didn't throw a UrlNormalizerRedirectException.
                 $this->_processed = true;
                 $this->processLocaleUrl($request);
             }

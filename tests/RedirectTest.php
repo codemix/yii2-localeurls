@@ -116,6 +116,45 @@ class RedirectTest extends TestCase
                 '/site/page/' => '/en/site/page/',
             ],
         ],
+
+        // Normalizer with + w/o suffix
+        [
+            'urlManager' => [
+                'languages' => ['en-US', 'en', 'de'],
+                'suffix' => '/',
+                'normalizer' => [
+                    'class' => '\yii\web\UrlNormalizer',
+                ],
+            ],
+            'redirects' => [
+                '/de' => '/de/',    // normalizer
+                '/de/' => false,
+
+                '/de/site/login' => '/de/site/login/',  // normalizer
+                '/de/site/login/' => false,
+
+                '/en/site/login' => '/en/site/login/',  // normalizer
+                '/en/site/login/' => '/site/login/',    // localeurls
+            ],
+        ],
+        [
+            'urlManager' => [
+                'languages' => ['en-US', 'en', 'de'],
+                'normalizer' => [
+                    'class' => '\yii\web\UrlNormalizer',
+                ],
+            ],
+            'redirects' => [
+                '/de/' => '/de',    // normalizer
+                '/de' => false,
+
+                '/de/site/login/' => '/de/site/login',  // normalizer
+                '/de/site/login' => false,
+
+                '/en/site/login/' => '/en/site/login',  // normalizer
+                '/en/site/login' => '/site/login',    // localeurls
+            ],
+        ],
     ];
 
     public function testRedirects()
@@ -161,8 +200,18 @@ class RedirectTest extends TestCase
         try {
             $this->mockRequest($from, $request);
             if ($to) {
-                $this->fail("No redirect for $from");
+                $this->fail("No redirect for $from to $to with urlManager config:\n" . print_r($urlManager, true));
             }
+        } catch (\yii\web\UrlNormalizerRedirectException $e) {
+            $url = $e->url;
+            if (is_array($url)) {
+                if (isset($url[0])) {
+                    // ensure the route is absolute
+                    $url[0] = '/' . ltrim($url[0], '/');
+                }
+                $url += Yii::$app->request->getQueryParams();
+            }
+            $this->assertEquals($this->prepareUrl($to), Url::to($url, $e->scheme));
         } catch (\yii\base\Exception $e) {
             $this->assertEquals($this->prepareUrl($to), $e->getMessage());
         }
