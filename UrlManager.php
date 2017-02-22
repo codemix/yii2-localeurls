@@ -199,7 +199,6 @@ class UrlManager extends BaseUrlManager
         if ($this->enableLocaleUrls && $this->languages) {
             $params = (array) $params;
 
-            $addLanguage = false;
             $isLanguageGiven = isset($params[$this->languageParam]);
             $language = $isLanguageGiven ? $params[$this->languageParam] : Yii::$app->language;
             $isDefaultLanguage = $language===$this->getDefaultLanguage();
@@ -418,6 +417,8 @@ class UrlManager extends BaseUrlManager
      * Redirect to the current URL with given language code applied
      *
      * @param string $language the language code to add. Can also be empty to not add any language code.
+     * @throws \yii\base\Exception
+     * @throws \yii\web\NotFoundHttpException
      */
     protected function redirectToLanguage($language)
     {
