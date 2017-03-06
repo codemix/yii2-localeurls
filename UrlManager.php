@@ -237,21 +237,35 @@ class UrlManager extends BaseUrlManager
                     }
                 }
 
-                // /foo/bar -> /de/foo/bar
-                // /base/url/foo/bar -> /base/url/de/foo/bar
-                // /base/index.php/foo/bar -> /base/index.php/de/foo/bar
-                // http://www.example.com/base/url/foo/bar -> http://www.example.com/base/de/foo/bar
-                $needle = $this->showScriptName ? $this->getScriptUrl() : $this->getBaseUrl();
-                // Check for server name URL
+                // Calculate the position where the language code has to be inserted
+                // depending on the showScriptName and baseUrl configuration:
+                //
+                //  - /foo/bar -> /de/foo/bar
+                //  - /base/foo/bar -> /base/de/foo/bar
+                //  - /index.php/foo/bar -> /index.php/de/foo/bar
+                //  - /base/index.php/foo/bar -> /base/index.php/de/foo/bar
+                //
+                $insertPos = strlen($this->showScriptName ? $this->getScriptUrl() : $this->getBaseUrl());
+
+                // If we have an absolute URL the length of the host URL has to be added:
+                //
+                //  - http://www.example.com
+                //  - http://www.example.com?x=y
+                //  - http://www.example.com/foo/bar
+                //
                 if (strpos($url, '://')!==false) {
+                    // Host URL ends at first '/' or '?' after the schema
                     if (($pos = strpos($url, '/', 8))!==false || ($pos = strpos($url, '?', 8))!==false) {
-                        $needle = substr($url, 0, $pos) . $needle;
+                        $insertPos += $pos;
                     } else {
-                        $needle = $url . $needle;
+                        $insertPos += strlen($url);
                     }
                 }
-                $needleLength = strlen($needle);
-                return $needleLength ? substr_replace($url, "$needle/$language", 0, $needleLength) : "/$language$url";
+                if ($insertPos > 0) {
+                    return substr_replace($url, '/' . $language, $insertPos, 0);
+                } else {
+                    return '/' . $language . $url;
+                }
             } else {
                 return $url;
             }
