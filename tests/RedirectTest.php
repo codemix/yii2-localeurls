@@ -4,6 +4,26 @@ use yii\helpers\Url;
 
 class RedirectTest extends TestCase
 {
+    /**
+     * @var array the set of test configurations to test. Each entry is an
+     * array with this structure:
+     *
+     * ```php
+     * [
+     *     'urlManager' => [
+     *         // UrlManager settings for this test
+     *     ],
+     *     'redirects' => [
+     *         // List of expected redirecs in the form `$fromUrl => $to`.
+     *         // $to can be:
+     *         //   - a string with a URL that should be redirected to,
+     *         //   - `false` if there should be no redirect
+     *         //   - an array of individual request/session/cookie configurations
+     *         //     each indexed by the expected redirect URL (or `false`)
+     *     ],
+     * ]
+     * ```
+     */
     public $testConfigs = [
         [
             'urlManager' => [

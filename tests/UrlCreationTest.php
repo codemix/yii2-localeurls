@@ -4,405 +4,352 @@ use yii\helpers\Url;
 
 class UrlCreationTest extends TestCase
 {
-    public function testCreateNormalUrlIfLocaleUrlsDisabled()
-    {
-        $this->mockUrlManager([
-            'enableLocaleUrls' => false,
-            'languages' => ['en-US', 'en', 'de'],
-            'rules' => [
-                '/foo/<term:.+>/bar' => 'slug/action',
+    /**
+     * @var array the set of test configurations to test. Each entry is an
+     * array with this structure:
+     *
+     * ```php
+     * [
+     *     'urlManager' => [
+     *         // UrlManager settings for this test
+     *     ],
+     *     'urls' => [
+     *         // Key is a request URL
+     *         '/some/request/url' => [
+     *             // The URLs to create during this request indexed by the
+     *             // expected result. If expected URL starts with
+     *             // 'http://localhost' the URL is created as absolute URL.
+     *             '/expected/url' => ['some/route', 'param1'=> 'value1'],
+     *             ...
+     *         ],
+     *     ],
+     * ]
+     * ```
+     */
+    public $testConfigs = [
+        [
+            'urlManager' => [
+                'languages' => ['en-US', 'en', 'french' => 'fr', 'de'],
+                'rules' => [
+                    '' => 'site/index',
+                    '/foo/<term:.+>/bar' => 'slug/action',
+                    '/important/<term:.+>/bar' => 'important/action',
+                    'http://www.example.com/foo/<term:.+>/bar' => 'slug/other',
+                ],
+                'ignoreLanguageUrlPatterns' => [
+                    '#^ignored/.*#' => '#not/used#',
+                    '#^important/.*#' => '#not/used#',
+                ],
             ],
-        ]);
-        $this->mockRequest('/site/page');
-        $this->assertEquals($this->prepareUrl('/demo/action?language=de'), Url::to(['/demo/action', 'language' => 'de']));
-        $this->assertEquals($this->prepareUrl('/foo/baz/bar?language=de'), Url::to(['/slug/action', 'language' => 'de', 'term' => 'baz']));
+            'urls' => [
+                // No language code in request
+                '/site/page' => [
+                    '/demo/action' => ['/demo/action'],
+                    '/demo/action?x=y' => ['/demo/action', 'x' => 'y'],
+                    '/foo/baz/bar' => ['/slug/action', 'term' => 'baz'],
+                    '/foo/baz/bar?x=y' => ['/slug/action', 'term' => 'baz', 'x' => 'y'],
+                ],
+                // Language code in request
+                '/de/site/page' => [
+                    // Request language
+                    '/de' => ['/site/index'],
+                    '/de?x=y' => ['/site/index', 'x' => 'y'],
+                    '/de/demo/action' => ['/demo/action'],
+                    '/de/demo/action?x=y' => ['/demo/action', 'x' => 'y'],
+                    '/de/foo/baz/bar' => ['/slug/action', 'term' => 'baz'],
+                    '/de/foo/baz/bar?x=y' => ['/slug/action', 'term' => 'baz', 'x' => 'y'],
+                    'http://localhost/de' => ['/site/index'],
+                    'http://localhost/de?x=y' => ['/site/index', 'x' => 'y'],
+                    'http://localhost/de/demo/action' => ['/demo/action'],
+                    'http://localhost/de/demo/action?x=y' => ['/demo/action', 'x' => 'y'],
+                    'http://localhost/de/foo/baz/bar' => ['/slug/action', 'term' => 'baz'],
+                    'http://localhost/de/foo/baz/bar?x=y' => ['/slug/action', 'term' => 'baz', 'x' => 'y'],
+                    'http://www.example.com/de/foo/baz/bar' => ['/slug/other', 'term' => 'baz'],
+                    'http://www.example.com/de/foo/baz/bar?x=y' => ['/slug/other', 'term' => 'baz', 'x' => 'y'],
+
+                    // Other language
+                    '/en' => ['/', 'language' => 'en'],
+                    '/en/demo/action' => ['/demo/action', 'language' => 'en'],
+                    '/en-us' => ['/', 'language' => 'en-US'],
+                    '/en-us/demo/action' => ['/demo/action', 'language' => 'en-US'],
+                    '/en-us/demo/action?x=y' => ['/demo/action', 'language' => 'en-US', 'x' => 'y'],
+                    '/en-us/foo/baz/bar' => ['/slug/action', 'language' => 'en-US', 'term' => 'baz'],
+                    '/en-us/foo/baz/bar?x=y' => ['/slug/action', 'language' => 'en-US', 'term' => 'baz', 'x' => 'y'],
+                    'http://localhost/en-us' => ['/', 'language' => 'en-US'],
+                    'http://localhost/en-us/demo/action' => ['/demo/action', 'language' => 'en-US'],
+                    'http://localhost/en-us/demo/action?x=y' => ['/demo/action', 'language' => 'en-US', 'x' => 'y'],
+                    'http://localhost/en-us/foo/baz/bar' => ['/slug/action', 'language' => 'en-US', 'term' => 'baz'],
+                    'http://localhost/en-us/foo/baz/bar?x=y' => ['/slug/action', 'language' => 'en-US', 'term' => 'baz', 'x' => 'y'],
+                    'http://www.example.com/en-us/foo/baz/bar' => ['/slug/other', 'language' => 'en-US', 'term' => 'baz'],
+                    'http://www.example.com/en-us/foo/baz/bar?x=y' => ['/slug/other', 'language' => 'en-US', 'term' => 'baz', 'x' => 'y'],
+
+                    // Aliased language
+                    '/french/demo/action' => ['/demo/action', 'language' => 'fr'],
+                    '/french/demo/action?x=y' => ['/demo/action', 'language' => 'fr', 'x' => 'y'],
+                    '/french/foo/baz/bar' => ['/slug/action', 'language' => 'fr', 'term' => 'baz'],
+                    '/french/foo/baz/bar?x=y' => ['/slug/action', 'language' => 'fr', 'term' => 'baz', 'x' => 'y'],
+
+                    // No language code added for ignored patterns
+                    '/ignored/action' => ['/ignored/action'],
+                    '/ignored/action?x=y' => ['/ignored/action', 'x' => 'y'],
+                    '/important/baz/bar' => ['/important/action', 'term' => 'baz'],
+                    '/important/baz/bar?x=y' => ['/important/action', 'term' => 'baz', 'x' => 'y'],
+
+                    // No language
+                    '/' => ['/site/index', 'language' => ''],
+                    '/demo/action' => ['/demo/action', 'language' => ''],
+                    'http://localhost/' => ['/site/index', 'language' => ''],
+                ],
+            ]
+        ],
+
+        // Trailing slashes
+        [
+            'urlManager' => [
+                'languages' => ['en-US', 'en', 'french' => 'fr', 'de'],
+                'suffix' => '/',
+                'rules' => [
+                    '' => 'site/index',
+                    '/foo/<term:.+>/bar' => 'slug/action',
+                    '/important/<term:.+>/bar' => 'important/action',
+                    'http://www.example.com/foo/<term:.+>/bar' => 'slug/other',
+                ],
+                'ignoreLanguageUrlPatterns' => [
+                    '#^ignored/.*#' => '#not/used#',
+                    '#^important/.*#' => '#not/used#',
+                ],
+            ],
+            'urls' => [
+                // No language code in request
+                '/site/page/' => [
+                    '/demo/action/' => ['/demo/action'],
+                    '/demo/action/?x=y' => ['/demo/action', 'x' => 'y'],
+                    '/foo/baz/bar/' => ['/slug/action', 'term' => 'baz'],
+                    '/foo/baz/bar/?x=y' => ['/slug/action', 'term' => 'baz', 'x' => 'y'],
+                ],
+                // Language code in request
+                '/de/site/page/' => [
+                    // Request language
+                    '/de/' => ['/site/index'],
+                    '/de/?x=y' => ['/site/index', 'x' => 'y'],
+                    '/de/demo/action/' => ['/demo/action'],
+                    '/de/demo/action/?x=y' => ['/demo/action', 'x' => 'y'],
+                    '/de/foo/baz/bar/' => ['/slug/action', 'term' => 'baz'],
+                    '/de/foo/baz/bar/?x=y' => ['/slug/action', 'term' => 'baz', 'x' => 'y'],
+                    'http://localhost/de/' => ['/site/index'],
+                    'http://localhost/de/?x=y' => ['/site/index', 'x' => 'y'],
+                    'http://localhost/de/demo/action/' => ['/demo/action'],
+                    'http://localhost/de/demo/action/?x=y' => ['/demo/action', 'x' => 'y'],
+                    'http://localhost/de/foo/baz/bar/' => ['/slug/action', 'term' => 'baz'],
+                    'http://localhost/de/foo/baz/bar/?x=y' => ['/slug/action', 'term' => 'baz', 'x' => 'y'],
+                    'http://www.example.com/de/foo/baz/bar/' => ['/slug/other', 'term' => 'baz'],
+                    'http://www.example.com/de/foo/baz/bar/?x=y' => ['/slug/other', 'term' => 'baz', 'x' => 'y'],
+
+                    // Other language
+                    '/en/' => ['/', 'language' => 'en'],
+                    '/en/demo/action/' => ['/demo/action', 'language' => 'en'],
+                    '/en-us/' => ['/', 'language' => 'en-US'],
+                    '/en-us/demo/action/' => ['/demo/action', 'language' => 'en-US'],
+                    '/en-us/demo/action/?x=y' => ['/demo/action', 'language' => 'en-US', 'x' => 'y'],
+                    '/en-us/foo/baz/bar/' => ['/slug/action', 'language' => 'en-US', 'term' => 'baz'],
+                    '/en-us/foo/baz/bar/?x=y' => ['/slug/action', 'language' => 'en-US', 'term' => 'baz', 'x' => 'y'],
+                    'http://localhost/en-us/' => ['/', 'language' => 'en-US'],
+                    'http://localhost/en-us/demo/action/' => ['/demo/action', 'language' => 'en-US'],
+                    'http://localhost/en-us/demo/action/?x=y' => ['/demo/action', 'language' => 'en-US', 'x' => 'y'],
+                    'http://localhost/en-us/foo/baz/bar/' => ['/slug/action', 'language' => 'en-US', 'term' => 'baz'],
+                    'http://localhost/en-us/foo/baz/bar/?x=y' => ['/slug/action', 'language' => 'en-US', 'term' => 'baz', 'x' => 'y'],
+                    'http://www.example.com/en-us/foo/baz/bar/' => ['/slug/other', 'language' => 'en-US', 'term' => 'baz'],
+                    'http://www.example.com/en-us/foo/baz/bar/?x=y' => ['/slug/other', 'language' => 'en-US', 'term' => 'baz', 'x' => 'y'],
+
+                    // Aliased language
+                    '/french/demo/action/' => ['/demo/action', 'language' => 'fr'],
+                    '/french/demo/action/?x=y' => ['/demo/action', 'language' => 'fr', 'x' => 'y'],
+                    '/french/foo/baz/bar/' => ['/slug/action', 'language' => 'fr', 'term' => 'baz'],
+                    '/french/foo/baz/bar/?x=y' => ['/slug/action', 'language' => 'fr', 'term' => 'baz', 'x' => 'y'],
+
+                    // No language code added for ignored patterns
+                    '/ignored/action/' => ['/ignored/action'],
+                    '/ignored/action/?x=y' => ['/ignored/action', 'x' => 'y'],
+                    '/important/baz/bar/' => ['/important/action', 'term' => 'baz'],
+                    '/important/baz/bar/?x=y' => ['/important/action', 'term' => 'baz', 'x' => 'y'],
+
+                    // No language
+                    '/' => ['/site/index', 'language' => ''],
+                    '/demo/action/' => ['/demo/action', 'language' => ''],
+                    'http://localhost/' => ['/site/index', 'language' => ''],
+                ],
+            ]
+        ],
+
+        // Keep Upper case
+        [
+            'urlManager' => [
+                'languages' => ['en-US', 'en', 'de'],
+                'keepUppercaseLanguageCode' => true,
+                'rules' => [
+                    '/foo/<term:.+>/bar' => 'slug/action',
+                ],
+            ],
+            'urls' => [
+                '/en-US/site/page' => [
+                    '/en-US/demo/action' => ['/demo/action'],
+                    '/en-US/demo/action?x=y' => ['/demo/action', 'x' => 'y'],
+                    '/en-US/foo/baz/bar' => ['/slug/action', 'term' => 'baz'],
+                    '/en-US/foo/baz/bar?x=y' => ['/slug/action', 'term' => 'baz', 'x' => 'y'],
+                ],
+                '/de/site/page' => [
+                    '/en-US/demo/action' => ['/demo/action', 'language' => 'en-US'],
+                    '/en-US/demo/action?x=y' => ['/demo/action', 'language' => 'en-US', 'x' => 'y'],
+                    '/en-US/foo/baz/bar' => ['/slug/action', 'language' => 'en-US', 'term' => 'baz'],
+                    '/en-US/foo/baz/bar?x=y' => ['/slug/action', 'language' => 'en-US', 'term' => 'baz', 'x' => 'y'],
+                ],
+            ],
+        ],
+
+        [
+            'urlManager' => [
+                'languages' => ['en-US', 'en', 'de'],
+                'rules' => [
+                    'http://www.example.com' => 'site/index',
+                ],
+            ],
+            'urls' => [
+                '/de/site/page' => [
+                    // false forces creation as relative URL
+                    'http://www.example.com/de' => [false, '/site/index'],
+                ],
+            ],
+        ],
+
+        // Persistence disabled
+        [
+            'urlManager' => [
+                'languages' => ['en-US', 'en', 'de'],
+                'enableLanguagePersistence' => false,
+                'rules' => [
+                    '/foo/<term:.+>/bar' => 'slug/action',
+                ],
+            ],
+            'urls' => [
+                '/de/site/page/' => [
+                    '/en' => ['/', 'language' => 'en'],
+                    '/en/demo/action' => ['/demo/action', 'language' => 'en'],
+                    '/en/demo/action?x=y' => ['/demo/action', 'language' => 'en', 'x' => 'y'],
+                    '/en/foo/baz/bar' => ['/slug/action', 'language' => 'en', 'term' => 'baz'],
+                    '/en/foo/baz/bar?x=y' => ['/slug/action', 'language' => 'en', 'term' => 'baz', 'x' => 'y'],
+                ],
+            ],
+        ],
+        // Detection disabled
+        [
+            'urlManager' => [
+                'languages' => ['en-US', 'en', 'de'],
+                'enableLanguageDetection' => false,
+                'rules' => [
+                    '/foo/<term:.+>/bar' => 'slug/action',
+                ],
+            ],
+            'urls' => [
+                '/de/site/page/' => [
+                    '/en' => ['/', 'language' => 'en'],
+                    '/en/demo/action' => ['/demo/action', 'language' => 'en'],
+                    '/en/demo/action?x=y' => ['/demo/action', 'language' => 'en', 'x' => 'y'],
+                    '/en/foo/baz/bar' => ['/slug/action', 'language' => 'en', 'term' => 'baz'],
+                    '/en/foo/baz/bar?x=y' => ['/slug/action', 'language' => 'en', 'term' => 'baz', 'x' => 'y'],
+                ],
+            ],
+        ],
+        // Persistence and detection disabled
+        [
+            'urlManager' => [
+                'languages' => ['en-US', 'en', 'de'],
+                'enableLanguageDetection' => false,
+                'enableLanguagePersistence' => false,
+                'rules' => [
+                    '/foo/<term:.+>/bar' => 'slug/action',
+                ],
+            ],
+            'urls' => [
+                '/de/site/page/' => [
+                    '/' => ['/', 'language' => 'en'],
+                    '/demo/action' => ['/demo/action', 'language' => 'en'],
+                    '/demo/action?x=y' => ['/demo/action', 'language' => 'en', 'x' => 'y'],
+                    '/foo/baz/bar' => ['/slug/action', 'language' => 'en', 'term' => 'baz'],
+                    '/foo/baz/bar?x=y' => ['/slug/action', 'language' => 'en', 'term' => 'baz', 'x' => 'y'],
+                ],
+            ],
+        ],
+
+
+        // Locale URLs disabled
+        [
+            'urlManager' => [
+                'enableLocaleUrls' => false,
+                'languages' => ['en-US', 'en', 'de'],
+                'rules' => [
+                    '/foo/<term:.+>/bar' => 'slug/action',
+                ],
+            ],
+            'urls' => [
+                '/site/page' => [
+                    '/demo/action?language=de' => ['/demo/action', 'language' => 'de'],
+                    '/foo/baz/bar?language=de' => ['/slug/action', 'language' => 'de', 'term' => 'baz'],
+                ],
+            ]
+        ],
+        [
+            'urlManager' => [
+                'languages' => [],
+                'rules' => [
+                    '/foo/<term:.+>/bar' => 'slug/action',
+                ],
+            ],
+            'urls' => [
+                '/site/page' => [
+                    '/demo/action?language=de' => ['/demo/action', 'language' => 'de'],
+                    '/foo/baz/bar?language=de' => ['/slug/action', 'language' => 'de', 'term' => 'baz'],
+                ],
+            ]
+        ],
+
+    ];
+
+    public function testUrlCreation()
+    {
+        foreach ($this->testConfigs as $config) {
+            $urlManager = isset($config['urlManager']) ? $config['urlManager'] : [];
+            foreach ($config['urls'] as $requestUrl => $routes) {
+                $this->performUrlCreationTest($requestUrl, $urlManager, $routes);
+            }
+        }
     }
 
-    public function testCreateNormalUrlIfNoLanguagesConfigured()
+    /**
+     * Tests URL creation during a specific request
+     *
+     * @param array $requestUrl the requested URL
+     * @param array $urlManager the urlManager configuration
+     * @param array $routes to create URL for indexed by the expected URL
+     */
+    public function performUrlCreationTest($requestUrl, $urlManager, $routes)
     {
-        $this->mockUrlManager([
-            'languages' => [],
-            'rules' => [
-                '/foo/<term:.+>/bar' => 'slug/action',
-            ],
-        ]);
-        $this->mockRequest('/site/page');
-        $this->assertEquals($this->prepareUrl('/demo/action?language=de'), Url::to(['/demo/action', 'language' => 'de']));
-        $this->assertEquals($this->prepareUrl('/foo/baz/bar?language=de'), Url::to(['/slug/action', 'language' => 'de', 'term' => 'baz']));
-    }
-
-    public function testCreateUrlWithoutLanguageIfNoLanguageInUrl()
-    {
-        $this->mockUrlManager([
-            'languages' => ['en-US', 'en', 'de'],
-            'rules' => [
-                '/foo/<term:.+>/bar' => 'slug/action',
-            ],
-        ]);
-        $this->mockRequest('/site/page');
-        $this->assertEquals($this->prepareUrl('/demo/action'), Url::to(['/demo/action']));
-        $this->assertEquals($this->prepareUrl('/demo/action?x=y'), Url::to(['/demo/action', 'x' => 'y']));
-        $this->assertEquals($this->prepareUrl('/foo/baz/bar'), Url::to(['/slug/action', 'term' => 'baz']));
-        $this->assertEquals($this->prepareUrl('/foo/baz/bar?x=y'), Url::to(['/slug/action', 'x' => 'y', 'term' => 'baz']));
-    }
-
-    public function testCreateUrlWithLanguageFromUrl()
-    {
-        $this->mockUrlManager([
-            'languages' => ['en-US', 'en', 'de'],
-            'rules' => [
-                '/foo/<term:.+>/bar' => 'slug/action',
-            ],
-        ]);
-        $this->mockRequest('/de/site/page');
-        $this->assertEquals($this->prepareUrl('/de/demo/action'), Url::to(['/demo/action']));
-        $this->assertEquals($this->prepareUrl('/de/demo/action?x=y'), Url::to(['/demo/action', 'x' => 'y']));
-        $this->assertEquals($this->prepareUrl('/de/foo/baz/bar'), Url::to(['/slug/action', 'term' => 'baz']));
-        $this->assertEquals($this->prepareUrl('/de/foo/baz/bar?x=y'), Url::to(['/slug/action', 'x' => 'y', 'term' => 'baz']));
-    }
-
-    public function testCreateAbsoluteUrlWithLanguageFromUrl()
-    {
-        $this->mockUrlManager([
-            'languages' => ['en-US', 'en', 'de'],
-            'rules' => [
-                '/foo/<term:.+>/bar' => 'slug/action',
-            ],
-        ]);
-        $this->mockRequest('/de/site/page');
-        $this->assertEquals('http://localhost'.$this->prepareUrl('/de/demo/action'), Url::to(['/demo/action'], 'http'));
-        $this->assertEquals('http://localhost'.$this->prepareUrl('/de/demo/action?x=y'), Url::to(['/demo/action', 'x' => 'y'], 'http'));
-        $this->assertEquals('http://localhost'.$this->prepareUrl('/de/foo/baz/bar'), Url::to(['/slug/action', 'term' => 'baz'], 'http'));
-        $this->assertEquals('http://localhost'.$this->prepareUrl('/de/foo/baz/bar?x=y'), Url::to(['/slug/action', 'x' => 'y', 'term' => 'baz'], 'http'));
-    }
-
-    public function testCreateServerNameUrlWithLanguageFromUrl()
-    {
-        $this->mockUrlManager([
-            'languages' => ['en-US', 'en', 'de'],
-            'rules' => [
-                'http://www.example.com/foo/<term:.+>/bar' => 'slug/action',
-            ],
-        ]);
-        $this->mockRequest('/de/site/page');
-        $this->assertEquals('http://www.example.com'.$this->prepareUrl('/de/foo/baz/bar'), Url::to(['/slug/action', 'term' => 'baz']));
-        $this->assertEquals('http://www.example.com'.$this->prepareUrl('/de/foo/baz/bar?x=y'), Url::to(['/slug/action', 'x' => 'y', 'term' => 'baz']));
-    }
-
-    public function testCreateUrlWithLanguageFromUrlIfUppercaseEnabled()
-    {
-        $this->mockUrlManager([
-            'languages' => ['en-US', 'en', 'de'],
-            'keepUppercaseLanguageCode' => true,
-            'rules' => [
-                '/foo/<term:.+>/bar' => 'slug/action',
-            ],
-        ]);
-        $this->mockRequest('/en-US/site/page');
-        $this->assertEquals($this->prepareUrl('/en-US/demo/action'), Url::to(['/demo/action']));
-        $this->assertEquals($this->prepareUrl('/en-US/demo/action?x=y'), Url::to(['/demo/action', 'x' => 'y']));
-        $this->assertEquals($this->prepareUrl('/en-US/foo/baz/bar'), Url::to(['/slug/action', 'term' => 'baz']));
-        $this->assertEquals($this->prepareUrl('/en-US/foo/baz/bar?x=y'), Url::to(['/slug/action', 'x' => 'y', 'term' => 'baz']));
-    }
-
-    public function testCreateHomeUrlWithLanguageFromUrl()
-    {
-        $this->mockUrlManager([
-            'languages' => ['en-US', 'en', 'de'],
-            'rules' => [
-                '' => 'site/index',
-                '/foo/<term:.+>/bar' => 'slug/action',
-            ],
-        ]);
-        $this->mockRequest('/de/site/page');
-        $this->assertEquals($this->prepareUrl('/'), Url::to(['/site/index', 'language' => '']));
-        $this->assertEquals($this->prepareUrl('/de'), Url::to(['/site/index']));
-        $this->assertEquals($this->prepareUrl('/de?x=y'), Url::to(['/site/index', 'x' => 'y']));
-    }
-
-    public function testCreateAbsoluteHomeUrlWithLanguageFromUrl()
-    {
-        $this->mockUrlManager([
-            'languages' => ['en-US', 'en', 'de'],
-            'rules' => [
-                '' => 'site/index',
-                '/foo/<term:.+>/bar' => 'slug/action',
-            ],
-        ]);
-        $this->mockRequest('/de/site/page');
-        $this->assertEquals('http://localhost'.$this->prepareUrl('/'), Url::to(['/site/index', 'language' => ''], 'http'));
-        $this->assertEquals('http://localhost'.$this->prepareUrl('/de'), Url::to(['/site/index'], 'http'));
-        $this->assertEquals('http://localhost'.$this->prepareUrl('/de?x=y'), Url::to(['/site/index', 'x' => 'y'], 'http'));
-    }
-
-    public function testCreateServerNameHomeUrlWithLanguageFromUrl()
-    {
-        $this->mockUrlManager([
-            'languages' => ['en-US', 'en', 'de'],
-            'rules' => [
-                'http://www.example.com' => 'site/index',
-            ],
-        ]);
-        $this->mockRequest('/de/site/page');
-        $this->assertEquals('http://www.example.com'.$this->prepareUrl('/de'), Url::to(['/site/index']));
-    }
-
-    public function testCreateUrlWithSpecificLanguage()
-    {
-        $this->mockUrlManager([
-            'languages' => ['en-US', 'en', 'de'],
-            'rules' => [
-                '/foo/<term:.+>/bar' => 'slug/action',
-            ],
-        ]);
-        $this->mockRequest('/de/site/page');
-        $this->assertEquals($this->prepareUrl('/'), Url::to(['/', 'language' => '']));
-        $this->assertEquals($this->prepareUrl('/demo/action'), Url::to(['/demo/action', 'language' => '']));
-        $this->assertEquals($this->prepareUrl('/en'), Url::to(['/', 'language' => 'en']));
-        $this->assertEquals($this->prepareUrl('/en/demo/action'), Url::to(['/demo/action', 'language' => 'en']));
-        $this->assertEquals($this->prepareUrl('/en-us'), Url::to(['/', 'language' => 'en-US']));
-        $this->assertEquals($this->prepareUrl('/en-us/demo/action'), Url::to(['/demo/action', 'language' => 'en-US']));
-        $this->assertEquals($this->prepareUrl('/en-us/demo/action?x=y'), Url::to(['/demo/action', 'language' => 'en-US', 'x'=>'y']));
-        $this->assertEquals($this->prepareUrl('/en-us/foo/baz/bar'), Url::to(['/slug/action', 'language' => 'en-US', 'term' => 'baz']));
-        $this->assertEquals($this->prepareUrl('/en-us/foo/baz/bar?x=y'), Url::to(['/slug/action', 'language' => 'en-US', 'x' => 'y', 'term' => 'baz']));
-    }
-
-    public function testCreateAbsoluteUrlWithSpecificLanguage()
-    {
-        $this->mockUrlManager([
-            'languages' => ['en-US', 'en', 'de'],
-            'rules' => [
-                '/foo/<term:.+>/bar' => 'slug/action',
-            ],
-        ]);
-        $this->mockRequest('/de/site/page');
-        $this->assertEquals('http://localhost'.$this->prepareUrl('/en-us'), Url::to(['/', 'language' => 'en-US'], 'http'));
-        $this->assertEquals('http://localhost'.$this->prepareUrl('/en-us/demo/action'), Url::to(['/demo/action', 'language' => 'en-US'], 'http'));
-        $this->assertEquals('http://localhost'.$this->prepareUrl('/en-us/demo/action?x=y'), Url::to(['/demo/action', 'language' => 'en-US', 'x'=>'y'], 'http'));
-        $this->assertEquals('http://localhost'.$this->prepareUrl('/en-us/foo/baz/bar'), Url::to(['/slug/action', 'language' => 'en-US', 'term' => 'baz'], 'http'));
-        $this->assertEquals('http://localhost'.$this->prepareUrl('/en-us/foo/baz/bar?x=y'), Url::to(['/slug/action', 'language' => 'en-US', 'x' => 'y', 'term' => 'baz'], 'http'));
-    }
-
-    public function testCreateServerNameUrlWithSpecificLanguage()
-    {
-        $this->mockUrlManager([
-            'languages' => ['en-US', 'en', 'de'],
-            'rules' => [
-                'http://www.example.com/foo/<term:.+>/bar' => 'slug/action',
-            ],
-        ]);
-        $this->mockRequest('/de/site/page');
-        $this->assertEquals('http://www.example.com'.$this->prepareUrl('/en-us/foo/baz/bar'), Url::to(['/slug/action', 'language' => 'en-US', 'term' => 'baz']));
-        $this->assertEquals('http://www.example.com'.$this->prepareUrl('/en-us/foo/baz/bar?x=y'), Url::to(['/slug/action', 'language' => 'en-US', 'x' => 'y', 'term' => 'baz']));
-    }
-
-    public function testCreateUrlWithSpecificAliasedLanguage()
-    {
-        $this->mockUrlManager([
-            'languages' => ['fr', 'en', 'deutsch' => 'de'],
-            'rules' => [
-                '/foo/<term:.+>/bar' => 'slug/action',
-            ],
-        ]);
-        $this->mockRequest('/fr/site/page');
-        $this->assertEquals($this->prepareUrl('/deutsch/demo/action'), Url::to(['/demo/action', 'language' => 'de']));
-        $this->assertEquals($this->prepareUrl('/deutsch/demo/action?x=y'), Url::to(['/demo/action', 'language' => 'de','x'=>'y']));
-        $this->assertEquals($this->prepareUrl('/deutsch/foo/baz/bar'), Url::to(['/slug/action', 'language' => 'de', 'term' => 'baz']));
-        $this->assertEquals($this->prepareUrl('/deutsch/foo/baz/bar?x=y'), Url::to(['/slug/action', 'language' => 'de', 'x' => 'y', 'term' => 'baz']));
-    }
-
-    public function testCreateNormalUrlIfIgnoreRoutesMatches()
-    {
-        $this->mockUrlManager([
-            'languages' => ['en-us', 'en', 'de'],
-            'ignoreLanguageUrlPatterns' => [
-                '#^demo/.*#' => '#not/used#',
-                '#^slug/.*#' => '#not/used#',
-            ],
-            'rules' => [
-                '/foo/<term:.+>/bar' => 'slug/action',
-            ],
-        ]);
-        $this->mockRequest('/de/site/page');
-        $this->assertEquals($this->prepareUrl('/demo/action'), Url::to(['/demo/action']));
-        $this->assertEquals($this->prepareUrl('/demo/action?x=y'), Url::to(['/demo/action', 'x'=>'y']));
-        $this->assertEquals($this->prepareUrl('/foo/baz/bar'), Url::to(['/slug/action', 'term' => 'baz']));
-        $this->assertEquals($this->prepareUrl('/foo/baz/bar?x=y'), Url::to(['/slug/action', 'x' => 'y', 'term' => 'baz']));
-    }
-
-    public function testCreateUrlWithLanguageFromUrlIfIgnoreRouteDoesNotMatch()
-    {
-        $this->mockUrlManager([
-            'languages' => ['en-us', 'en', 'de'],
-            'ignoreLanguageUrlPatterns' => [
-                '#^other/.*#' => '#not/used#'
-            ],
-            'rules' => [
-                '/foo/<term:.+>/bar' => 'slug/action',
-            ],
-        ]);
-        $this->mockRequest('/de/site/page');
-        $this->assertEquals($this->prepareUrl('/de/demo/action?x=y'), Url::to(['/demo/action', 'x'=>'y']));
-        $this->assertEquals($this->prepareUrl('/de/foo/baz/bar?x=y'), Url::to(['/slug/action', 'x' => 'y', 'term' => 'baz']));
-    }
-
-    public function testCreateUrlWithTralingSlashWithLanguageFromUrl()
-    {
-        $this->mockUrlManager([
-            'languages' => ['en-US', 'en', 'de'],
-            'suffix' => '/',
-            'rules' => [
-                '/foo/<term:.+>/bar' => 'slug/action',
-            ],
-        ]);
-        $this->mockRequest('/de/site/page/');
-        $this->assertEquals($this->prepareUrl('/de/demo/action/'), Url::to(['/demo/action']));
-        $this->assertEquals($this->prepareUrl('/de/demo/action/?x=y'), Url::to(['/demo/action', 'x'=>'y']));
-        $this->assertEquals($this->prepareUrl('/de/foo/baz/bar/'), Url::to(['/slug/action', 'term' => 'baz']));
-        $this->assertEquals($this->prepareUrl('/de/foo/baz/bar/?x=y'), Url::to(['/slug/action', 'x' => 'y', 'term' => 'baz']));
-    }
-
-    public function testCreateAbsoluteUrlWithTralingSlashWithLanguageFromUrl()
-    {
-        $this->mockUrlManager([
-            'languages' => ['en-US', 'en', 'de'],
-            'suffix' => '/',
-            'rules' => [
-                '/foo/<term:.+>/bar' => 'slug/action',
-            ],
-        ]);
-        $this->mockRequest('/de/site/page/');
-        $this->assertEquals('http://localhost'.$this->prepareUrl('/de/demo/action/'), Url::to(['/demo/action'], 'http'));
-        $this->assertEquals('http://localhost'.$this->prepareUrl('/de/demo/action/?x=y'), Url::to(['/demo/action', 'x'=>'y'], 'http'));
-        $this->assertEquals('http://localhost'.$this->prepareUrl('/de/foo/baz/bar/'), Url::to(['/slug/action', 'term' => 'baz'], 'http'));
-        $this->assertEquals('http://localhost'.$this->prepareUrl('/de/foo/baz/bar/?x=y'), Url::to(['/slug/action', 'x' => 'y', 'term' => 'baz'], 'http'));
-    }
-
-    public function testCreateServerNameUrlWithTralingSlashWithLanguageFromUrl()
-    {
-        $this->mockUrlManager([
-            'languages' => ['en-US', 'en', 'de'],
-            'suffix' => '/',
-            'rules' => [
-                'http://www.example.com/foo/<term:.+>/bar' => 'slug/action',
-            ],
-        ]);
-        $this->mockRequest('/de/site/page/');
-        $this->assertEquals('http://www.example.com'.$this->prepareUrl('/de/foo/baz/bar/'), Url::to(['/slug/action', 'term' => 'baz']));
-        $this->assertEquals('http://www.example.com'.$this->prepareUrl('/de/foo/baz/bar/?x=y'), Url::to(['/slug/action', 'x' => 'y', 'term' => 'baz']));
-    }
-
-    public function testCreateHomeUrlWithTrailingSlashWithLanguageFromUrl()
-    {
-        $this->mockUrlManager([
-            'languages' => ['en-US', 'en', 'de'],
-            'rules' => [
-                '' => 'site/index',
-                '/foo/<term:.+>/bar' => 'slug/action',
-            ],
-            'suffix' => '/',
-        ]);
-        $this->mockRequest('/de/site/page/');
-        $this->assertEquals($this->prepareUrl('/de/'), Url::to(['/site/index']));
-        $this->assertEquals($this->prepareUrl('/de/?x=y'), Url::to(['/site/index', 'x'=>'y']));
-    }
-
-    public function testCreateUrlWithSpecificLanguageWithTrailingSlash()
-    {
-        $this->mockUrlManager([
-            'languages' => ['en-US', 'en', 'de'],
-            'suffix' => '/',
-            'rules' => [
-                '/foo/<term:.+>/bar' => 'slug/action',
-            ],
-        ]);
-        $this->mockRequest('/de/site/page/');
-        $this->assertEquals($this->prepareUrl('/en-us/demo/action/'), Url::to(['/demo/action', 'language' => 'en-US']));
-        $this->assertEquals($this->prepareUrl('/en-us/demo/action/?x=y'), Url::to(['/demo/action', 'language' => 'en-US', 'x'=>'y']));
-        $this->assertEquals($this->prepareUrl('/en-us/foo/baz/bar/'), Url::to(['/slug/action', 'language' => 'en-US', 'term' => 'baz']));
-        $this->assertEquals($this->prepareUrl('/en-us/foo/baz/bar/?x=y'), Url::to(['/slug/action', 'language' => 'en-US', 'x' => 'y', 'term' => 'baz']));
-    }
-
-    public function testCreateUrlWithUppercaseLanguageIfEnabled()
-    {
-        $this->mockUrlManager([
-            'languages' => ['en-US', 'en', 'de'],
-            'keepUppercaseLanguageCode' => true,
-            'rules' => [
-                '/foo/<term:.+>/bar' => 'slug/action',
-            ],
-        ]);
-        $this->mockRequest('/de/site/page');
-        $this->assertEquals($this->prepareUrl('/en-US'), Url::to(['/', 'language' => 'en-US']));
-        $this->assertEquals($this->prepareUrl('/en-US/demo/action'), Url::to(['/demo/action', 'language' => 'en-US']));
-        $this->assertEquals($this->prepareUrl('/en-US/demo/action?x=y'), Url::to(['/demo/action', 'language' => 'en-US', 'x'=>'y']));
-        $this->assertEquals($this->prepareUrl('/en-US/foo/baz/bar'), Url::to(['/slug/action', 'language' => 'en-US', 'term' => 'baz']));
-        $this->assertEquals($this->prepareUrl('/en-US/foo/baz/bar?x=y'), Url::to(['/slug/action', 'language' => 'en-US', 'x' => 'y', 'term' => 'baz']));
-    }
-
-    public function testCreateResetUrlWithLanguageIfPersistenceAndDetectionEnabled()
-    {
-        $this->mockUrlManager([
-            'languages' => ['en-US', 'en', 'de'],
-            'rules' => [
-                '/foo/<term:.+>/bar' => 'slug/action',
-            ],
-        ]);
-        $this->mockRequest('/de/site/page');
-        $this->assertEquals($this->prepareUrl('/en/demo/action'), Url::to(['/demo/action', 'language' => 'en']));
-        $this->assertEquals($this->prepareUrl('/en/demo/action?x=y'), Url::to(['/demo/action', 'x' => 'y', 'language' => 'en']));
-        $this->assertEquals($this->prepareUrl('/en/foo/baz/bar'), Url::to(['/slug/action', 'term' => 'baz', 'language' => 'en']));
-        $this->assertEquals($this->prepareUrl('/en/foo/baz/bar?x=y'), Url::to(['/slug/action', 'x' => 'y', 'term' => 'baz', 'language' => 'en']));
-    }
-
-    public function testCreateResetUrlWithLanguageIfPersistenceDisabled()
-    {
-        $this->mockUrlManager([
-            'languages' => ['en-US', 'en', 'de'],
-            'enableLanguagePersistence' => false,
-            'rules' => [
-                '/foo/<term:.+>/bar' => 'slug/action',
-            ],
-        ]);
-        $this->mockRequest('/de/site/page');
-        $this->assertEquals($this->prepareUrl('/en/demo/action'), Url::to(['/demo/action', 'language' => 'en']));
-        $this->assertEquals($this->prepareUrl('/en/demo/action?x=y'), Url::to(['/demo/action', 'x' => 'y', 'language' => 'en']));
-        $this->assertEquals($this->prepareUrl('/en/foo/baz/bar'), Url::to(['/slug/action', 'term' => 'baz', 'language' => 'en']));
-        $this->assertEquals($this->prepareUrl('/en/foo/baz/bar?x=y'), Url::to(['/slug/action', 'x' => 'y', 'term' => 'baz', 'language' => 'en']));
-    }
-
-    public function testCreateResetUrlWithLanguageIfDetectionDisabled()
-    {
-        $this->mockUrlManager([
-            'languages' => ['en-US', 'en', 'de'],
-            'enableLanguageDetection' => false,
-            'rules' => [
-                '/foo/<term:.+>/bar' => 'slug/action',
-            ],
-        ]);
-        $this->mockRequest('/de/site/page');
-        $this->assertEquals($this->prepareUrl('/en/demo/action'), Url::to(['/demo/action', 'language' => 'en']));
-        $this->assertEquals($this->prepareUrl('/en/demo/action?x=y'), Url::to(['/demo/action', 'x' => 'y', 'language' => 'en']));
-        $this->assertEquals($this->prepareUrl('/en/foo/baz/bar'), Url::to(['/slug/action', 'term' => 'baz', 'language' => 'en']));
-        $this->assertEquals($this->prepareUrl('/en/foo/baz/bar?x=y'), Url::to(['/slug/action', 'x' => 'y', 'term' => 'baz', 'language' => 'en']));
-    }
-
-    public function testCreateUrlWithoutDefaultLanguageIfPersistenceAndDetectionDisabled()
-    {
-        $this->mockUrlManager([
-            'languages' => ['en-US', 'en', 'de'],
-            'enableLanguagePersistence' => false,
-            'enableLanguageDetection' => false,
-            'rules' => [
-                '' => 'site/index',
-                '/foo/<term:.+>/bar' => 'slug/action',
-            ],
-        ]);
-        $this->mockRequest('/de/site/page');
-        $this->assertEquals($this->prepareUrl('/'), Url::to(['/site/index', 'language' => 'en']));
-        $this->assertEquals($this->prepareUrl('/demo/action'), Url::to(['/demo/action', 'language' => 'en']));
-        $this->assertEquals($this->prepareUrl('/demo/action?x=y'), Url::to(['/demo/action', 'x' => 'y', 'language' => 'en']));
-        $this->assertEquals($this->prepareUrl('/foo/baz/bar'), Url::to(['/slug/action', 'term' => 'baz', 'language' => 'en']));
-        $this->assertEquals($this->prepareUrl('/foo/baz/bar?x=y'), Url::to(['/slug/action', 'x' => 'y', 'term' => 'baz', 'language' => 'en']));
+        $this->tearDown();
+        $this->mockUrlManager($urlManager);
+        $this->mockRequest($requestUrl);
+        foreach ($routes as $url => $route) {
+            if (preg_match('#^(https?)://([^/]*)(.*)#', $url, $matches)) {
+                $schema = $matches[1];
+                $host = $matches[2];
+                $relativeUrl = $matches[3];
+                if ($route[0]===false) {
+                    array_shift($route);
+                    $this->assertEquals($schema . '://' . $host . $this->prepareUrl($relativeUrl), Url::to($route));
+                } else {
+                    $this->assertEquals($schema . '://' . $host . $this->prepareUrl($relativeUrl), Url::to($route, $schema));
+                }
+            } else {
+                $this->assertEquals($this->prepareUrl($url), Url::to($route));
+            }
+        }
     }
 }
