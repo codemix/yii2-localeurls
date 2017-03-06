@@ -35,6 +35,14 @@ class UrlCreationTest extends TestCase
                     '/foo/<term:.+>/bar' => 'slug/action',
                     '/important/<term:.+>/bar' => 'important/action',
                     'http://www.example.com/foo/<term:.+>/bar' => 'slug/other',
+                    // Issue #94: We currently don't support mix of trailing slash /
+                    // no trailing slash. So the tests for this config are commented
+                    // out below
+                    [
+                        'pattern' => '/slash',
+                        'route' => 'slash/action',
+                        'suffix' => '/',
+                    ],
                 ],
                 'ignoreLanguageUrlPatterns' => [
                     '#^ignored/.*#' => '#not/used#',
@@ -48,6 +56,7 @@ class UrlCreationTest extends TestCase
                     '/demo/action?x=y' => ['/demo/action', 'x' => 'y'],
                     '/foo/baz/bar' => ['/slug/action', 'term' => 'baz'],
                     '/foo/baz/bar?x=y' => ['/slug/action', 'term' => 'baz', 'x' => 'y'],
+                    '/slash/' => ['/slash/action'],
                 ],
                 // Language code in request
                 '/de/site/page' => [
@@ -58,9 +67,11 @@ class UrlCreationTest extends TestCase
                     '/de/demo/action?x=y' => ['/demo/action', 'x' => 'y'],
                     '/de/foo/baz/bar' => ['/slug/action', 'term' => 'baz'],
                     '/de/foo/baz/bar?x=y' => ['/slug/action', 'term' => 'baz', 'x' => 'y'],
+                    //'/de/slash/' => ['/slash/action'],
                     'http://localhost/de' => ['/site/index'],
                     'http://localhost/de?x=y' => ['/site/index', 'x' => 'y'],
                     'http://localhost/de/demo/action' => ['/demo/action'],
+                    //'http://localhost/de/slash/' => ['/slash/action'],
                     'http://localhost/de/demo/action?x=y' => ['/demo/action', 'x' => 'y'],
                     'http://localhost/de/foo/baz/bar' => ['/slug/action', 'term' => 'baz'],
                     'http://localhost/de/foo/baz/bar?x=y' => ['/slug/action', 'term' => 'baz', 'x' => 'y'],
@@ -70,6 +81,7 @@ class UrlCreationTest extends TestCase
                     // Other language
                     '/en' => ['/', 'language' => 'en'],
                     '/en/demo/action' => ['/demo/action', 'language' => 'en'],
+                    //'/en/slash/' => ['/slash/action', 'language' => 'en'],
                     '/en-us' => ['/', 'language' => 'en-US'],
                     '/en-us/demo/action' => ['/demo/action', 'language' => 'en-US'],
                     '/en-us/demo/action?x=y' => ['/demo/action', 'language' => 'en-US', 'x' => 'y'],
@@ -86,6 +98,7 @@ class UrlCreationTest extends TestCase
                     // Aliased language
                     '/french/demo/action' => ['/demo/action', 'language' => 'fr'],
                     '/french/demo/action?x=y' => ['/demo/action', 'language' => 'fr', 'x' => 'y'],
+                    //'/french/slash/' => ['/slash/action', 'language' => 'french'],
                     '/french/foo/baz/bar' => ['/slug/action', 'language' => 'fr', 'term' => 'baz'],
                     '/french/foo/baz/bar?x=y' => ['/slug/action', 'language' => 'fr', 'term' => 'baz', 'x' => 'y'],
 
