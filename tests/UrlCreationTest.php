@@ -305,6 +305,7 @@ class UrlCreationTest extends TestCase
             ],
             'urls' => [
                 '/site/page' => [
+                    '/' => ['/'],
                     '/demo/action?language=de' => ['/demo/action', 'language' => 'de'],
                     '/foo/baz/bar?language=de' => ['/slug/action', 'language' => 'de', 'term' => 'baz'],
                 ],
@@ -319,6 +320,7 @@ class UrlCreationTest extends TestCase
             ],
             'urls' => [
                 '/site/page' => [
+                    '/' => ['/'],
                     '/demo/action?language=de' => ['/demo/action', 'language' => 'de'],
                     '/foo/baz/bar?language=de' => ['/slug/action', 'language' => 'de', 'term' => 'baz'],
                 ],
