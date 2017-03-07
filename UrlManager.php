@@ -228,14 +228,6 @@ class UrlManager extends BaseUrlManager
                 if (!$this->keepUppercaseLanguageCode) {
                     $language = strtolower($language);
                 }
-                // Remove any trailing slashes unless one is configured as suffix
-                if ($this->suffix!=='/') {
-                    if (count($params)!==1) {
-                        $url = preg_replace('#/\?#', '?', $url);
-                    } else {
-                        $url = rtrim($url, '/');
-                    }
-                }
 
                 // Calculate the position where the language code has to be inserted
                 // depending on the showScriptName and baseUrl configuration:
@@ -245,7 +237,27 @@ class UrlManager extends BaseUrlManager
                 //  - /index.php/foo/bar -> /index.php/de/foo/bar
                 //  - /base/index.php/foo/bar -> /base/index.php/de/foo/bar
                 //
-                $insertPos = strlen($this->showScriptName ? $this->getScriptUrl() : $this->getBaseUrl());
+                $prefix = $this->showScriptName ? $this->getScriptUrl() : $this->getBaseUrl();
+                $insertPos = strlen($prefix);
+
+                // Remove any trailing slashes for root URLs
+                if ($this->suffix !== '/') {
+                    if (count($params) === 1 ) {
+                        // / -> ''
+                        // /base/ -> /base
+                        // /index.php/ -> /index.php
+                        // /base/index.php/ -> /base/index.php
+                        if ($url === $prefix . '/') {
+                            $url = rtrim($url, '/');
+                        }
+                    } elseif (strncmp($url, $prefix . '/?', $insertPos + 2) === 0) {
+                        // /?x=y -> ?x=y
+                        // /base/?x=y -> /base?x=y
+                        // /index.php/?x=y -> /index.php?x=y
+                        // /base/index.php/?x=y -> /base/index.php?x=y
+                        $url = substr_replace($url, '', $insertPos, 1);
+                    }
+                }
 
                 // If we have an absolute URL the length of the host URL has to be added:
                 //
