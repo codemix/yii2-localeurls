@@ -7,6 +7,7 @@ use Yii;
 use yii\base\InvalidConfigException;
 use yii\web\Cookie;
 use yii\web\UrlManager as BaseUrlManager;
+use yii\web\UrlNormalizerRedirectException;
 
 /**
  * UrlManager
@@ -158,6 +159,7 @@ class UrlManager extends BaseUrlManager
     public function parseRequest($request)
     {
         if ($this->enableLocaleUrls && $this->languages) {
+            $this->_request = $request;
             $process = true;
             if ($this->ignoreLanguageUrlPatterns) {
                 $pathInfo = $request->getPathInfo();
@@ -169,13 +171,17 @@ class UrlManager extends BaseUrlManager
                 }
             }
             if ($process && !$this->_processed) {
-                // If a normalizer is configured, let it do it's job
+                // Check if a normalizer wants to redirect
+                $normalized = false;
                 if (property_exists($this, 'normalizer') && $this->normalizer!==false) {
-                    parent::parseRequest($request);
+                    try {
+                        parent::parseRequest($request);
+                    } catch (UrlNormalizerRedirectException $e) {
+                        $normalized = true;
+                    }
                 }
-                // Still here, so parent::parseRequest() didn't throw a UrlNormalizerRedirectException.
                 $this->_processed = true;
-                $this->processLocaleUrl($request);
+                $this->processLocaleUrl($normalized);
             }
         }
         return parent::parseRequest($request);
@@ -291,12 +297,11 @@ class UrlManager extends BaseUrlManager
      * If no parameter is found it will try to detect the language from persistent storage (session /
      * cookie) or from browser settings.
      *
-     * @var \yii\web\Request $request
+     * @param bool $normalized whether a UrlNormalizer tried to redirect
      */
-    protected function processLocaleUrl($request)
+    protected function processLocaleUrl($normalized)
     {
-        $this->_request = $request;
-        $pathInfo = $request->getPathInfo();
+        $pathInfo = $this->_request->getPathInfo();
         $parts = [];
         foreach ($this->languages as $k => $v) {
             $value = is_string($k) ? $k : $v;
@@ -310,7 +315,7 @@ class UrlManager extends BaseUrlManager
         }
         $pattern = implode('|', $parts);
         if (preg_match("#^($pattern)\b(/?)#i", $pathInfo, $m)) {
-            $request->setPathInfo(mb_substr($pathInfo, mb_strlen($m[1].$m[2])));
+            $this->_request->setPathInfo(mb_substr($pathInfo, mb_strlen($m[1].$m[2])));
             $code = $m[1];
             if (isset($this->languages[$code])) {
                 // Replace alias with language code
@@ -351,7 +356,9 @@ class UrlManager extends BaseUrlManager
 
             // "Reset" case: We called e.g. /fr/demo/page so the persisted language was set back to "fr".
             // Now we can redirect to the URL without language prefix, if default prefixes are disabled.
-            if (!$this->enableDefaultLanguageUrlCode && $language===$this->_defaultLanguage) {
+            $reset = !$this->enableDefaultLanguageUrlCode && $language===$this->_defaultLanguage;
+
+            if ($reset || $normalized) {
                 $this->redirectToLanguage('');
             }
         } else {
@@ -360,12 +367,12 @@ class UrlManager extends BaseUrlManager
                 $language = Yii::$app->session->get($this->languageSessionKey);
                 $language!==null && Yii::trace("Found persisted language '$language' in session.", __METHOD__);
                 if ($language===null) {
-                    $language = $request->getCookies()->getValue($this->languageCookieName);
+                    $language = $this->_request->getCookies()->getValue($this->languageCookieName);
                     $language!==null && Yii::trace("Found persisted language '$language' in cookie.", __METHOD__);
                 }
             }
             if ($language===null && $this->enableLanguageDetection) {
-                foreach ($request->getAcceptableLanguages() as $acceptable) {
+                foreach ($this->_request->getAcceptableLanguages() as $acceptable) {
                     list($language,$country) = $this->matchCode($acceptable);
                     if ($language!==null) {
                         $language = $country===null ? $language : "$language-$country";
@@ -390,7 +397,10 @@ class UrlManager extends BaseUrlManager
             if ($key && is_string($key)) {
                 $language = $key;
             }
-            $this->redirectToLanguage($this->keepUppercaseLanguageCode ? $language : strtolower($language));
+            if (!$this->keepUppercaseLanguageCode) {
+                $language = strtolower($language);
+            }
+            $this->redirectToLanguage($language);
         }
     }
 
@@ -448,7 +458,12 @@ class UrlManager extends BaseUrlManager
      */
     protected function redirectToLanguage($language)
     {
-        $result = parent::parseRequest($this->_request);
+        try {
+            $result = parent::parseRequest($this->_request);
+        } catch (UrlNormalizerRedirectException $e) {
+            $route = is_array($e->url) ? $e->url[0] : $e->url;
+            $result = [$route, $this->_request->getQueryParams()];
+        }
         if ($result === false) {
             throw new \yii\web\NotFoundHttpException(Yii::t('yii', 'Page not found.'));
         }
@@ -473,6 +488,5 @@ class UrlManager extends BaseUrlManager
         } else {
             Yii::$app->end();
         }
-
     }
 }

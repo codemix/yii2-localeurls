@@ -19,7 +19,8 @@ class RedirectTest extends TestCase
      *         //   - a string with a URL that should be redirected to,
      *         //   - `false` if there should be no redirect
      *         //   - an array of individual request/session/cookie configurations
-     *         //     each indexed by the expected redirect URL (or `false`)
+     *         //     of this form:
+     *         //     [$to, 'request' => .., 'session' => ..., 'cookie' => ...]
      *     ],
      * ]
      * ```
@@ -40,34 +41,41 @@ class RedirectTest extends TestCase
                 '/site/page' => [
 
                     // Acceptable languages in request
-                    '/de/site/page' => ['request' => ['acceptableLanguages' => ['de']]],
-                    '/at/site/page' => ['request' => ['acceptableLanguages' => ['de-at', 'de']]],
-                    '/wc/site/page' => ['request' => ['acceptableLanguages' => ['wc']]],
-                    '/es-bo/site/page' => ['request' => ['acceptableLanguages' => ['es-BO', 'es', 'en']]],
-                    '/es-bo/site/page' => ['request' => ['acceptableLanguages' => ['es-bo', 'es', 'en']]],
-                    '/wc-at/site/page' => ['request' => ['acceptableLanguages' => ['wc-AT', 'de', 'en']]],
-                    '/pt/site/page' => ['request' => ['acceptableLanguages' => ['pt-br']]],
-                    '/alias/site/page' => ['request' => ['acceptableLanguages' => ['fr']]],
+                    ['/de/site/page', 'request' => ['acceptableLanguages' => ['de']]],
+                    ['/at/site/page', 'request' => ['acceptableLanguages' => ['de-at', 'de']]],
+                    ['/wc/site/page', 'request' => ['acceptableLanguages' => ['wc']]],
+                    ['/es-bo/site/page', 'request' => ['acceptableLanguages' => ['es-BO', 'es', 'en']]],
+                    ['/es-bo/site/page', 'request' => ['acceptableLanguages' => ['es-bo', 'es', 'en']]],
+                    ['/wc-at/site/page', 'request' => ['acceptableLanguages' => ['wc-AT', 'de', 'en']]],
+                    ['/pt/site/page', 'request' => ['acceptableLanguages' => ['pt-br']]],
+                    ['/alias/site/page', 'request' => ['acceptableLanguages' => ['fr']]],
                     // no redirect
-                    false => ['request' => ['acceptableLanguages' => ['en']]], // default language
+                    [false, 'request' => ['acceptableLanguages' => ['en']]], // default language
 
                     // Language in session
-                    '/de/site/page' => ['session' => ['_language' => 'de']],
-                    '/at/site/page' => ['session' => ['_language' => 'de-AT']],
-                    '/wc/site/page' => ['session' => ['_language' => 'wc']],
-                    '/es-bo/site/page' => ['session' => ['_language' => 'es-BO']],
-                    '/wc-at/site/page' => ['session' => ['_language' => 'wc-AT']],
-                    '/pt/site/page' => ['session' => ['_language' => 'pt']],
-                    '/alias/site/page' => ['session' => ['_language' => 'fr']],
+                    ['/de/site/page', 'session' => ['_language' => 'de']],
+                    ['/at/site/page', 'session' => ['_language' => 'de-AT']],
+                    ['/wc/site/page', 'session' => ['_language' => 'wc']],
+                    ['/es-bo/site/page', 'session' => ['_language' => 'es-BO']],
+                    ['/wc-at/site/page', 'session' => ['_language' => 'wc-AT']],
+                    ['/pt/site/page', 'session' => ['_language' => 'pt']],
+                    ['/alias/site/page', 'session' => ['_language' => 'fr']],
 
                     // Language in cookie
-                    '/de/site/page' => ['cookie' => ['_language' => 'de']],
-                    '/at/site/page' => ['cookie' => ['_language' => 'de-AT']],
-                    '/wc/site/page' => ['cookie' => ['_language' => 'wc']],
-                    '/es-bo/site/page' => ['cookie' => ['_language' => 'es-BO']],
-                    '/wc-at/site/page' => ['cookie' => ['_language' => 'wc-AT']],
-                    '/pt/site/page' => ['cookie' => ['_language' => 'pt']],
-                    '/alias/site/page' => ['cookie' => ['_language' => 'fr']],
+                    ['/de/site/page', 'cookie' => ['_language' => 'de']],
+                    ['/at/site/page', 'cookie' => ['_language' => 'de-AT']],
+                    ['/wc/site/page', 'cookie' => ['_language' => 'wc']],
+                    ['/es-bo/site/page', 'cookie' => ['_language' => 'es-BO']],
+                    ['/wc-at/site/page', 'cookie' => ['_language' => 'wc-AT']],
+                    ['/pt/site/page', 'cookie' => ['_language' => 'pt']],
+                    ['/alias/site/page', 'cookie' => ['_language' => 'fr']],
+                ],
+
+                // Requests with other language in session, cookie or request headers
+                '/de/site/page' => [
+                    [false, 'session' => ['_language' => 'wc']],
+                    [false, 'cookie' => ['_language' => 'wc']],
+                    [false, 'request' => ['acceptableLanguages' => ['en']]],
                 ],
             ],
         ],
@@ -75,12 +83,26 @@ class RedirectTest extends TestCase
         // Default language uses language code
         [
             'urlManager' => [
-                'languages' => ['en-US', 'en', 'de'],
+                'languages' => ['en-US', 'en', 'de', 'pt', 'at' => 'de-AT', 'alias' => 'fr', 'es-BO', 'wc-*'],
                 'enableDefaultLanguageUrlCode' => true,
             ],
             'redirects' => [
-                '/' => '/en',
-                '/site/page' => '/en/site/page',
+                '/' => [
+                    ['/en'],    // default language
+                    ['/de', 'session' => ['_language' => 'de']],
+                    ['/alias', 'cookie' => ['_language' => 'fr']],
+                ],
+                '/site/page' => [
+                    ['/en/site/page', ],  // default language
+                    ['/de/site/page', 'session' => ['_language' => 'de']],
+                    ['/alias/site/page', 'cookie' => ['_language' => 'fr']],
+                ],
+                // Requests with other language in session, cookie or request headers
+                '/de/site/page' => [
+                    [false, 'session' => ['_language' => 'wc']],
+                    [false, 'cookie' => ['_language' => 'wc']],
+                    [false, 'request' => ['acceptableLanguages' => ['en']]],
+                ],
             ],
         ],
 
@@ -93,8 +115,8 @@ class RedirectTest extends TestCase
             'redirects' => [
                 '/es-BO/site/page' => false,
                 '/site/page' => [
-                    '/en-US/site/page' => ['session' => ['_language' => 'en-US']],
-                    '/en-US/site/page' => ['cookie' => ['_language' => 'en-US']],
+                    ['/en-US/site/page', 'session' => ['_language' => 'en-US']],
+                    ['/en-US/site/page', 'cookie' => ['_language' => 'en-US']],
                 ]
             ],
         ],
@@ -127,13 +149,21 @@ class RedirectTest extends TestCase
         ],
         [
             'urlManager' => [
-                'languages' => ['en-US', 'en', 'de'],
+                'languages' => ['en-US', 'en', 'de', 'pt', 'at' => 'de-AT', 'alias' => 'fr', 'es-BO', 'wc-*'],
                 'enableDefaultLanguageUrlCode' => true,
                 'suffix' => '/'
             ],
             'redirects' => [
-                '/' => '/en/',
-                '/site/page/' => '/en/site/page/',
+                '/' => [
+                    ['/en/'],    // default language
+                    ['/de/', 'session' => ['_language' => 'de']],
+                    ['/alias/', 'cookie' => ['_language' => 'fr']],
+                ],
+                '/site/page/' => [
+                    ['/en/site/page/'],  // default language
+                    ['/de/site/page/', 'session' => ['_language' => 'de']],
+                    ['/alias/site/page/', 'cookie' => ['_language' => 'fr']],
+                ],
             ],
         ],
 
@@ -147,13 +177,17 @@ class RedirectTest extends TestCase
                 ],
             ],
             'redirects' => [
+                '' => '',
+                '/site/page' => '/site/page/',
+                '/site/page/' => false,
+
                 '/de' => '/de/',    // normalizer
                 '/de/' => false,
 
                 '/de/site/login' => '/de/site/login/',  // normalizer
                 '/de/site/login/' => false,
 
-                '/en/site/login' => '/en/site/login/',  // normalizer
+                '/en/site/login' => '/site/login/',     // normalizer
                 '/en/site/login/' => '/site/login/',    // localeurls
             ],
         ],
@@ -165,14 +199,64 @@ class RedirectTest extends TestCase
                 ],
             ],
             'redirects' => [
+                '' => '',
+                '/site/page/' => '/site/page',
+                '/site/page' => false,
+
                 '/de/' => '/de',    // normalizer
                 '/de' => false,
 
                 '/de/site/login/' => '/de/site/login',  // normalizer
                 '/de/site/login' => false,
 
-                '/en/site/login/' => '/en/site/login',  // normalizer
-                '/en/site/login' => '/site/login',    // localeurls
+                '/en/site/login/' => '/site/login',     // normalizer
+                '/en/site/login' => '/site/login',      // localeurls
+            ],
+        ],
+        // Normalizer with default language code
+        [
+            'urlManager' => [
+                'languages' => ['en-US', 'en', 'de', 'pt', 'at' => 'de-AT', 'alias' => 'fr', 'es-BO', 'wc-*'],
+                'enableDefaultLanguageUrlCode' => true,
+                'suffix' => '/',
+                'normalizer' => [
+                    'class' => '\yii\web\UrlNormalizer',
+                ],
+            ],
+            'redirects' => [
+                '' => [
+                    ['/en/'],    // default language
+                    ['/de/', 'session' => ['_language' => 'de']],
+                    ['/alias/', 'cookie' => ['_language' => 'fr']],
+                ],
+                '/site/page' => [
+                    ['/en/site/page/'],  // default language
+                    ['/de/site/page/', 'session' => ['_language' => 'de']],
+                    ['/alias/site/page/', 'cookie' => ['_language' => 'fr']],
+                ],
+                '/en/site/page' => '/en/site/page/',
+            ],
+        ],
+        [
+            'urlManager' => [
+                'languages' => ['en-US', 'en', 'de', 'pt', 'at' => 'de-AT', 'alias' => 'fr', 'es-BO', 'wc-*'],
+                'enableDefaultLanguageUrlCode' => true,
+                'normalizer' => [
+                    'class' => '\yii\web\UrlNormalizer',
+                ],
+            ],
+            'redirects' => [
+                '/' => [
+                    ['/en'],    // default language
+                    ['/de', 'session' => ['_language' => 'de']],
+                    ['/alias', 'cookie' => ['_language' => 'fr']],
+                ],
+                '/site/page/' => [
+                    ['/en/site/page'],  // default language
+                    ['/de/site/page', 'session' => ['_language' => 'de']],
+                    ['/alias/site/page', 'cookie' => ['_language' => 'fr']],
+                ],
+                '/en/site/page/' => '/en/site/page',
             ],
         ],
     ];
@@ -183,7 +267,8 @@ class RedirectTest extends TestCase
             $urlManager = isset($config['urlManager']) ? $config['urlManager'] : [];
             foreach ($config['redirects'] as $from => $to) {
                 if (is_array($to)) {
-                    foreach ($to as $url => $params) {
+                    foreach ($to as $params) {
+                        $url = $params[0];
                         $request = isset($params['request']) ? $params['request'] : [];
                         $session = isset($params['session']) ? $params['session'] : [];
                         $cookie = isset($params['cookie']) ? $params['cookie'] : [];
@@ -217,10 +302,18 @@ class RedirectTest extends TestCase
         if ($cookie!==null) {
             $_COOKIE = $cookie;
         }
+        $configMessage = print_r([
+            'from' => $from,
+            'to' => $to,
+            'urlManager' => $urlManager,
+            'request' => $request,
+            'session' => $session,
+            'cookie' => $cookie,
+        ], true);
         try {
             $this->mockRequest($from, $request);
             if ($to) {
-                $this->fail("No redirect for $from to $to with urlManager config:\n" . print_r($urlManager, true));
+                $this->fail("No redirect:\n$configMessage");
             }
         } catch (\yii\web\UrlNormalizerRedirectException $e) {
             $url = $e->url;
@@ -231,9 +324,11 @@ class RedirectTest extends TestCase
                 }
                 $url += Yii::$app->request->getQueryParams();
             }
-            $this->assertEquals($this->prepareUrl($to), Url::to($url, $e->scheme));
+            $message = "UrlNormalizerRedirectException:\n$configMessage";
+            $this->assertEquals($this->prepareUrl($to), Url::to($url, $e->scheme), $message);
         } catch (\yii\base\Exception $e) {
-            $this->assertEquals($this->prepareUrl($to), $e->getMessage());
+            $message = "Redirection:\n$configMessage";
+            $this->assertEquals($this->prepareUrl($to), $e->getMessage(), $message);
         }
     }
 
