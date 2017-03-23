@@ -26,18 +26,26 @@ class RedirectTest extends TestCase
      * ```
      */
     public $testConfigs = [
+
+        // No URL code for default language
         [
             'urlManager' => [
                 'languages' => ['en-US', 'en', 'de', 'pt', 'at' => 'de-AT', 'alias' => 'fr', 'es-BO', 'wc-*'],
+                'rules' => [
+                    '/custom' => 'test/action',
+                    [
+                        'pattern' => '/slash',
+                        'route' => 'test/slash',
+                        'suffix' => '/',
+                    ],
+                ],
             ],
             'redirects' => [
-                // from => to
+                // Default language in URL
                 '/en/site/page' => '/site/page',
                 '/en' => '/',
-                '/es-BO/site/page' => '/es-bo/site/page',
-                '/wc-BB/site/page' => '/wc-bb/site/page',
 
-                // Requests with params in session, cookie or request headers
+                // No code in URL but params in session, cookie or headers
                 '/site/page' => [
 
                     // Acceptable languages in request
@@ -49,8 +57,6 @@ class RedirectTest extends TestCase
                     ['/wc-at/site/page', 'request' => ['acceptableLanguages' => ['wc-AT', 'de', 'en']]],
                     ['/pt/site/page', 'request' => ['acceptableLanguages' => ['pt-br']]],
                     ['/alias/site/page', 'request' => ['acceptableLanguages' => ['fr']]],
-                    // no redirect
-                    [false, 'request' => ['acceptableLanguages' => ['en']]], // default language
 
                     // Language in session
                     ['/de/site/page', 'session' => ['_language' => 'de']],
@@ -69,24 +75,69 @@ class RedirectTest extends TestCase
                     ['/wc-at/site/page', 'cookie' => ['_language' => 'wc-AT']],
                     ['/pt/site/page', 'cookie' => ['_language' => 'pt']],
                     ['/alias/site/page', 'cookie' => ['_language' => 'fr']],
+
+                    // Default language in cookie/session/header
+                    [false, 'request' => ['acceptableLanguages' => ['en']]],
+                    [false, 'session' => ['_language' => 'en']],
+                    [false, 'cookie' => ['_language' => 'en']],
+
+                    // Session precedes cookie precedes header
+                    ['/de/site/page',
+                        'session' => ['_language' => 'de'],
+                        'cookie' => ['_language' => 'fr'],
+                        'request' => ['acceptableLanguages' => ['pt']],
+                    ],
+                    ['/alias/site/page',
+                        'cookie' => ['_language' => 'fr'],
+                        'request' => ['acceptableLanguages' => ['pt']],
+                    ],
                 ],
 
-                // Requests with other language in session, cookie or request headers
+                // Code in URL different from language in session, cookie or headers
                 '/de/site/page' => [
                     [false, 'session' => ['_language' => 'wc']],
                     [false, 'cookie' => ['_language' => 'wc']],
                     [false, 'request' => ['acceptableLanguages' => ['en']]],
                 ],
+
+                // Lowercase conversion
+                '/es-BO/site/page' => [
+                    ['/es-bo/site/page'],
+                    ['/es-bo/site/page', 'session' => ['_language' => 'de']],
+                    ['/es-bo/site/page', 'cookie' => ['_language' => 'de']],
+                ],
+                '/wc-BB/site/page' => [
+                    ['/wc-bb/site/page'],
+                    ['/wc-bb/site/page', 'session' => ['_language' => 'de']],
+                    ['/wc-bb/site/page', 'cookie' => ['_language' => 'de']],
+                ],
+
+                // Custom URL rule
+                '/custom' => false,
+                '/en/custom' => '/custom',
+                '/de/custom' => false,
+                '/slash/' => false,
+                '/en/slash/' => '/slash/',
+                '/de/slash/' => false,
             ],
         ],
 
-        // Default language uses language code
+        // URL code for default language
         [
             'urlManager' => [
                 'languages' => ['en-US', 'en', 'de', 'pt', 'at' => 'de-AT', 'alias' => 'fr', 'es-BO', 'wc-*'],
                 'enableDefaultLanguageUrlCode' => true,
+                'rules' => [
+                    '/custom' => 'test/action',
+                    [
+                        'pattern' => '/slash',
+                        'route' => 'test/slash',
+                        'suffix' => '/',
+                    ],
+                ],
             ],
             'redirects' => [
+                // No code in URL
                 '/' => [
                     ['/en'],    // default language
                     ['/de', 'session' => ['_language' => 'de']],
@@ -97,12 +148,26 @@ class RedirectTest extends TestCase
                     ['/de/site/page', 'session' => ['_language' => 'de']],
                     ['/alias/site/page', 'cookie' => ['_language' => 'fr']],
                 ],
-                // Requests with other language in session, cookie or request headers
+
+                // Lang requests with different language in session, cookie or headers
+                '/en/site/page' => [
+                    [false, 'session' => ['_language' => 'wc']],
+                    [false, 'cookie' => ['_language' => 'wc']],
+                    [false, 'request' => ['acceptableLanguages' => ['en']]],
+                ],
                 '/de/site/page' => [
                     [false, 'session' => ['_language' => 'wc']],
                     [false, 'cookie' => ['_language' => 'wc']],
                     [false, 'request' => ['acceptableLanguages' => ['en']]],
                 ],
+
+                // Custom URL rule
+                '/custom' => '/en/custom',
+                '/en/custom' => false,
+                '/de/custom' => false,
+                '/slash/' => '/en/slash/',
+                '/en/slash/' => false,
+                '/de/slash/' => false,
             ],
         ],
 
@@ -113,11 +178,13 @@ class RedirectTest extends TestCase
                 'keepUppercaseLanguageCode' => true,
             ],
             'redirects' => [
-                '/es-BO/site/page' => false,
+                // No code in URL
                 '/site/page' => [
                     ['/en-US/site/page', 'session' => ['_language' => 'en-US']],
                     ['/en-US/site/page', 'cookie' => ['_language' => 'en-US']],
-                ]
+                ],
+                // Upper case code in URL
+                '/es-BO/site/page' => false,
             ],
         ],
 
@@ -136,22 +203,48 @@ class RedirectTest extends TestCase
             ],
         ],
 
-        // Suffix URLs
+        // Suffix in UrlManager, with + w/o URL code for default language
         [
             'urlManager' => [
                 'languages' => ['en-US', 'en', 'de'],
-                'suffix' => '/'
+                'suffix' => '/',
+                'rules' => [
+                    '/custom' => 'test/action',
+                    [
+                        'pattern' => '/noslash',
+                        'route' => 'test/slash',
+                        'suffix' => '',
+                    ],
+                ],
             ],
             'redirects' => [
                 '/en' => '/',
                 '/en/site/page/' => '/site/page/',
+                '/site/page/' => false,
+                '/de/site/page/' => false,
+
+                // Custom URL rule
+                '/custom/' => false,
+                '/en/custom/' => '/custom/',
+                '/de/custom/' => false,
+                '/noslash' => false,
+                '/en/noslash' => '/noslash',
+                '/de/noslash' => false,
             ],
         ],
         [
             'urlManager' => [
                 'languages' => ['en-US', 'en', 'de', 'pt', 'at' => 'de-AT', 'alias' => 'fr', 'es-BO', 'wc-*'],
                 'enableDefaultLanguageUrlCode' => true,
-                'suffix' => '/'
+                'suffix' => '/',
+                'rules' => [
+                    '/custom' => 'test/action',
+                    [
+                        'pattern' => '/noslash',
+                        'route' => 'test/slash',
+                        'suffix' => '',
+                    ],
+                ],
             ],
             'redirects' => [
                 '/' => [
@@ -164,16 +257,42 @@ class RedirectTest extends TestCase
                     ['/de/site/page/', 'session' => ['_language' => 'de']],
                     ['/alias/site/page/', 'cookie' => ['_language' => 'fr']],
                 ],
+                '/en/site/page/' => [
+                    [false],
+                    [false, 'session' => ['_language' => 'de']],
+                    [false, 'cookie' => ['_language' => 'fr']],
+                ],
+                '/pt/site/page/' => [
+                    [false],
+                    [false, 'session' => ['_language' => 'de']],
+                    [false, 'cookie' => ['_language' => 'fr']],
+                ],
+
+                // Custom URL rule
+                '/custom/' => '/en/custom/',
+                '/en/custom/' => false,
+                '/de/custom/' => false,
+                '/noslash' => '/en/noslash',
+                '/en/noslash' => false,
+                '/de/noslash' => false,
             ],
         ],
 
-        // Normalizer with + w/o suffix
+        // Normalizer with + w/o suffix, no URL code for default language
         [
             'urlManager' => [
                 'languages' => ['en-US', 'en', 'de'],
                 'suffix' => '/',
                 'normalizer' => [
                     'class' => '\yii\web\UrlNormalizer',
+                ],
+                'rules' => [
+                    '/custom' => 'test/action',
+                    [
+                        'pattern' => '/noslash',
+                        'route' => 'test/slash',
+                        'suffix' => '',
+                    ],
                 ],
             ],
             'redirects' => [
@@ -189,6 +308,20 @@ class RedirectTest extends TestCase
 
                 '/en/site/login' => '/site/login/',     // normalizer
                 '/en/site/login/' => '/site/login/',    // localeurls
+
+                // Custom URL rule
+                '/custom' => '/custom/',
+                '/custom/' => false,
+                '/en/custom' => '/custom/',
+                '/en/custom/' => '/custom/',
+                '/de/custom' => '/de/custom/',
+                '/de/custom/' => false,
+                '/noslash' => false,
+                '/noslash/' => '/noslash',
+                '/en/noslash' => '/noslash',
+                '/en/noslash/' => '/noslash',
+                '/de/noslash' => false,
+                '/de/noslash/' => '/de/noslash',
             ],
         ],
         [
@@ -196,6 +329,14 @@ class RedirectTest extends TestCase
                 'languages' => ['en-US', 'en', 'de'],
                 'normalizer' => [
                     'class' => '\yii\web\UrlNormalizer',
+                ],
+                'rules' => [
+                    '/custom' => 'test/action',
+                    [
+                        'pattern' => '/slash',
+                        'route' => 'test/slash',
+                        'suffix' => '/',
+                    ],
                 ],
             ],
             'redirects' => [
@@ -211,9 +352,24 @@ class RedirectTest extends TestCase
 
                 '/en/site/login/' => '/site/login',     // normalizer
                 '/en/site/login' => '/site/login',      // localeurls
+
+                // Custom URL rule
+                '/custom' => false,
+                '/custom/' => '/custom',
+                '/en/custom' => '/custom',
+                '/en/custom/' => '/custom',
+                '/de/custom' => false,
+                '/de/custom/' => '/de/custom',
+                '/slash' => '/slash/',
+                '/slash/' => false,
+                '/en/slash' => '/slash/',
+                '/en/slash/' => '/slash/',
+                '/de/slash' => '/de/slash/',
+                '/de/slash/' => false,
             ],
         ],
-        // Normalizer with default language code
+
+        // Normalizer with + w/o suffix, with URL code for default language
         [
             'urlManager' => [
                 'languages' => ['en-US', 'en', 'de', 'pt', 'at' => 'de-AT', 'alias' => 'fr', 'es-BO', 'wc-*'],
@@ -221,6 +377,14 @@ class RedirectTest extends TestCase
                 'suffix' => '/',
                 'normalizer' => [
                     'class' => '\yii\web\UrlNormalizer',
+                ],
+                'rules' => [
+                    '/custom' => 'test/action',
+                    [
+                        'pattern' => '/noslash',
+                        'route' => 'test/slash',
+                        'suffix' => '',
+                    ],
                 ],
             ],
             'redirects' => [
@@ -235,6 +399,20 @@ class RedirectTest extends TestCase
                     ['/alias/site/page/', 'cookie' => ['_language' => 'fr']],
                 ],
                 '/en/site/page' => '/en/site/page/',
+
+                // Custom URL rule
+                '/custom' => '/en/custom/',
+                '/custom/' => '/en/custom/',
+                '/en/custom' => '/en/custom/',
+                '/en/custom/' => false,
+                '/de/custom' => '/de/custom/',
+                '/de/custom/' => false,
+                '/noslash' => '/en/noslash',
+                '/noslash/' => '/en/noslash',
+                '/en/noslash' => false,
+                '/en/noslash/' => '/en/noslash',
+                '/de/noslash' => false,
+                '/de/noslash/' => '/de/noslash',
             ],
         ],
         [
@@ -243,6 +421,14 @@ class RedirectTest extends TestCase
                 'enableDefaultLanguageUrlCode' => true,
                 'normalizer' => [
                     'class' => '\yii\web\UrlNormalizer',
+                ],
+                'rules' => [
+                    '/custom' => 'test/action',
+                    [
+                        'pattern' => '/slash',
+                        'route' => 'test/slash',
+                        'suffix' => '/',
+                    ],
                 ],
             ],
             'redirects' => [
@@ -257,6 +443,20 @@ class RedirectTest extends TestCase
                     ['/alias/site/page', 'cookie' => ['_language' => 'fr']],
                 ],
                 '/en/site/page/' => '/en/site/page',
+
+                // Custom URL rule
+                '/custom' => '/en/custom',
+                '/custom/' => '/en/custom',
+                '/en/custom' => false,
+                '/en/custom/' => '/en/custom',
+                '/de/custom' => false,
+                '/de/custom/' => '/de/custom',
+                '/slash' => '/en/slash/',
+                '/slash/' => '/en/slash/',
+                '/en/slash' => '/en/slash/',
+                '/en/slash/' => false,
+                '/de/slash' => '/de/slash/',
+                '/de/slash/' => false,
             ],
         ],
     ];

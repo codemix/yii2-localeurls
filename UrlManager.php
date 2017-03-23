@@ -479,6 +479,11 @@ class UrlManager extends BaseUrlManager
         if ($this->suffix==='/' && $route==='') {
             $url = rtrim($url, '/').'/';
         }
+        // Prevent redirects to same URL which could happen in certain
+        // UrlNormalizer / custom rule combinations
+        if ($url === $this->_request->url) {
+            return;
+        }
         Yii::trace("Redirecting to $url.", __METHOD__);
         Yii::$app->getResponse()->redirect($url);
         if (YII2_LOCALEURLS_TEST) {
