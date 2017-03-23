@@ -203,6 +203,52 @@ class RedirectTest extends TestCase
             ],
         ],
 
+        // No persistence / detection
+        [
+            'urlManager' => [
+                'languages' => ['en-US', 'en', 'de', 'pt', 'at' => 'de-AT', 'alias' => 'fr', 'es-BO', 'wc-*'],
+                'enableLanguageDetection' => false,
+                'enableLanguagePersistence' => false,
+            ],
+            'redirects' => [
+                '/' => [
+                    [false],
+                    [false,
+                        'session' => ['_language' => 'de'],
+                        'cookie' => ['_language' => 'fr'],
+                        'request' => ['acceptableLanguages' => ['pt']],
+                    ],
+                ],
+                '/site/page' => [
+                    [false],
+                    [false,
+                        'session' => ['_language' => 'de'],
+                        'cookie' => ['_language' => 'fr'],
+                        'request' => ['acceptableLanguages' => ['pt']],
+                    ],
+                ],
+                '/de' => [
+                    [false],
+                    [false,
+                        'session' => ['_language' => 'en'],
+                        'cookie' => ['_language' => 'fr'],
+                        'request' => ['acceptableLanguages' => ['pt']],
+                    ],
+                ],
+                '/de/site/page' => [
+                    [false],
+                    [false,
+                        'session' => ['_language' => 'en'],
+                        'cookie' => ['_language' => 'fr'],
+                        'request' => ['acceptableLanguages' => ['pt']],
+                    ],
+                ],
+                '/en' => '/',
+                '/en/site/page' => '/site/page',
+            ],
+        ],
+
+
         // Suffix in UrlManager, with + w/o URL code for default language
         [
             'urlManager' => [
