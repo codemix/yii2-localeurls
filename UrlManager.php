@@ -476,7 +476,7 @@ class UrlManager extends BaseUrlManager
         array_unshift($params, $route);
         $url = $this->createUrl($params);
         // Required to prevent double slashes on generated URLs
-        if ($this->suffix==='/' && $route==='') {
+        if ($this->suffix==='/' && $route==='' && count($params)===1) {
             $url = rtrim($url, '/').'/';
         }
         // Prevent redirects to same URL which could happen in certain

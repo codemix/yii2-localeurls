@@ -166,6 +166,7 @@ class UrlManagerTest extends TestCase
             'languages' => ['en-US', 'en', 'de'],
         ]);
         $this->mockRequest('/site/page');
+        $this->assertTrue(true);
     }
 
     public function testDoesNothingIfInvalidLanguageInSession()
@@ -176,6 +177,7 @@ class UrlManagerTest extends TestCase
             'languages' => ['en-US', 'en', 'de'],
         ]);
         $this->mockRequest('/site/page');
+        $this->assertTrue(true);
     }
 
 

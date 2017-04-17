@@ -119,6 +119,15 @@ class RedirectTest extends TestCase
                 '/slash/' => false,
                 '/en/slash/' => '/slash/',
                 '/de/slash/' => false,
+
+                // Params
+                '/en?a=b' => '/?a=b',
+                '/en/site/page?a=b' => '/site/page?a=b',
+                '/en/custom?a=b' => '/custom?a=b',
+                '/en/slash/?a=b' => '/slash/?a=b',
+                '/site/page?a=b' => [
+                    ['/de/site/page?a=b', 'request' => ['acceptableLanguages' => ['de']]],
+                ],
             ],
         ],
 
@@ -168,6 +177,15 @@ class RedirectTest extends TestCase
                 '/slash/' => '/en/slash/',
                 '/en/slash/' => false,
                 '/de/slash/' => false,
+
+                // Params
+                '/?a=b' => '/en?a=b',
+                '/site/page?a=b' => '/en/site/page?a=b',
+                '/custom?a=b' => '/en/custom?a=b',
+                '/slash/?a=b' => '/en/slash/?a=b',
+                '/site/page?a=b' => [
+                    ['/de/site/page?a=b', 'request' => ['acceptableLanguages' => ['de']]],
+                ],
             ],
         ],
 
@@ -276,6 +294,15 @@ class RedirectTest extends TestCase
                 '/noslash' => false,
                 '/en/noslash' => '/noslash',
                 '/de/noslash' => false,
+
+                // Params
+                '/en?a=b' => '/?a=b',
+                '/en/site/page/?a=b' => '/site/page/?a=b',
+                '/en/custom/?a=b' => '/custom/?a=b',
+                '/en/noslash?a=b' => '/noslash?a=b',
+                '/site/page/?a=b' => [
+                    ['/de/site/page/?a=b', 'request' => ['acceptableLanguages' => ['de']]],
+                ],
             ],
         ],
         [
@@ -321,6 +348,15 @@ class RedirectTest extends TestCase
                 '/noslash' => '/en/noslash',
                 '/en/noslash' => false,
                 '/de/noslash' => false,
+
+                // Params
+                '/?a=b' => '/en/?a=b',
+                '/site/page/?a=b' => '/en/site/page/?a=b',
+                '/custom/?a=b' => '/en/custom/?a=b',
+                '/noslash?a=b' => '/en/noslash?a=b',
+                '/site/page/?a=b' => [
+                    ['/de/site/page/?a=b', 'request' => ['acceptableLanguages' => ['de']]],
+                ],
             ],
         ],
 
@@ -368,6 +404,21 @@ class RedirectTest extends TestCase
                 '/en/noslash/' => '/noslash',
                 '/de/noslash' => false,
                 '/de/noslash/' => '/de/noslash',
+
+                // Params
+                '/site/page?a=b' => '/site/page/?a=b',
+                '/de?a=b' => '/de/?a=b',
+                '/de/site/login?a=b' => '/de/site/login/?a=b',
+                '/en/site/login?a=b' => '/site/login/?a=b',
+                '/en/site/login/?a=b' => '/site/login/?a=b',
+                '/custom?a=b' => '/custom/?a=b',
+                '/en/custom?a=b' => '/custom/?a=b',
+                '/en/custom/?a=b' => '/custom/?a=b',
+                '/de/custom?a=b' => '/de/custom/?a=b',
+                '/noslash/?a=b' => '/noslash?a=b',
+                '/en/noslash?a=b' => '/noslash?a=b',
+                '/en/noslash/?a=b' => '/noslash?a=b',
+                '/de/noslash/?a=b' => '/de/noslash?a=b',
             ],
         ],
         [
@@ -412,6 +463,21 @@ class RedirectTest extends TestCase
                 '/en/slash/' => '/slash/',
                 '/de/slash' => '/de/slash/',
                 '/de/slash/' => false,
+
+                // Params
+                '/site/page/?a=b' => '/site/page?a=b',
+                '/de/?a=b' => '/de?a=b',    // normalizer
+                '/de/site/login/?a=b' => '/de/site/login?a=b',  // normalizer
+                '/en/site/login/?a=b' => '/site/login?a=b',     // normalizer
+                '/en/site/login?a=b' => '/site/login?a=b',      // localeurls
+                '/custom/?a=b' => '/custom?a=b',
+                '/en/custom?a=b' => '/custom?a=b',
+                '/en/custom/?a=b' => '/custom?a=b',
+                '/de/custom/?a=b' => '/de/custom?a=b',
+                '/slash?a=b' => '/slash/?a=b',
+                '/en/slash?a=b' => '/slash/?a=b',
+                '/en/slash/?a=b' => '/slash/?a=b',
+                '/de/slash?a=b' => '/de/slash/?a=b',
             ],
         ],
 
@@ -459,6 +525,18 @@ class RedirectTest extends TestCase
                 '/en/noslash/' => '/en/noslash',
                 '/de/noslash' => false,
                 '/de/noslash/' => '/de/noslash',
+
+                // Params
+                '?a=b' => '/en/?a=b',
+                '/site/page?a=b' => '/en/site/page/?a=b',
+                '/custom?a=b' => '/en/custom/?a=b',
+                '/custom/?a=b' => '/en/custom/?a=b',
+                '/en/custom?a=b' => '/en/custom/?a=b',
+                '/de/custom?a=b' => '/de/custom/?a=b',
+                '/noslash?a=b' => '/en/noslash?a=b',
+                '/noslash/?a=b' => '/en/noslash?a=b',
+                '/en/noslash/?a=b' => '/en/noslash?a=b',
+                '/de/noslash/?a=b' => '/de/noslash?a=b',
             ],
         ],
         [
@@ -503,6 +581,18 @@ class RedirectTest extends TestCase
                 '/en/slash/' => false,
                 '/de/slash' => '/de/slash/',
                 '/de/slash/' => false,
+
+                // Params
+                '/?a=b' => '/en?a=b',
+                '/site/page/?a=b' => '/en/site/page?a=b',
+                '/en/site/page/?a=b' => '/en/site/page?a=b',
+                '/custom?a=b' => '/en/custom?a=b',
+                '/custom/?a=b' => '/en/custom?a=b',
+                '/de/custom/?a=b' => '/de/custom?a=b',
+                '/slash?a=b' => '/en/slash/?a=b',
+                '/slash/?a=b' => '/en/slash/?a=b',
+                '/en/slash?a=b' => '/en/slash/?a=b',
+                '/de/slash?a=b' => '/de/slash/?a=b',
             ],
         ],
     ];

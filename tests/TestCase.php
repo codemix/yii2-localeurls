@@ -54,6 +54,9 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $parts = explode('?', $url);
         if (isset($parts[1])) {
             $_SERVER['QUERY_STRING'] = $parts[1];
+            parse_str($parts[1], $_GET);
+        } else {
+            $_GET = [];
         }
         if ($config!==[]) {
             $config = [
