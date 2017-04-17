@@ -2,7 +2,7 @@
 use yii\helpers\ArrayHelper;
 use yii\di\Container;
 
-abstract class TestCase extends \PHPUnit_Framework_TestCase
+abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var array UrlManager component configuration for each test method
@@ -83,7 +83,8 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     protected function expectRedirect($url)
     {
         $url = $this->prepareUrl($url);
-        $this->setExpectedExceptionRegExp('\yii\base\Exception', '#^' . $url . '$#');
+        $this->expectException('\yii\base\Exception');
+        $this->expectExceptionMessageRegExp('#^' . $url . '$#');
     }
 
     /**
