@@ -33,6 +33,7 @@ class RedirectTest extends TestCase
                 'languages' => ['en-US', 'en', 'de', 'pt', 'at' => 'de-AT', 'alias' => 'fr', 'es-BO', 'wc-*'],
                 'rules' => [
                     '/custom' => 'test/action',
+                    '/slug/<name>' => 'test/slug',
                     [
                         'pattern' => '/slash',
                         'route' => 'test/slash',
@@ -128,6 +129,8 @@ class RedirectTest extends TestCase
                 '/site/page?a=b' => [
                     ['/de/site/page?a=b', 'request' => ['acceptableLanguages' => ['de']]],
                 ],
+                '/slug/value' => false,
+                '/en/slug/value' => '/slug/value'
             ],
         ],
 
@@ -138,6 +141,7 @@ class RedirectTest extends TestCase
                 'enableDefaultLanguageUrlCode' => true,
                 'rules' => [
                     '/custom' => 'test/action',
+                    '/slug/<name>' => 'test/slug',
                     [
                         'pattern' => '/slash',
                         'route' => 'test/slash',
@@ -186,6 +190,8 @@ class RedirectTest extends TestCase
                 '/site/page?a=b' => [
                     ['/de/site/page?a=b', 'request' => ['acceptableLanguages' => ['de']]],
                 ],
+                '/slug/value' => '/en/slug/value',
+                '/en/slug/value' => false,
             ],
         ],
 
@@ -274,6 +280,7 @@ class RedirectTest extends TestCase
                 'suffix' => '/',
                 'rules' => [
                     '/custom' => 'test/action',
+                    '/slug/<name>' => 'test/slug',
                     [
                         'pattern' => '/noslash',
                         'route' => 'test/slash',
@@ -303,6 +310,8 @@ class RedirectTest extends TestCase
                 '/site/page/?a=b' => [
                     ['/de/site/page/?a=b', 'request' => ['acceptableLanguages' => ['de']]],
                 ],
+                '/slug/value/' => false,
+                '/en/slug/value/' => '/slug/value/',
             ],
         ],
         [
@@ -312,6 +321,7 @@ class RedirectTest extends TestCase
                 'suffix' => '/',
                 'rules' => [
                     '/custom' => 'test/action',
+                    '/slug/<name>' => 'test/slug',
                     [
                         'pattern' => '/noslash',
                         'route' => 'test/slash',
@@ -357,6 +367,8 @@ class RedirectTest extends TestCase
                 '/site/page/?a=b' => [
                     ['/de/site/page/?a=b', 'request' => ['acceptableLanguages' => ['de']]],
                 ],
+                '/slug/value/' => '/en/slug/value/',
+                '/en/slug/value/' => false,
             ],
         ],
 
@@ -370,6 +382,7 @@ class RedirectTest extends TestCase
                 ],
                 'rules' => [
                     '/custom' => 'test/action',
+                    '/slug/<name>' => 'test/slug',
                     [
                         'pattern' => '/noslash',
                         'route' => 'test/slash',
@@ -419,6 +432,9 @@ class RedirectTest extends TestCase
                 '/en/noslash?a=b' => '/noslash?a=b',
                 '/en/noslash/?a=b' => '/noslash?a=b',
                 '/de/noslash/?a=b' => '/de/noslash?a=b',
+                '/slug/value' => '/slug/value/',
+                '/en/slug/value' => '/slug/value/',
+                '/de/slug/value' => '/de/slug/value/',
             ],
         ],
         [
@@ -429,6 +445,7 @@ class RedirectTest extends TestCase
                 ],
                 'rules' => [
                     '/custom' => 'test/action',
+                    '/slug/<name>' => 'test/slug',
                     [
                         'pattern' => '/slash',
                         'route' => 'test/slash',
@@ -478,6 +495,9 @@ class RedirectTest extends TestCase
                 '/en/slash?a=b' => '/slash/?a=b',
                 '/en/slash/?a=b' => '/slash/?a=b',
                 '/de/slash?a=b' => '/de/slash/?a=b',
+                '/slug/value/' => '/slug/value',
+                '/en/slug/value/' => '/slug/value',
+                '/de/slug/value/' => '/de/slug/value',
             ],
         ],
 
@@ -492,6 +512,7 @@ class RedirectTest extends TestCase
                 ],
                 'rules' => [
                     '/custom' => 'test/action',
+                    '/slug/<name>' => 'test/slug',
                     [
                         'pattern' => '/noslash',
                         'route' => 'test/slash',
@@ -537,6 +558,9 @@ class RedirectTest extends TestCase
                 '/noslash/?a=b' => '/en/noslash?a=b',
                 '/en/noslash/?a=b' => '/en/noslash?a=b',
                 '/de/noslash/?a=b' => '/de/noslash?a=b',
+                '/slug/value' => '/en/slug/value/',
+                '/en/slug/value' => '/en/slug/value/',
+                '/de/slug/value' => '/de/slug/value/',
             ],
         ],
         [
@@ -548,6 +572,7 @@ class RedirectTest extends TestCase
                 ],
                 'rules' => [
                     '/custom' => 'test/action',
+                    '/slug/<name>' => 'test/slug',
                     [
                         'pattern' => '/slash',
                         'route' => 'test/slash',
@@ -593,6 +618,9 @@ class RedirectTest extends TestCase
                 '/slash/?a=b' => '/en/slash/?a=b',
                 '/en/slash?a=b' => '/en/slash/?a=b',
                 '/de/slash?a=b' => '/de/slash/?a=b',
+                '/slug/value/' => '/en/slug/value',
+                '/en/slug/value/' => '/en/slug/value',
+                '/de/slug/value/' => '/de/slug/value',
             ],
         ],
     ];

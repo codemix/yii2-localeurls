@@ -461,8 +461,13 @@ class UrlManager extends BaseUrlManager
         try {
             $result = parent::parseRequest($this->_request);
         } catch (UrlNormalizerRedirectException $e) {
-            $route = is_array($e->url) ? $e->url[0] : $e->url;
-            $result = [$route, $this->_request->getQueryParams()];
+            if (is_array($e->url)) {
+                $params = $e->url;
+                $route = array_shift($params);
+                $result = [$route, $params];
+            } else {
+                $result = [$e->url, []];
+            }
         }
         if ($result === false) {
             throw new \yii\web\NotFoundHttpException(Yii::t('yii', 'Page not found.'));
