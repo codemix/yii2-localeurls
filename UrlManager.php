@@ -104,6 +104,38 @@ class UrlManager extends BaseUrlManager
     public $ignoreLanguageUrlPatterns = [];
 
     /**
+     * @var array list of route and its parameter used as slug URL handler. The keys of the array are routes,
+     * the values are query parameter:
+     *
+     * ~~~php
+     * [
+     *      'site/index' => 'slug'
+     * ]
+     * ~~~
+     *
+     * Route rules will be added at initial procedure to handle all requests as:
+     *
+     * ~~~php
+     * 'rules' => [
+     *       '<slug:.+>' => 'site/index',
+     * ]
+     * ~~~
+     *
+     * Route patterns are checked during URL creation. If a pattern matches, language parameter will be skipped
+     * as in $ignoreLanguageUrlPatterns case and slug query string will be used as argument for parent::createUrl()
+     * when enableDefaultLanguageUrlCode is false to avoid wrong URL without default language code but with slug
+     * query string instead after redirect, e.g:
+     *
+     *   slug route:       '<slug:.+>' => 'site/index'
+     *   default language: ru
+     *   start slug url:   site.com/en/some/slug/url
+     *   change language:  site.com/ru/some/slug/url
+     *   redirect to:      site.com/site/index/?slug=some%2Fslug%2Furl
+     *   should be:        site.com/some/slug/url
+     */
+    public $slugRoutes = [];
+
+    /**
      * @var string the language that was initially set in the application configuration
      */
     protected $_defaultLanguage;
@@ -138,6 +170,11 @@ class UrlManager extends BaseUrlManager
         if ($this->enableLocaleUrls && $this->languages) {
             if (!$this->enablePrettyUrl) {
                 throw new InvalidConfigException('Locale URL support requires enablePrettyUrl to be set to true.');
+            }
+        }
+        if ($this->slugRoutes) {
+            foreach($this->slugRoutes as $pattern => $slug) {
+                $this->addRules(["<$slug:.+>" => $pattern]);
             }
         }
         $this->_defaultLanguage = Yii::$app->language;
@@ -198,6 +235,16 @@ class UrlManager extends BaseUrlManager
             foreach ($this->ignoreLanguageUrlPatterns as $pattern => $v) {
                 if (preg_match($pattern, $route)) {
                     return parent::createUrl($params);
+                }
+            }
+        }
+
+        if ($this->slugRoutes && !$this->enableDefaultLanguageUrlCode) {
+            $params = (array) $params;
+            $route = trim($params[0], '/');
+            foreach ($this->slugRoutes as $pattern => $slug) {
+                if (preg_match("#^$pattern#", $route)) {
+                    return parent::createUrl($params[$slug]);
                 }
             }
         }
