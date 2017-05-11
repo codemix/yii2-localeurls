@@ -155,7 +155,7 @@ codes before the similar looking generic ones (i.e. 'en-US' before 'en'):
 > as shown above. The URLs will still always use lowercase codes. If a URL with an uppercase
 > code like `en-US` is used, the user will be redirected to the lowercase `en-us` variant.
 > The application language will always use the correct `en-US` code. If you don't want to
-> redirect URLs with uppercase country code, you can set the `keepUppercaseLanguageCode`
+> redirect URLs with lowercase country code, you can set the `keepUppercaseLanguageCode`
 > option to `true`.
 
 If you want your URL to optionally contain *any* country variant you can also use a wildcard pattern:
