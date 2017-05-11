@@ -94,6 +94,21 @@ class UrlManagerTest extends TestCase
         $this->assertEquals('site/page', $request->pathInfo);
     }
 
+    public function testCanUseLanguageWithScriptCode()
+    {
+        $this->mockUrlManager([
+            'languages' => ['en-US', 'deutsch' => 'de', 'sr-Latn'],
+        ]);
+        $this->mockRequest('/sr-latn/site/page');
+        $this->assertEquals('sr-Latn', Yii::$app->language);
+        $this->assertEquals('sr-Latn', Yii::$app->session->get('_language'));
+        $cookie = Yii::$app->response->cookies->get('_language');
+        $this->assertNotNull($cookie);
+        $this->assertEquals('sr-Latn', $cookie->value);
+        $request = Yii::$app->request;
+        $this->assertEquals('site/page', $request->pathInfo);
+    }
+
 
 
 

@@ -407,26 +407,58 @@ class UrlManager extends BaseUrlManager
     /**
      * Tests whether the given code matches any of the configured languages.
      *
+     * The return value is an array of the form `[$language, $country]`, where
+     * `$country` or both can be `null`.
+     *
      * If the code is a single language code, and matches either
      *
      *  - an exact language as configured (ll)
      *  - a language with a country wildcard (ll-*)
      *
-     * this language code is returned.
+     * the code value will be returned as `$language`.
      *
-     * If the code also contains a country code, and matches either
+     * If the code is of the form `ll-CC`, and matches either
      *
      *  - an exact language/country code as configured (ll-CC)
      *  - a language with a country wildcard (ll-*)
      *
-     * the code with uppercase country is returned. If only the language part matches
-     * a configured language, that language is returned.
+     * `$country` well be set to the `CC` part of the configured language.
+     * If only the language part matches a configured language, only `$language`
+     * will be set to that language.
      *
      * @param string $code the code to match
-     * @return array of [language, country], [language, null] or [null, null] if no match
+     * @return array of `[$language, $country]` where `$country` or both can be
+     * `null`
      */
     protected function matchCode($code)
     {
+        $hasDash = strpos($code, '-') !== false;
+        $lcCode = strtolower($code);
+        $lcLanguages = array_map('strtolower', $this->languages);
+
+        if (($key = array_search($lcCode, $lcLanguages)) === false) {
+            if ($hasDash) {
+                list($language, $country) = explode('-', $code, 2);
+            } else {
+                $language = $code;
+                $country = null;
+            }
+            if (in_array($language . '-*', $this->languages)) {
+                if ($hasDash) {
+                    return [$language, strtoupper($country)];
+                } else {
+                    return [$language, null];
+                }
+            } elseif ($hasDash && in_array($language, $this->languages)) {
+                return [$language, null];
+            } else {
+                return [null, null];
+            }
+        } else {
+            $result = $this->languages[$key];
+            return $hasDash ? explode('-', $result, 2) : [$result, null];
+        }
+
         $language = $code;
         $country = null;
         $parts = explode('-', $code);
