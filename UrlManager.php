@@ -38,7 +38,7 @@ class UrlManager extends BaseUrlManager
      * contains the default language code will be redirected to the same URL
      * without a language code. So if the default language is `fr` and a user
      * requests `/fr/some/page` he gets redirected to `/some/page`. This way
-     * the persistet language can be reset to the default language.
+     * the persistent language can be reset to the default language.
      *
      * If this is `true`, then an URL that does not contain any language code
      * will be redirected to the same URL with default language code. So if for
