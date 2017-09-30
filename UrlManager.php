@@ -353,21 +353,7 @@ class UrlManager extends BaseUrlManager
             Yii::$app->language = $language;
             Yii::trace("Language code found in URL. Setting application language to '$language'.", __METHOD__);
             if ($this->enableLanguagePersistence) {
-                Yii::$app->session[$this->languageSessionKey] = $language;
-                Yii::trace("Persisting language '$language' in session.", __METHOD__);
-                if ($this->languageCookieDuration) {
-                    $cookie = new Cookie(array_merge(
-                        ['httpOnly' => true],
-                        $this->languageCookieOptions,
-                        [
-                            'name' => $this->languageCookieName,
-                            'value' => $language,
-                            'expire' => time() + (int) $this->languageCookieDuration,
-                        ]
-                    ));
-                    Yii::$app->getResponse()->getCookies()->add($cookie);
-                    Yii::trace("Persisting language '$language' in cookie.", __METHOD__);
-                }
+                $this->persistLanguage($language);
             }
 
             // "Reset" case: We called e.g. /fr/demo/page so the persisted language was set back to "fr".
@@ -380,12 +366,7 @@ class UrlManager extends BaseUrlManager
         } else {
             $language = null;
             if ($this->enableLanguagePersistence) {
-                $language = Yii::$app->session->get($this->languageSessionKey);
-                $language!==null && Yii::trace("Found persisted language '$language' in session.", __METHOD__);
-                if ($language===null) {
-                    $language = $this->_request->getCookies()->getValue($this->languageCookieName);
-                    $language!==null && Yii::trace("Found persisted language '$language' in cookie.", __METHOD__);
-                }
+                $language = $this->loadPersistedLanguage();
             }
             if ($language===null && $this->enableLanguageDetection) {
                 foreach ($this->_request->getAcceptableLanguages() as $acceptable) {
@@ -418,6 +399,42 @@ class UrlManager extends BaseUrlManager
             }
             $this->redirectToLanguage($language);
         }
+    }
+
+    /**
+     * @param string $language the language code to persist in session and cookie
+     */
+    protected function persistLanguage($language)
+    {
+        Yii::$app->session[$this->languageSessionKey] = $language;
+        Yii::trace("Persisting language '$language' in session.", __METHOD__);
+        if ($this->languageCookieDuration) {
+            $cookie = new Cookie(array_merge(
+                ['httpOnly' => true],
+                $this->languageCookieOptions,
+                [
+                    'name' => $this->languageCookieName,
+                    'value' => $language,
+                    'expire' => time() + (int) $this->languageCookieDuration,
+                ]
+            ));
+            Yii::$app->getResponse()->getCookies()->add($cookie);
+            Yii::trace("Persisting language '$language' in cookie.", __METHOD__);
+        }
+    }
+
+    /**
+     * @return string|null the persisted language code or null if none found
+     */
+    protected function loadPersistedLanguage()
+    {
+        $language = Yii::$app->session->get($this->languageSessionKey);
+        $language!==null && Yii::trace("Found persisted language '$language' in session.", __METHOD__);
+        if ($language===null) {
+            $language = $this->_request->getCookies()->getValue($this->languageCookieName);
+            $language!==null && Yii::trace("Found persisted language '$language' in cookie.", __METHOD__);
+        }
+        return $language;
     }
 
     /**
