@@ -252,6 +252,63 @@ This will give you:
     /demo/action
 
 
+#### Language Change Event
+
+When persistence is enabled, the component will fire a `languageChanged` event
+whenever the language stored in session or cookie changes. Here's an example
+how this can be used:
+
+```php
+<?php
+
+'urlManager' => [
+    'class' => 'codemix\localeurls\UrlManager',
+    'languages' => ['en', 'fr', 'de'],
+    'on languageChanged' => `\app\helpers\MyHelper::languageChanged',
+]
+```
+
+The static class method in `MyHelper` could look like this:
+
+```php
+<?php
+public static function languageChanged($event)
+{
+    // $event->language: new language
+    // $event->oldLanguage: old language
+
+    // Save the current language to user record
+    $user = Yii::$app->user;
+    if (!$user->isGuest) {
+        $user->identity->language = $event->language;
+        $user->identity->save();
+    }
+}
+```
+
+You could then for example restore the user language in the `afterLogin` event
+of a custom `user` component:
+
+```php
+<?php
+public function afterLogin($identity, $cookieBased, $duration)
+{
+    parent::afterLogin($identity, $cookieBased, $duration);
+    $language = $identity->language;
+    if ($language !==null && Yii::$app->language !== $language) {
+        Yii::$app
+            ->getResponse()
+            ->redirect(['site/index', 'language' => $language]);
+        Yii::$app->end();
+    }
+}
+```
+
+> **Note:** A language may already have been selected before a new user signs
+> up. So remember to also save the app language in the user model when
+> inserting a new user.
+
+
 ### Language Detection
 
 If a user visits your site for the first time and there's no language stored in session

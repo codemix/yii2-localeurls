@@ -17,6 +17,8 @@ use yii\web\UrlNormalizerRedirectException;
  */
 class UrlManager extends BaseUrlManager
 {
+    const EVENT_LANGUAGE_CHANGED = 'languageChanged';
+
     /**
      * @var array list of available language codes. More specific patterns
      * should come first, e.g. 'en_us' before 'en'. This can also contain
@@ -406,6 +408,15 @@ class UrlManager extends BaseUrlManager
      */
     protected function persistLanguage($language)
     {
+        if ($this->hasEventHandlers(self::EVENT_LANGUAGE_CHANGED)) {
+            $oldLanguage = $this->loadPersistedLanguage();
+            if ($oldLanguage !== $language) {
+                $this->trigger(self::EVENT_LANGUAGE_CHANGED, new LanguageChangedEvent([
+                    'oldLanguage' => $oldLanguage,
+                    'language' => $language,
+                ]));
+            }
+        }
         Yii::$app->session[$this->languageSessionKey] = $language;
         Yii::trace("Persisting language '$language' in session.", __METHOD__);
         if ($this->languageCookieDuration) {
