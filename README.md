@@ -256,7 +256,7 @@ This will give you:
 
 When persistence is enabled, the component will fire a `languageChanged` event
 whenever the language stored in session or cookie changes. Here's an example
-how this can be used:
+how this can be used to track user languages in the database:
 
 ```php
 <?php
@@ -264,15 +264,15 @@ how this can be used:
 'urlManager' => [
     'class' => 'codemix\localeurls\UrlManager',
     'languages' => ['en', 'fr', 'de'],
-    'on languageChanged' => `\app\helpers\MyHelper::languageChanged',
+    'on languageChanged' => `\app\components\User::onLanguageChanged',
 ]
 ```
 
-The static class method in `MyHelper` could look like this:
+The static class method in `User` could look like this:
 
 ```php
 <?php
-public static function languageChanged($event)
+public static function onLanguageChanged($event)
 {
     // $event->language: new language
     // $event->oldLanguage: old language
@@ -285,28 +285,8 @@ public static function languageChanged($event)
     }
 }
 ```
-
-You could then for example restore the user language in the `afterLogin` event
-of a custom `user` component:
-
-```php
-<?php
-public function afterLogin($identity, $cookieBased, $duration)
-{
-    parent::afterLogin($identity, $cookieBased, $duration);
-    $language = $identity->language;
-    if ($language !==null && Yii::$app->language !== $language) {
-        Yii::$app
-            ->getResponse()
-            ->redirect(['site/index', 'language' => $language]);
-        Yii::$app->end();
-    }
-}
-```
-
-> **Note:** A language may already have been selected before a new user signs
-> up. So remember to also save the app language in the user model when
-> inserting a new user.
+> **Note:** A language may already have been selected before a user logs in or
+> signs up. So you should also save or update the language in these cases.
 
 
 ### Language Detection

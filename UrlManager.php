@@ -411,6 +411,7 @@ class UrlManager extends BaseUrlManager
         if ($this->hasEventHandlers(self::EVENT_LANGUAGE_CHANGED)) {
             $oldLanguage = $this->loadPersistedLanguage();
             if ($oldLanguage !== $language) {
+                Yii::trace("Triggering languageChanged event: $oldLanguage -> $language", __METHOD__);
                 $this->trigger(self::EVENT_LANGUAGE_CHANGED, new LanguageChangedEvent([
                     'oldLanguage' => $oldLanguage,
                     'language' => $language,
