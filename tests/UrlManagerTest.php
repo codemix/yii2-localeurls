@@ -248,4 +248,18 @@ class UrlManagerTest extends TestCase
         $request = Yii::$app->request;
         $this->assertEquals('site/page', $request->pathInfo);
     }
+
+    public function testCanDisableSessionOnly()
+    {
+        $this->mockUrlManager([
+            'languages' => ['en-US', 'en', 'de'],
+            'languageSessionKey' => false,
+        ]);
+        $this->mockRequest('/en-us/site/page');
+        $this->assertEquals('en-US', Yii::$app->language);
+        $this->assertNull(Yii::$app->session->get('_language'));
+        $this->assertEquals('en-US', Yii::$app->response->cookies->get('_language'));
+        $request = Yii::$app->request;
+        $this->assertEquals('site/page', $request->pathInfo);
+    }
 }

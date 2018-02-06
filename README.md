@@ -220,6 +220,7 @@ You can modify other persistence settings with:
  * `languageCookieName`: The name of the language cookie. Default is `_language`.
  * `languageCookieOptions`: Other options to set on the language cookie.
  * `languageSessionKey`: The name of the language session key. Default is `_language`.
+    Since 1.6.0 this can also be set to `false` to not use the session at all.
 
 #### Reset To Default Language
 
