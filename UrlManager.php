@@ -72,8 +72,8 @@ class UrlManager extends BaseUrlManager
     public $keepUppercaseLanguageCode = false;
 
     /**
-     * @var string the name of the session key that is used to store the
-     * language. Default is '_language'.
+     * @var string|bool the name of the session key that is used to store the
+     * language. If `false` no session is used. Default is '_language'.
      */
     public $languageSessionKey = '_language';
 
@@ -418,8 +418,10 @@ class UrlManager extends BaseUrlManager
                 ]));
             }
         }
-        Yii::$app->session[$this->languageSessionKey] = $language;
-        Yii::trace("Persisting language '$language' in session.", __METHOD__);
+        if ($this->languageSessionKey !== false) {
+            Yii::$app->session[$this->languageSessionKey] = $language;
+            Yii::trace("Persisting language '$language' in session.", __METHOD__);
+        }
         if ($this->languageCookieDuration) {
             $cookie = new Cookie(array_merge(
                 ['httpOnly' => true],
@@ -440,8 +442,11 @@ class UrlManager extends BaseUrlManager
      */
     protected function loadPersistedLanguage()
     {
-        $language = Yii::$app->session->get($this->languageSessionKey);
-        $language!==null && Yii::trace("Found persisted language '$language' in session.", __METHOD__);
+        $language = null;
+        if ($this->languageSessionKey !== false) {
+            $language = Yii::$app->session->get($this->languageSessionKey);
+            $language!==null && Yii::trace("Found persisted language '$language' in session.", __METHOD__);
+        }
         if ($language===null) {
             $language = $this->_request->getCookies()->getValue($this->languageCookieName);
             $language!==null && Yii::trace("Found persisted language '$language' in cookie.", __METHOD__);
