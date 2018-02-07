@@ -18,3 +18,4 @@ if (!class_exists($newClass) && class_exists($oldClass)) {
 require(__DIR__ . '/../vendor/autoload.php');
 require(__DIR__ . '/../vendor/yiisoft/yii2/Yii.php');
 require(__DIR__ . '/TestCase.php');
+require(__DIR__ . '/TestUrlRule.php');

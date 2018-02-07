@@ -1,5 +1,4 @@
 <?php
-
 use yii\helpers\Url;
 
 class UrlCreationTest extends TestCase
@@ -36,6 +35,9 @@ class UrlCreationTest extends TestCase
                     '/custom/<term:.+>/bar' => 'demo/custom',
                     'http://www.example.com/foo/<term:.+>/bar' => 'demo/absolute-slug',
                     [
+                        'class' => 'TestUrlRule',
+                    ],
+                    [
                         'pattern' => '/slash',
                         'route' => 'demo/slash',
                         'suffix' => '/',
@@ -60,6 +62,7 @@ class UrlCreationTest extends TestCase
                     '/demo/action?x=y' => ['/demo/action', 'x' => 'y'],
                     '/foo/baz/bar' => ['/demo/slug', 'term' => 'baz'],
                     '/foo/baz/bar?x=y' => ['/demo/slug', 'term' => 'baz', 'x' => 'y'],
+                    '/ruleclass-english' => ['/ruleclass/test'],
                     '/slash/' => ['/demo/slash'],
                     '/slash/?x=y' => ['/demo/slash', 'x' => 'y'],
                     '/slugslash/baz/bar/' => ['/demo/slug-slash', 'term' => 'baz'],
@@ -71,6 +74,7 @@ class UrlCreationTest extends TestCase
                     'http://localhost/demo/action?x=y' => ['/demo/action', 'x' => 'y'],
                     'http://localhost/foo/baz/bar' => ['/demo/slug', 'term' => 'baz'],
                     'http://localhost/foo/baz/bar?x=y' => ['/demo/slug', 'term' => 'baz', 'x' => 'y'],
+                    'http://localhost/ruleclass-english' => ['/ruleclass/test'],
                     'http://localhost/slash/' => ['/demo/slash'],
                     'http://localhost/slash/?x=y' => ['/demo/slash', 'x' => 'y'],
                     'http://localhost/slugslash/baz/bar/' => ['/demo/slug-slash', 'term' => 'baz'],
@@ -88,6 +92,7 @@ class UrlCreationTest extends TestCase
                     '/de/demo/action?x=y' => ['/demo/action', 'x' => 'y'],
                     '/de/foo/baz/bar' => ['/demo/slug', 'term' => 'baz'],
                     '/de/foo/baz/bar?x=y' => ['/demo/slug', 'term' => 'baz', 'x' => 'y'],
+                    '/de/ruleclass-deutsch' => ['/ruleclass/test', 'slugLanguage' => 'de'],
                     '/de/slash/' => ['/demo/slash'],
                     '/de/slash/?x=y' => ['/demo/slash', 'x' => 'y'],
                     '/de/slugslash/baz/bar/' => ['/demo/slug-slash', 'term' => 'baz'],
@@ -99,6 +104,7 @@ class UrlCreationTest extends TestCase
                     'http://localhost/de/demo/action?x=y' => ['/demo/action', 'x' => 'y'],
                     'http://localhost/de/foo/baz/bar' => ['/demo/slug', 'term' => 'baz'],
                     'http://localhost/de/foo/baz/bar?x=y' => ['/demo/slug', 'term' => 'baz', 'x' => 'y'],
+                    'http://localhost/de/ruleclass-deutsch' => ['/ruleclass/test', 'slugLanguage' => 'de'],
                     'http://localhost/de/slash/' => ['/demo/slash'],
                     'http://localhost/de/slash/?x=y' => ['/demo/slash', 'x' => 'y'],
                     'http://localhost/de/slugslash/baz/bar/' => ['/demo/slug-slash', 'term' => 'baz'],
@@ -114,6 +120,7 @@ class UrlCreationTest extends TestCase
                     '/en-us/demo/action?x=y' => ['/demo/action', 'language' => 'en-US', 'x' => 'y'],
                     '/en-us/foo/baz/bar' => ['/demo/slug', 'language' => 'en-US', 'term' => 'baz'],
                     '/en-us/foo/baz/bar?x=y' => ['/demo/slug', 'language' => 'en-US', 'term' => 'baz', 'x' => 'y'],
+                    '/en-us/ruleclass-english' => ['/ruleclass/test', 'language' => 'en-US', 'slugLanguage' => 'en-US'],
                     '/en-us/slash/' => ['/demo/slash', 'language' => 'en-US'],
                     '/en-us/slash/?x=y' => ['/demo/slash', 'language' => 'en-US', 'x' => 'y'],
                     '/en-us/slugslash/baz/bar/' => ['/demo/slug-slash', 'language' => 'en-US', 'term' => 'baz'],
@@ -125,6 +132,7 @@ class UrlCreationTest extends TestCase
                     'http://localhost/en-us/demo/action?x=y' => ['/demo/action', 'language' => 'en-US', 'x' => 'y'],
                     'http://localhost/en-us/foo/baz/bar' => ['/demo/slug', 'language' => 'en-US', 'term' => 'baz'],
                     'http://localhost/en-us/foo/baz/bar?x=y' => ['/demo/slug', 'language' => 'en-US', 'term' => 'baz', 'x' => 'y'],
+                    'http://localhost/en-us/ruleclass-english' => ['/ruleclass/test', 'language' => 'en-US', 'slugLanguage' => 'en-US'],
                     'http://localhost/en-us/slash/' => ['/demo/slash', 'language' => 'en-US'],
                     'http://localhost/en-us/slash/?x=y' => ['/demo/slash', 'language' => 'en-US', 'x' => 'y'],
                     'http://localhost/en-us/slugslash/baz/bar/' => ['/demo/slug-slash', 'language' => 'en-US', 'term' => 'baz'],
@@ -140,6 +148,7 @@ class UrlCreationTest extends TestCase
                     '/french/demo/action?x=y' => ['/demo/action', 'language' => 'fr', 'x' => 'y'],
                     '/french/foo/baz/bar' => ['/demo/slug', 'language' => 'fr', 'term' => 'baz'],
                     '/french/foo/baz/bar?x=y' => ['/demo/slug', 'language' => 'fr', 'term' => 'baz', 'x' => 'y'],
+                    '/french/ruleclass-francais' => ['/ruleclass/test', 'language' => 'fr', 'slugLanguage' => 'fr'],
                     '/french/slash/' => ['/demo/slash', 'language' => 'fr'],
                     '/french/slash/?x=y' => ['/demo/slash', 'language' => 'fr', 'x' => 'y'],
                     '/french/slugslash/baz/bar/' => ['/demo/slug-slash', 'language' => 'fr', 'term' => 'baz'],
@@ -151,6 +160,7 @@ class UrlCreationTest extends TestCase
                     'http://localhost/french/demo/action?x=y' => ['/demo/action', 'language' => 'fr', 'x' => 'y'],
                     'http://localhost/french/foo/baz/bar' => ['/demo/slug', 'language' => 'fr', 'term' => 'baz'],
                     'http://localhost/french/foo/baz/bar?x=y' => ['/demo/slug', 'language' => 'fr', 'term' => 'baz', 'x' => 'y'],
+                    'http://localhost/french/ruleclass-francais' => ['/ruleclass/test', 'language' => 'fr', 'slugLanguage' => 'fr'],
                     'http://localhost/french/slash/' => ['/demo/slash', 'language' => 'fr'],
                     'http://localhost/french/slash/?x=y' => ['/demo/slash', 'language' => 'fr', 'x' => 'y'],
                     'http://localhost/french/slugslash/baz/bar/' => ['/demo/slug-slash', 'language' => 'fr', 'term' => 'baz'],
@@ -176,6 +186,7 @@ class UrlCreationTest extends TestCase
                     '/demo/action?x=y' => ['/demo/action', 'language' => '', 'x' => 'y'],
                     '/foo/baz/bar' => ['/demo/slug', 'language' => '', 'term' => 'baz'],
                     '/foo/baz/bar?x=y' => ['/demo/slug', 'language' => '', 'term' => 'baz', 'x' => 'y'],
+                    '/ruleclass-english' => ['/ruleclass/test', 'language' => '', 'slugLanguage' => 'en'],
                     '/slash/' => ['/demo/slash', 'language' => ''],
                     '/slash/?x=y' => ['/demo/slash', 'language' => '', 'x' => 'y'],
                     '/slugslash/baz/bar/' => ['/demo/slug-slash', 'language' => '', 'term' => 'baz'],
@@ -187,6 +198,7 @@ class UrlCreationTest extends TestCase
                     'http://localhost/demo/action?x=y' => ['/demo/action', 'language' => '', 'x' => 'y'],
                     'http://localhost/foo/baz/bar' => ['/demo/slug', 'language' => '', 'term' => 'baz'],
                     'http://localhost/foo/baz/bar?x=y' => ['/demo/slug', 'language' => '', 'term' => 'baz', 'x' => 'y'],
+                    'http://localhost/ruleclass-english' => ['/ruleclass/test', 'language' => '', 'slugLanguage' => 'en'],
                     'http://localhost/slash/' => ['/demo/slash', 'language' => ''],
                     'http://localhost/slash/?x=y' => ['/demo/slash', 'language' => '', 'x' => 'y'],
                     'http://localhost/slugslash/baz/bar/' => ['/demo/slug-slash', 'language' => '', 'term' => 'baz'],
