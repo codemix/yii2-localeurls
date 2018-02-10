@@ -135,6 +135,18 @@ class UrlManager extends BaseUrlManager
     public $languageParam = 'language';
 
     /**
+     * @var string $_SERVER key set by apache mod_geoip
+     */
+    public $geoipServerFieldName = 'HTTP_X_GEO_COUNTRY';
+
+    /**
+     * @var array list of countries for given language code
+     * e.g. 'ru' => ['RUS','AZE','ARM','BLR','KAZ','KGZ','MDA','TJK','TKM','UZB','UKR']
+     * will set app language to ru for countries listed above
+     */
+    public $geoipLanguageCountries = [];
+
+    /**
      * @var \yii\web\Request
      */
     protected $_request;
@@ -369,6 +381,14 @@ class UrlManager extends BaseUrlManager
             $language = null;
             if ($this->enableLanguagePersistence) {
                 $language = $this->loadPersistedLanguage();
+            }
+            if ($language===null && isset($_SERVER[$this->geoipServerFieldName]) && !empty($this->geoipLanguageCountries)) {
+                foreach ($this->geoipLanguageCountries as $key => $codes) {
+                    if (in_array($_SERVER[$this->geoipServerFieldName], $codes)) {
+                        $language = $key;
+                        break;
+                    }
+                }
             }
             if ($language===null && $this->enableLanguageDetection) {
                 foreach ($this->_request->getAcceptableLanguages() as $acceptable) {
