@@ -141,10 +141,17 @@ class UrlManager extends BaseUrlManager
     public $geoIpServerVar = 'HTTP_X_GEO_COUNTRY';
 
     /**
-     * @var array list of GeoIP countries indexed by corresponding language code
-     * e.g. 'ru' => ['RUS','AZE','ARM','BLR','KAZ','KGZ','MDA','TJK','TKM','UZB','UKR']
-     * will set app language to ru for listed countries.
-     * The default is an empty list which disables GeoIP detection.
+     * @var array list of GeoIP countries indexed by corresponding language
+     * code. The default is an empty list which disables GeoIP detection.
+     * Example:
+     *
+     * ~~~php
+     * [
+     *     // Set app language to 'ru' for these GeoIp countries
+     *     'ru' => ['RUS','AZE','ARM','BLR','KAZ','KGZ','MDA','TJK','TKM','UZB','UKR']
+     *
+     * ]
+     * ~~~
      */
     public $geoIpLanguageCountries = [];
 
@@ -236,7 +243,7 @@ class UrlManager extends BaseUrlManager
 
             $isLanguageGiven = isset($params[$this->languageParam]);
             $language = $isLanguageGiven ? $params[$this->languageParam] : Yii::$app->language;
-            $isDefaultLanguage = $language===$this->getDefaultLanguage();
+            $isDefaultLanguage = $language === $this->getDefaultLanguage();
 
             if ($isLanguageGiven) {
                 unset($params[$this->languageParam]);
@@ -337,7 +344,7 @@ class UrlManager extends BaseUrlManager
         $parts = [];
         foreach ($this->languages as $k => $v) {
             $value = is_string($k) ? $k : $v;
-            if (substr($value, -2)==='-*') {
+            if (substr($value, -2) === '-*') {
                 $lng = substr($value, 0, -2);
                 $parts[] = "$lng\-[a-z]{2,3}";
                 $parts[] = $lng;
@@ -356,13 +363,13 @@ class UrlManager extends BaseUrlManager
                 // lowercase language, uppercase country
                 list($language,$country) = $this->matchCode($code);
                 if ($country!==null) {
-                    if ($code==="$language-$country" && !$this->keepUppercaseLanguageCode) {
+                    if ($code === "$language-$country" && !$this->keepUppercaseLanguageCode) {
                         $this->redirectToLanguage(strtolower($code));   // Redirect ll-CC to ll-cc
                     } else {
                         $language = "$language-$country";
                     }
                 }
-                if ($language===null) {
+                if ($language === null) {
                     $language = $code;
                 }
             }
@@ -374,7 +381,7 @@ class UrlManager extends BaseUrlManager
 
             // "Reset" case: We called e.g. /fr/demo/page so the persisted language was set back to "fr".
             // Now we can redirect to the URL without language prefix, if default prefixes are disabled.
-            $reset = !$this->enableDefaultLanguageUrlCode && $language===$this->_defaultLanguage;
+            $reset = !$this->enableDefaultLanguageUrlCode && $language === $this->_defaultLanguage;
 
             if ($reset || $normalized) {
                 $this->redirectToLanguage('');
@@ -384,26 +391,10 @@ class UrlManager extends BaseUrlManager
             if ($this->enableLanguagePersistence) {
                 $language = $this->loadPersistedLanguage();
             }
-            if ($language===null && $this->enableLanguageDetection) {
-                foreach ($this->_request->getAcceptableLanguages() as $acceptable) {
-                    list($language,$country) = $this->matchCode($acceptable);
-                    if ($language!==null) {
-                        $language = $country===null ? $language : "$language-$country";
-                        Yii::trace("Detected browser language '$language'.", __METHOD__);
-                        break;
-                    }
-                }
+            if ($language === null) {
+                $language = $this->detectLanguage();
             }
-            if ($language===null && isset($_SERVER[$this->geoIpServerVar])) {
-                foreach ($this->geoIpLanguageCountries as $key => $codes) {
-                    if (in_array($_SERVER[$this->geoIpServerVar], $codes)) {
-                        $language = $key;
-                        Yii::trace("Detected GeoIp language '$language'.", __METHOD__);
-                        break;
-                    }
-                }
-            }
-            if ($language===null || $language===$this->_defaultLanguage) {
+            if ($language === null || $language === $this->_defaultLanguage) {
                 if (!$this->enableDefaultLanguageUrlCode) {
                     return;
                 } else {
@@ -411,7 +402,7 @@ class UrlManager extends BaseUrlManager
                 }
             }
             // #35: Only redirect if a valid language was found
-            if ($this->matchCode($language)===[null, null]) {
+            if ($this->matchCode($language) === [null, null]) {
                 return;
             }
 
@@ -470,11 +461,38 @@ class UrlManager extends BaseUrlManager
             $language = Yii::$app->session->get($this->languageSessionKey);
             $language!==null && Yii::trace("Found persisted language '$language' in session.", __METHOD__);
         }
-        if ($language===null) {
+        if ($language === null) {
             $language = $this->_request->getCookies()->getValue($this->languageCookieName);
             $language!==null && Yii::trace("Found persisted language '$language' in cookie.", __METHOD__);
         }
         return $language;
+    }
+
+    /**
+     * @return string|null the language detected from request headers or via
+     * GeoIp module
+     */
+    protected function detectLanguage()
+    {
+        if ($this->enableLanguageDetection) {
+            foreach ($this->_request->getAcceptableLanguages() as $acceptable) {
+                list($language,$country) = $this->matchCode($acceptable);
+                if ($language!==null) {
+                    $language = $country === null ? $language : "$language-$country";
+                    Yii::trace("Detected browser language '$language'.", __METHOD__);
+                    return $language;
+                }
+            }
+        }
+        if (isset($_SERVER[$this->geoIpServerVar])) {
+            foreach ($this->geoIpLanguageCountries as $key => $codes) {
+                $country = $_SERVER[$this->geoIpServerVar];
+                if (in_array($country, $codes)) {
+                    Yii::trace("Detected GeoIp language '$key'.", __METHOD__);
+                    return $key;
+                }
+            }
+        }
     }
 
     /**
@@ -537,7 +555,7 @@ class UrlManager extends BaseUrlManager
         $language = $code;
         $country = null;
         $parts = explode('-', $code);
-        if (count($parts)===2) {
+        if (count($parts) === 2) {
             $language = $parts[0];
             $country = strtoupper($parts[1]);
         }
@@ -589,7 +607,7 @@ class UrlManager extends BaseUrlManager
         array_unshift($params, $route);
         $url = $this->createUrl($params);
         // Required to prevent double slashes on generated URLs
-        if ($this->suffix==='/' && $route==='' && count($params)===1) {
+        if ($this->suffix === '/' && $route === '' && count($params) === 1) {
             $url = rtrim($url, '/').'/';
         }
         // Prevent redirects to same URL which could happen in certain
