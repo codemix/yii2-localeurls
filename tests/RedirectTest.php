@@ -18,9 +18,15 @@ class RedirectTest extends TestCase
      *         // $to can be:
      *         //   - a string with a URL that should be redirected to,
      *         //   - `false` if there should be no redirect
-     *         //   - an array of individual request/session/cookie configurations
-     *         //     of this form:
-     *         //     [$to, 'request' => .., 'session' => ..., 'cookie' => ...]
+     *         //   - an array with the expected redirect URL as first element
+     *         //     and further parameters to set:
+     *         //     [
+     *         //       $to,               // redirect URL as string
+     *         //       'request' => ... , // request properties
+     *         //       'session' => ... , // session data
+     *         //       'cookie' => ... ,  // cookie data
+     *         //       'server' => ... ,  // $_SERVER data
+     *         //     ]
      *     ],
      * ]
      * ```
@@ -31,6 +37,12 @@ class RedirectTest extends TestCase
         [
             'urlManager' => [
                 'languages' => ['en-US', 'en', 'de', 'pt', 'at' => 'de-AT', 'alias' => 'fr', 'es-BO', 'wc-*'],
+                'geoIpLanguageCountries' => [
+                    'de' => ['DEU'],
+                    'de-AT' => ['AUT'],
+                    'fr' => ['FRA'],
+                    'en' => ['USA', 'GBR'],
+                ],
                 'rules' => [
                     '/custom' => 'test/action',
                     '/slug/<name>' => 'test/slug',
@@ -51,6 +63,11 @@ class RedirectTest extends TestCase
 
                 // No code in URL but params in session, cookie or headers
                 '/site/page' => [
+
+                    // Country in GeoIp server var
+                    ['/de/site/page', 'server' => ['HTTP_X_GEO_COUNTRY' => 'DEU']],
+                    ['/at/site/page', 'server' => ['HTTP_X_GEO_COUNTRY' => 'AUT']],
+                    ['/alias/site/page', 'server' => ['HTTP_X_GEO_COUNTRY' => 'FRA']],
 
                     // Acceptable languages in request
                     ['/de/site/page', 'request' => ['acceptableLanguages' => ['de']]],
@@ -80,28 +97,36 @@ class RedirectTest extends TestCase
                     ['/pt/site/page', 'cookie' => ['_language' => 'pt']],
                     ['/alias/site/page', 'cookie' => ['_language' => 'fr']],
 
-                    // Default language in cookie/session/header
+                    // Default language in GeoIp/cookie/session/header
+                    [false, 'server' => ['HTTP_X_GEO_COUNTRY' => 'USA']],
                     [false, 'request' => ['acceptableLanguages' => ['en']]],
                     [false, 'session' => ['_language' => 'en']],
                     [false, 'cookie' => ['_language' => 'en']],
 
-                    // Session precedes cookie precedes header
+                    // Session precedes cookie precedes header precedes GeoIp
                     ['/de/site/page',
                         'session' => ['_language' => 'de'],
                         'cookie' => ['_language' => 'fr'],
                         'request' => ['acceptableLanguages' => ['pt']],
+                        'server' => ['HTTP_X_GEO_COUNTRY' => 'USA'],
                     ],
                     ['/alias/site/page',
                         'cookie' => ['_language' => 'fr'],
                         'request' => ['acceptableLanguages' => ['pt']],
+                        'server' => ['HTTP_X_GEO_COUNTRY' => 'USA'],
+                    ],
+                    ['/pt/site/page',
+                        'request' => ['acceptableLanguages' => ['pt']],
+                        'server' => ['HTTP_X_GEO_COUNTRY' => 'USA'],
                     ],
                 ],
 
-                // Code in URL different from language in session, cookie or headers
+                // Code in URL different from language in session, cookie, headers or GeoIp
                 '/de/site/page' => [
                     [false, 'session' => ['_language' => 'wc']],
                     [false, 'cookie' => ['_language' => 'wc']],
                     [false, 'request' => ['acceptableLanguages' => ['en']]],
+                    [false, 'server' => ['HTTP_X_GEO_COUNTRY' => 'USA']],
                 ],
 
                 // Lowercase conversion
@@ -144,6 +169,12 @@ class RedirectTest extends TestCase
             'urlManager' => [
                 'languages' => ['en-US', 'en', 'de', 'pt', 'at' => 'de-AT', 'alias' => 'fr', 'es-BO', 'wc-*'],
                 'enableDefaultLanguageUrlCode' => true,
+                'geoIpLanguageCountries' => [
+                    'de' => ['DEU'],
+                    'de-AT' => ['AUT'],
+                    'fr' => ['FRA'],
+                    'en' => ['USA', 'GBR'],
+                ],
                 'rules' => [
                     '/custom' => 'test/action',
                     '/slug/<name>' => 'test/slug',
@@ -163,23 +194,27 @@ class RedirectTest extends TestCase
                     ['/en'],    // default language
                     ['/de', 'session' => ['_language' => 'de']],
                     ['/alias', 'cookie' => ['_language' => 'fr']],
+                    ['/de', 'server' => ['HTTP_X_GEO_COUNTRY' => 'DEU']],
                 ],
                 '/site/page' => [
                     ['/en/site/page', ],  // default language
                     ['/de/site/page', 'session' => ['_language' => 'de']],
                     ['/alias/site/page', 'cookie' => ['_language' => 'fr']],
+                    ['/de/site/page', 'server' => ['HTTP_X_GEO_COUNTRY' => 'DEU']],
                 ],
 
-                // Lang requests with different language in session, cookie or headers
+                // Lang requests with different language in session, cookie, headers or GeoIp
                 '/en/site/page' => [
                     [false, 'session' => ['_language' => 'wc']],
                     [false, 'cookie' => ['_language' => 'wc']],
                     [false, 'request' => ['acceptableLanguages' => ['en']]],
+                    [false, 'server' => ['HTTP_X_GEO_COUNTRY' => 'USA']],
                 ],
                 '/de/site/page' => [
                     [false, 'session' => ['_language' => 'wc']],
                     [false, 'cookie' => ['_language' => 'wc']],
                     [false, 'request' => ['acceptableLanguages' => ['en']]],
+                    [false, 'server' => ['HTTP_X_GEO_COUNTRY' => 'USA']],
                 ],
 
                 // Custom URL rule
@@ -252,6 +287,7 @@ class RedirectTest extends TestCase
                         'session' => ['_language' => 'de'],
                         'cookie' => ['_language' => 'fr'],
                         'request' => ['acceptableLanguages' => ['pt']],
+                        'server' => ['HTTP_X_GEO_COUNTRY' => 'DEU'],
                     ],
                 ],
                 '/site/page' => [
@@ -260,6 +296,7 @@ class RedirectTest extends TestCase
                         'session' => ['_language' => 'de'],
                         'cookie' => ['_language' => 'fr'],
                         'request' => ['acceptableLanguages' => ['pt']],
+                        'server' => ['HTTP_X_GEO_COUNTRY' => 'DEU'],
                     ],
                 ],
                 '/de' => [
@@ -268,6 +305,7 @@ class RedirectTest extends TestCase
                         'session' => ['_language' => 'en'],
                         'cookie' => ['_language' => 'fr'],
                         'request' => ['acceptableLanguages' => ['pt']],
+                        'server' => ['HTTP_X_GEO_COUNTRY' => 'FRA'],
                     ],
                 ],
                 '/de/site/page' => [
@@ -276,6 +314,7 @@ class RedirectTest extends TestCase
                         'session' => ['_language' => 'en'],
                         'cookie' => ['_language' => 'fr'],
                         'request' => ['acceptableLanguages' => ['pt']],
+                        'server' => ['HTTP_X_GEO_COUNTRY' => 'FRA'],
                     ],
                 ],
                 '/en' => '/',
@@ -328,6 +367,12 @@ class RedirectTest extends TestCase
         [
             'urlManager' => [
                 'languages' => ['en-US', 'en', 'de', 'pt', 'at' => 'de-AT', 'alias' => 'fr', 'es-BO', 'wc-*'],
+                'geoIpLanguageCountries' => [
+                    'de' => ['DEU'],
+                    'de-AT' => ['AUT'],
+                    'fr' => ['FRA'],
+                    'en' => ['USA', 'GBR'],
+                ],
                 'enableDefaultLanguageUrlCode' => true,
                 'suffix' => '/',
                 'rules' => [
@@ -345,21 +390,25 @@ class RedirectTest extends TestCase
                     ['/en/'],    // default language
                     ['/de/', 'session' => ['_language' => 'de']],
                     ['/alias/', 'cookie' => ['_language' => 'fr']],
+                    ['/de/', 'server' => ['HTTP_X_GEO_COUNTRY' => 'DEU']],
                 ],
                 '/site/page/' => [
                     ['/en/site/page/'],  // default language
                     ['/de/site/page/', 'session' => ['_language' => 'de']],
                     ['/alias/site/page/', 'cookie' => ['_language' => 'fr']],
+                    ['/de/site/page/', 'server' => ['HTTP_X_GEO_COUNTRY' => 'DEU']],
                 ],
                 '/en/site/page/' => [
                     [false],
                     [false, 'session' => ['_language' => 'de']],
                     [false, 'cookie' => ['_language' => 'fr']],
+                    [false, 'server' => ['HTTP_X_GEO_COUNTRY' => 'FRA']],
                 ],
                 '/pt/site/page/' => [
                     [false],
                     [false, 'session' => ['_language' => 'de']],
                     [false, 'cookie' => ['_language' => 'fr']],
+                    [false, 'server' => ['HTTP_X_GEO_COUNTRY' => 'FRA']],
                 ],
 
                 // Custom URL rule
@@ -516,6 +565,12 @@ class RedirectTest extends TestCase
         [
             'urlManager' => [
                 'languages' => ['en-US', 'en', 'de', 'pt', 'at' => 'de-AT', 'alias' => 'fr', 'es-BO', 'wc-*'],
+                'geoIpLanguageCountries' => [
+                    'de' => ['DEU'],
+                    'de-AT' => ['AUT'],
+                    'fr' => ['FRA'],
+                    'en' => ['USA', 'GBR'],
+                ],
                 'enableDefaultLanguageUrlCode' => true,
                 'suffix' => '/',
                 'normalizer' => [
@@ -536,11 +591,13 @@ class RedirectTest extends TestCase
                     ['/en/'],    // default language
                     ['/de/', 'session' => ['_language' => 'de']],
                     ['/alias/', 'cookie' => ['_language' => 'fr']],
+                    ['/de/', 'server' => ['HTTP_X_GEO_COUNTRY' => 'DEU']],
                 ],
                 '/site/page' => [
                     ['/en/site/page/'],  // default language
                     ['/de/site/page/', 'session' => ['_language' => 'de']],
                     ['/alias/site/page/', 'cookie' => ['_language' => 'fr']],
+                    ['/de/site/page/', 'server' => ['HTTP_X_GEO_COUNTRY' => 'DEU']],
                 ],
                 '/en/site/page' => '/en/site/page/',
 
@@ -577,6 +634,12 @@ class RedirectTest extends TestCase
         [
             'urlManager' => [
                 'languages' => ['en-US', 'en', 'de', 'pt', 'at' => 'de-AT', 'alias' => 'fr', 'es-BO', 'wc-*'],
+                'geoIpLanguageCountries' => [
+                    'de' => ['DEU'],
+                    'de-AT' => ['AUT'],
+                    'fr' => ['FRA'],
+                    'en' => ['USA', 'GBR'],
+                ],
                 'enableDefaultLanguageUrlCode' => true,
                 'normalizer' => [
                     'class' => '\yii\web\UrlNormalizer',
@@ -596,11 +659,13 @@ class RedirectTest extends TestCase
                     ['/en'],    // default language
                     ['/de', 'session' => ['_language' => 'de']],
                     ['/alias', 'cookie' => ['_language' => 'fr']],
+                    ['/de', 'server' => ['HTTP_X_GEO_COUNTRY' => 'DEU']],
                 ],
                 '/site/page/' => [
                     ['/en/site/page'],  // default language
                     ['/de/site/page', 'session' => ['_language' => 'de']],
                     ['/alias/site/page', 'cookie' => ['_language' => 'fr']],
+                    ['/de/site/page', 'server' => ['HTTP_X_GEO_COUNTRY' => 'DEU']],
                 ],
                 '/en/site/page/' => '/en/site/page',
 
@@ -647,7 +712,8 @@ class RedirectTest extends TestCase
                         $request = isset($params['request']) ? $params['request'] : [];
                         $session = isset($params['session']) ? $params['session'] : [];
                         $cookie = isset($params['cookie']) ? $params['cookie'] : [];
-                        $this->performRedirectTest($from, $url, $urlManager, $request, $session, $cookie);
+                        $server = isset($params['server']) ? $params['server'] : [];
+                        $this->performRedirectTest($from, $url, $urlManager, $request, $session, $cookie, $server);
                     }
                 } else {
                     $this->performRedirectTest($from, $to, $urlManager);
@@ -666,16 +732,21 @@ class RedirectTest extends TestCase
      * @param array $session the session variables
      * @param array $cookie the cookies
      */
-    public function performRedirectTest($from, $to, $urlManager, $request = [], $session = [], $cookie = [])
+    public function performRedirectTest($from, $to, $urlManager, $request = [], $session = [], $cookie = [], $server = [])
     {
         $this->tearDown();
         $this->mockUrlManager($urlManager);
-        if ($session!==null) {
+        if (!empty($session)) {
             @session_start();
             $_SESSION = $session;
         }
-        if ($cookie!==null) {
+        if (!empty($cookie)) {
             $_COOKIE = $cookie;
+        }
+        if (!empty($server)) {
+            foreach ($server as $key => $value) {
+                $_SERVER[$key] = $value;
+            }
         }
         $configMessage = print_r([
             'from' => $from,
@@ -684,6 +755,7 @@ class RedirectTest extends TestCase
             'request' => $request,
             'session' => $session,
             'cookie' => $cookie,
+            'server' => $server,
         ], true);
         try {
             $this->mockRequest($from, $request);

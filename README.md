@@ -329,6 +329,27 @@ Any other `pt-CC` code              | `/pt-cc`              | `pt-CC`
 `pt`                                | `/pt`                 | `pt`
 
 
+#### Detection via GeoIP server module
+
+Since 1.7.0 language can also be detected via the webserver's GeoIP module.
+Note though that this only happens if no valid language was found in the
+browser settings.
+
+For this feature to work the related GeoIp module must already be installed and
+it must provide the country code in a server variable in `$_SERVER`. You can
+configure the key in `$geoIpServerVar`. The default is `HTTP_X_GEO_COUNTRY`.
+
+To enable this feature, you have to provide a list of GeoIp country codes and
+index them by the corresponding language that should be set:
+
+```php
+'geoIpLanguageCountries' => [
+    'de' => ['DEU', 'AUT'],
+    'pt' => ['PRT', 'BRA'],
+],
+```
+
+
 ### Excluding Routes / URLs
 
 You may want to disable the language processing for some routes and URLs with the
