@@ -398,6 +398,7 @@ class UrlManager extends BaseUrlManager
                 foreach ($this->geoIpLanguageCountries as $key => $codes) {
                     if (in_array($_SERVER[$this->geoIpServerVar], $codes)) {
                         $language = $key;
+                        Yii::trace("Detected GeoIp language '$language'.", __METHOD__);
                         break;
                     }
                 }

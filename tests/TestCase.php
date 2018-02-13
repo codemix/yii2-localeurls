@@ -19,12 +19,24 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
      */
     protected $baseUrl = '';
 
+    protected $_server;
+
+    protected function setUp()
+    {
+        if ($this->_server === null) {
+            // Keep initial $_SERVER content to restore after each
+            // test in tearDown()
+            $this->_server = $_SERVER;
+        }
+    }
+
     /**
      * Destroy Yii app singleton, DI container, session and cookies
      */
     protected function tearDown()
     {
         $_COOKIE = [];
+        $_SERVER = $this->_server;
         if (isset(\Yii::$app)) {
             \Yii::$app->session->destroy();
             \Yii::$app = null;

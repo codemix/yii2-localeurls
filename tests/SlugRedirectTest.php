@@ -49,6 +49,10 @@ class SlugRedirectTest extends TestCase
         $this->mockRequest('/es-BO/foo/baz/bar');
     }
 
+
+
+    // Accepted language tests
+    //
     public function testRedirectsIfNoLanguageInUrlAndAcceptedLanguageMatches()
     {
         $this->expectRedirect('/de/foo/baz/bar');
@@ -137,6 +141,83 @@ class SlugRedirectTest extends TestCase
         ]);
     }
 
+
+
+    // GeoIp ltests
+    //
+    public function testRedirectsIfNoLanguageInUrlAndGeoIpMatches()
+    {
+        $this->expectRedirect('/de/foo/baz/bar');
+        $_SERVER['HTTP_X_GEO_COUNTRY'] = 'DEU';
+        $this->mockUrlManager([
+            'languages' => ['en-US', 'en', 'de'],
+            'geoIpLanguageCountries' => [
+                'de' => ['DEU'],
+                'en-US' => ['USA'],
+            ],
+        ]);
+        $this->mockRequest('/foo/baz/bar');
+    }
+
+    public function testRedirectsIfNoLanguageInUrlAndGeoIpMatchesWildcard()
+    {
+        $this->expectRedirect('/de/foo/baz/bar');
+        $_SERVER['HTTP_X_GEO_COUNTRY'] = 'DEU';
+        $this->mockUrlManager([
+            'languages' => ['en-US', 'en', 'de-*'],
+            'geoIpLanguageCountries' => [
+                'de' => ['DEU'],
+                'en-US' => ['USA'],
+            ],
+        ]);
+        $this->mockRequest('/foo/baz/bar');
+    }
+
+    public function testRedirectsIfNoLanguageInUrlAndGeoIpWithCountryMatches()
+    {
+        $this->expectRedirect('/de-at/foo/baz/bar');
+        $_SERVER['HTTP_X_GEO_COUNTRY'] = 'AUT';
+        $this->mockUrlManager([
+            'languages' => ['en-US', 'en', 'de', 'de-AT'],
+            'geoIpLanguageCountries' => [
+                'de-DE' => ['DEU'],
+                'de-AT' => ['AUT'],
+            ],
+        ]);
+        $this->mockRequest('/foo/baz/bar');
+    }
+
+    public function testRedirectsIfNoLanguageInUrlAndGeoIpWithCountryMatchesWildcard()
+    {
+        $this->expectRedirect('/de-at/foo/baz/bar');
+        $_SERVER['HTTP_X_GEO_COUNTRY'] = 'AUT';
+        $this->mockUrlManager([
+            'languages' => ['en-US', 'en', 'de-*'],
+            'geoIpLanguageCountries' => [
+                'de-DE' => ['DEU'],
+                'de-AT' => ['AUT'],
+            ],
+        ]);
+        $this->mockRequest('/foo/baz/bar');
+    }
+
+    public function testRedirectsIfNoLanguageInUrlAndGeoIpWithCountryMatchesCountryAlias()
+    {
+        $this->expectRedirect('/at/foo/baz/bar');
+        $_SERVER['HTTP_X_GEO_COUNTRY'] = 'AUT';
+        $this->mockUrlManager([
+            'languages' => ['de', 'at'=>'de-AT'],
+            'geoIpLanguageCountries' => [
+                'de' => ['DEU'],
+                'de-AT' => ['AUT'],
+            ],
+        ]);
+        $this->mockRequest('/foo/baz/bar');
+    }
+
+
+    // Session test
+    //
     public function testRedirectsIfNoLanguageInUrlAndLanguageInSession()
     {
         $this->expectRedirect('/de/foo/baz/bar');
@@ -159,6 +240,10 @@ class SlugRedirectTest extends TestCase
         $this->mockRequest('/foo/baz/bar');
     }
 
+
+
+    // Cookie test
+    //
     public function testRedirectsIfNoLanguageInUrlAndLanguageInCookie()
     {
         $this->expectRedirect('/de/foo/baz/bar');
@@ -179,6 +264,9 @@ class SlugRedirectTest extends TestCase
         $this->mockRequest('/foo/baz/bar');
     }
 
+
+
+    // Ignore URL test
     public function testRedirectsIfUrlDoesNotMatchIgnoresUrls()
     {
         $this->expectRedirect('/foo/baz/bar');
@@ -191,6 +279,10 @@ class SlugRedirectTest extends TestCase
         $this->mockRequest('/en/foo/baz/bar');
     }
 
+
+
+    // Trailing slash tests
+    //
     public function testRedirectsIfDefaultLanguageInUrlAndDefaultLanguageUsesNoSuffixAndTrailingSlashEnabled()
     {
         $this->expectRedirect('/foo/baz/bar/');
