@@ -135,6 +135,20 @@ class UrlManager extends BaseUrlManager
     public $languageParam = 'language';
 
     /**
+     * @var string the key in $_SERVER that contains the detected GeoIP country.
+     * Default is 'HTTP_X_GEO_COUNTRY' as used by mod_geoip in apache.
+     */
+    public $geoIpServerVar = 'HTTP_X_GEO_COUNTRY';
+
+    /**
+     * @var array list of GeoIP countries indexed by corresponding language code
+     * e.g. 'ru' => ['RUS','AZE','ARM','BLR','KAZ','KGZ','MDA','TJK','TKM','UZB','UKR']
+     * will set app language to ru for listed countries.
+     * The default is an empty list which disables GeoIP detection.
+     */
+    public $geoIpLanguageCountries = [];
+
+    /**
      * @var \yii\web\Request
      */
     protected $_request;
@@ -376,6 +390,14 @@ class UrlManager extends BaseUrlManager
                     if ($language!==null) {
                         $language = $country===null ? $language : "$language-$country";
                         Yii::trace("Detected browser language '$language'.", __METHOD__);
+                        break;
+                    }
+                }
+            }
+            if ($language===null && isset($_SERVER[$this->geoIpServerVar])) {
+                foreach ($this->geoIpLanguageCountries as $key => $codes) {
+                    if (in_array($_SERVER[$this->geoIpServerVar], $codes)) {
+                        $language = $key;
                         break;
                     }
                 }
