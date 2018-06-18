@@ -352,6 +352,15 @@ class UrlManager extends BaseUrlManager
                 $parts[] = $value;
             }
         }
+        // order by length to make longer patterns match before short patterns, e.g. put "en-GB" before "en"
+        usort($parts, function($a, $b) {
+            $la = mb_strlen($a);
+            $lb = mb_strlen($b);
+            if ($la === $lb) {
+                return 0;
+            }
+            return $la < $lb ? 1 : -1;
+        });
         $pattern = implode('|', $parts);
         if (preg_match("#^($pattern)\b(/?)#i", $pathInfo, $m)) {
             $this->_request->setPathInfo(mb_substr($pathInfo, mb_strlen($m[1].$m[2])));

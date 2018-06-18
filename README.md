@@ -145,8 +145,7 @@ language code are no longer accessible:
 ### Language Configuration
 
 All languages **including the default language** must be configured in the `languages`
-parameter of the `localeUrls` component. You should list more specific language
-codes before the similar looking generic ones (i.e. 'en-US' before 'en'):
+parameter of the `localeUrls` component:
 
     'languages' => ['en-US', 'en-UK', 'en', 'fr', 'de-AT', 'de'],
 
