@@ -9,6 +9,6 @@ install:
   - export PATH="$HOME/.composer/vendor/bin:$PATH"
   - travis_retry composer install --prefer-dist --no-interaction --no-progress
 
-before_script:
-  - echo "output_buffering=On" > my-php-config.ini
-  - phpenv config-add my-php-config.ini
+script:
+  - php -doutput_buffering=On `which phpunit`
+
