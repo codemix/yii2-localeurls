@@ -10,5 +10,5 @@ install:
   - travis_retry composer install --prefer-dist --no-interaction --no-progress
 
 script:
-  - php -doutput_buffering=On `which phpunit`
+  - php -doutput_buffering=On $(which phpunit)
 
