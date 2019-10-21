@@ -155,6 +155,8 @@ class UrlManager extends BaseUrlManager
      */
     public $geoIpLanguageCountries = [];
 
+    public $enableAjaxRedirect = false;
+
     /**
      * @var \yii\web\Request
      */
@@ -253,7 +255,7 @@ class UrlManager extends BaseUrlManager
 
             if (
                 // Only add language if it's not empty and ...
-                $language!=='' && (
+                $language!=='' &&  (
 
                     // ... it's not the default language or default language uses URL code ...
                     !$isDefaultLanguage || $this->enableDefaultLanguageUrlCode ||
@@ -262,7 +264,7 @@ class UrlManager extends BaseUrlManager
                     // either persistence or detection is enabled.  This way a
                     // "reset URL" can be created for the default language.
                     $isLanguageGiven && ($this->enableLanguagePersistence || $this->enableLanguageDetection)
-                )
+                ) && (!$this->enableAjaxRedirect || !Yii::$app->request->isAjax)
             ) {
                 $key = array_search($language, $this->languages);
                 if (is_string($key)) {
