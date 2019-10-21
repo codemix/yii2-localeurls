@@ -154,7 +154,10 @@ class UrlManager extends BaseUrlManager
      * ~~~
      */
     public $geoIpLanguageCountries = [];
-
+    /**
+     * @var boolean If the AJAX request is turned on, it will not be redirected to the language  
+     * corresponding route.
+     */
     public $enableAjaxRedirect = false;
 
     /**
@@ -255,7 +258,7 @@ class UrlManager extends BaseUrlManager
 
             if (
                 // Only add language if it's not empty and ...
-                $language!=='' &&  (
+                $language!=='' && (
 
                     // ... it's not the default language or default language uses URL code ...
                     !$isDefaultLanguage || $this->enableDefaultLanguageUrlCode ||
