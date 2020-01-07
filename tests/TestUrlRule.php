@@ -1,4 +1,7 @@
 <?php
+namespace tests;
+
+use Yii;
 use yii\web\UrlRuleInterface;
 
 class TestUrlRule implements UrlRuleInterface

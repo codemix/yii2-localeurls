@@ -1,5 +1,7 @@
 <?php
+namespace tests;
 
+use Yii;
 use yii\helpers\Url;
 
 class UrlManagerTest extends TestCase

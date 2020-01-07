@@ -1,4 +1,5 @@
 <?php
+namespace tests;
 use yii\helpers\Url;
 
 class UrlCreationTest extends TestCase
@@ -35,7 +36,7 @@ class UrlCreationTest extends TestCase
                     '/custom/<term:.+>/bar' => 'demo/custom',
                     'http://www.example.com/foo/<term:.+>/bar' => 'demo/absolute-slug',
                     [
-                        'class' => 'TestUrlRule',
+                        'class' => '\tests\TestUrlRule',
                     ],
                     [
                         'pattern' => '/slash',

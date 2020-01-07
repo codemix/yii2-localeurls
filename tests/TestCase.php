@@ -1,4 +1,7 @@
 <?php
+namespace tests;
+
+use Yii;
 use yii\helpers\ArrayHelper;
 use yii\di\Container;
 
