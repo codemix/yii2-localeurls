@@ -1,5 +1,7 @@
 <?php
+namespace tests;
 
+use Yii;
 use yii\helpers\Url;
 
 class RedirectTest extends TestCase
@@ -47,7 +49,7 @@ class RedirectTest extends TestCase
                     '/custom' => 'test/action',
                     '/slug/<name>' => 'test/slug',
                     [
-                        'class' => 'TestUrlRule',
+                        'class' => '\tests\TestUrlRule',
                     ],
                     [
                         'pattern' => '/slash',
@@ -179,7 +181,7 @@ class RedirectTest extends TestCase
                     '/custom' => 'test/action',
                     '/slug/<name>' => 'test/slug',
                     [
-                        'class' => 'TestUrlRule',
+                        'class' => '\tests\TestUrlRule',
                     ],
                     [
                         'pattern' => '/slash',
