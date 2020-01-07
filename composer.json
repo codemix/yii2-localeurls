@@ -28,8 +28,8 @@
     }
   },
   "autoload-dev": {
-      "psr-4": {
-          "tests\\": "tests"
-      }
+    "psr-4": {
+      "tests\\": "tests"
+    }
   }
 }
