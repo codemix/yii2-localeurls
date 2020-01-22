@@ -1,4 +1,5 @@
 <?php
+
 namespace tests;
 
 use Yii;
@@ -11,7 +12,7 @@ class UrlManagerTest extends TestCase
 
     public function testSetsDefaultLanguageIfNoLanguageSpecified()
     {
-        $this->mockUrlManager( [
+        $this->mockUrlManager([
             'languages' => ['en-US', 'en', 'de'],
         ]);
         $this->mockRequest('/');
@@ -53,7 +54,7 @@ class UrlManagerTest extends TestCase
     public function testSetsLanguageFromUrlIfUppercaseEnabled()
     {
         $this->mockUrlManager([
-            'languages' => ['en-US', 'en', 'de'],
+            'languages'                 => ['en-US', 'en', 'de'],
             'keepUppercaseLanguageCode' => true,
         ]);
         $this->mockRequest('/en-US/site/page');
@@ -142,12 +143,12 @@ class UrlManagerTest extends TestCase
     {
         $this->mockUrlManager([
             'enableLocaleUrls' => false,
-            'languages' => ['en-US', 'en', 'de'],
-            'rules' => [
+            'languages'        => ['en-US', 'en', 'de'],
+            'rules'            => [
                 '' => 'site/index',
             ],
         ]);
-        $this->mockRequest('/site/page',[
+        $this->mockRequest('/site/page', [
             'acceptableLanguages' => ['de'],
         ]);
         $this->assertEquals('en', Yii::$app->language);
@@ -167,7 +168,7 @@ class UrlManagerTest extends TestCase
         $this->mockUrlManager([
             'languages' => [],
         ]);
-        $this->mockRequest('/site/page',[
+        $this->mockRequest('/site/page', [
             'acceptableLanguages' => ['de'],
         ]);
         $this->assertEquals('en', Yii::$app->language);
@@ -178,12 +179,12 @@ class UrlManagerTest extends TestCase
     public function testDoesNothingIfUrlMatchesIgnoresUrls()
     {
         $this->mockUrlManager([
-            'languages' => ['en-US', 'en', 'de'],
+            'languages'                 => ['en-US', 'en', 'de'],
             'ignoreLanguageUrlPatterns' => [
-                '#not/used#' => '#^site/page#'
+                '#not/used#' => '#^site/page#',
             ],
         ]);
-        $this->mockRequest('/site/page',[
+        $this->mockRequest('/site/page', [
             'acceptableLanguages' => ['de'],
         ]);
         $this->assertEquals('en', Yii::$app->language);
@@ -194,7 +195,7 @@ class UrlManagerTest extends TestCase
     public function testDoesNothingIfInvalidLanguageInCookie()
     {
         $_COOKIE['_language'] = 'fr';
-        $this->mockUrlManager( [
+        $this->mockUrlManager([
             'languages' => ['en-US', 'en', 'de'],
         ]);
         $this->mockRequest('/site/page');
@@ -205,7 +206,7 @@ class UrlManagerTest extends TestCase
     {
         @session_start();
         $_SESSION['_language'] = 'fr';
-        $this->mockUrlManager( [
+        $this->mockUrlManager([
             'languages' => ['en-US', 'en', 'de'],
         ]);
         $this->mockRequest('/site/page');
@@ -227,10 +228,10 @@ class UrlManagerTest extends TestCase
     public function testCanDisableLanguageDetection()
     {
         $this->mockUrlManager([
-            'languages' => ['en-US', 'en', 'de'],
+            'languages'               => ['en-US', 'en', 'de'],
             'enableLanguageDetection' => false,
         ]);
-        $this->mockRequest('/site/page',[
+        $this->mockRequest('/site/page', [
             'acceptableLanguages' => ['de'],
         ]);
         $this->assertEquals('en', Yii::$app->language);
@@ -241,7 +242,7 @@ class UrlManagerTest extends TestCase
     public function testCanDisablePersistence()
     {
         $this->mockUrlManager([
-            'languages' => ['en-US', 'en', 'de'],
+            'languages'                 => ['en-US', 'en', 'de'],
             'enableLanguagePersistence' => false,
         ]);
         $this->mockRequest('/en-us/site/page');
@@ -255,7 +256,7 @@ class UrlManagerTest extends TestCase
     public function testCanDisableCookieOnly()
     {
         $this->mockUrlManager([
-            'languages' => ['en-US', 'en', 'de'],
+            'languages'              => ['en-US', 'en', 'de'],
             'languageCookieDuration' => false,
         ]);
         $this->mockRequest('/en-us/site/page');
@@ -269,7 +270,7 @@ class UrlManagerTest extends TestCase
     public function testCanDisableSessionOnly()
     {
         $this->mockUrlManager([
-            'languages' => ['en-US', 'en', 'de'],
+            'languages'          => ['en-US', 'en', 'de'],
             'languageSessionKey' => false,
         ]);
         $this->mockRequest('/en-us/site/page');

@@ -1,4 +1,5 @@
 <?php
+
 namespace tests;
 
 use Yii;
@@ -38,33 +39,33 @@ class RedirectTest extends TestCase
         // No URL code for default language
         [
             'urlManager' => [
-                'languages' => ['en-US', 'en', 'de', 'pt', 'at' => 'de-AT', 'alias' => 'fr', 'es-BO', 'wc-*'],
+                'languages'              => ['en-US', 'en', 'de', 'pt', 'at' => 'de-AT', 'alias' => 'fr', 'es-BO', 'wc-*'],
                 'geoIpLanguageCountries' => [
-                    'de' => ['DEU'],
+                    'de'    => ['DEU'],
                     'de-AT' => ['AUT'],
-                    'fr' => ['FRA'],
-                    'en' => ['USA', 'GBR'],
+                    'fr'    => ['FRA'],
+                    'en'    => ['USA', 'GBR'],
                 ],
-                'rules' => [
-                    '/custom' => 'test/action',
+                'rules'                  => [
+                    '/custom'      => 'test/action',
                     '/slug/<name>' => 'test/slug',
                     [
                         'class' => '\tests\TestUrlRule',
                     ],
                     [
                         'pattern' => '/slash',
-                        'route' => 'test/slash',
-                        'suffix' => '/',
+                        'route'   => 'test/slash',
+                        'suffix'  => '/',
                     ],
                 ],
             ],
-            'redirects' => [
+            'redirects'  => [
                 // Default language in URL
-                '/en/site/page' => '/site/page',
-                '/en' => '/',
+                '/en/site/page'     => '/site/page',
+                '/en'               => '/',
 
                 // No code in URL but params in session, cookie or headers
-                '/site/page' => [
+                '/site/page'        => [
 
                     // Country in GeoIp server var
                     ['/de/site/page', 'server' => ['HTTP_X_GEO_COUNTRY' => 'DEU']],
@@ -107,24 +108,24 @@ class RedirectTest extends TestCase
 
                     // Session precedes cookie precedes header precedes GeoIp
                     ['/de/site/page',
-                        'session' => ['_language' => 'de'],
-                        'cookie' => ['_language' => 'fr'],
-                        'request' => ['acceptableLanguages' => ['pt']],
-                        'server' => ['HTTP_X_GEO_COUNTRY' => 'USA'],
+                     'session' => ['_language' => 'de'],
+                     'cookie'  => ['_language' => 'fr'],
+                     'request' => ['acceptableLanguages' => ['pt']],
+                     'server'  => ['HTTP_X_GEO_COUNTRY' => 'USA'],
                     ],
                     ['/alias/site/page',
-                        'cookie' => ['_language' => 'fr'],
-                        'request' => ['acceptableLanguages' => ['pt']],
-                        'server' => ['HTTP_X_GEO_COUNTRY' => 'USA'],
+                     'cookie'  => ['_language' => 'fr'],
+                     'request' => ['acceptableLanguages' => ['pt']],
+                     'server'  => ['HTTP_X_GEO_COUNTRY' => 'USA'],
                     ],
                     ['/pt/site/page',
-                        'request' => ['acceptableLanguages' => ['pt']],
-                        'server' => ['HTTP_X_GEO_COUNTRY' => 'USA'],
+                     'request' => ['acceptableLanguages' => ['pt']],
+                     'server'  => ['HTTP_X_GEO_COUNTRY' => 'USA'],
                     ],
                 ],
 
                 // Code in URL different from language in session, cookie, headers or GeoIp
-                '/de/site/page' => [
+                '/de/site/page'     => [
                     [false, 'session' => ['_language' => 'wc']],
                     [false, 'cookie' => ['_language' => 'wc']],
                     [false, 'request' => ['acceptableLanguages' => ['en']]],
@@ -132,35 +133,35 @@ class RedirectTest extends TestCase
                 ],
 
                 // Lowercase conversion
-                '/es-BO/site/page' => [
+                '/es-BO/site/page'  => [
                     ['/es-bo/site/page'],
                     ['/es-bo/site/page', 'session' => ['_language' => 'de']],
                     ['/es-bo/site/page', 'cookie' => ['_language' => 'de']],
                 ],
-                '/wc-BB/site/page' => [
+                '/wc-BB/site/page'  => [
                     ['/wc-bb/site/page'],
                     ['/wc-bb/site/page', 'session' => ['_language' => 'de']],
                     ['/wc-bb/site/page', 'cookie' => ['_language' => 'de']],
                 ],
 
                 // Custom URL rule
-                '/custom' => false,
-                '/en/custom' => '/custom',
-                '/de/custom' => false,
-                '/slash/' => false,
-                '/en/slash/' => '/slash/',
-                '/de/slash/' => false,
+                '/custom'           => false,
+                '/en/custom'        => '/custom',
+                '/de/custom'        => false,
+                '/slash/'           => false,
+                '/en/slash/'        => '/slash/',
+                '/de/slash/'        => false,
 
                 // Params
-                '/en?a=b' => '/?a=b',
+                '/en?a=b'           => '/?a=b',
                 '/en/site/page?a=b' => '/site/page?a=b',
-                '/en/custom?a=b' => '/custom?a=b',
-                '/en/slash/?a=b' => '/slash/?a=b',
-                '/site/page?a=b' => [
+                '/en/custom?a=b'    => '/custom?a=b',
+                '/en/slash/?a=b'    => '/slash/?a=b',
+                '/site/page?a=b'    => [
                     ['/de/site/page?a=b', 'request' => ['acceptableLanguages' => ['de']]],
                 ],
-                '/slug/value' => false,
-                '/en/slug/value' => '/slug/value',
+                '/slug/value'       => false,
+                '/en/slug/value'    => '/slug/value',
                 //'/ruleclass-test-url' => false,
                 //'/en/ruleclass-test-url' => '/ruleclass-test-url',
             ],
@@ -169,50 +170,50 @@ class RedirectTest extends TestCase
         // URL code for default language
         [
             'urlManager' => [
-                'languages' => ['en-US', 'en', 'de', 'pt', 'at' => 'de-AT', 'alias' => 'fr', 'es-BO', 'wc-*'],
+                'languages'                    => ['en-US', 'en', 'de', 'pt', 'at' => 'de-AT', 'alias' => 'fr', 'es-BO', 'wc-*'],
                 'enableDefaultLanguageUrlCode' => true,
-                'geoIpLanguageCountries' => [
-                    'de' => ['DEU'],
+                'geoIpLanguageCountries'       => [
+                    'de'    => ['DEU'],
                     'de-AT' => ['AUT'],
-                    'fr' => ['FRA'],
-                    'en' => ['USA', 'GBR'],
+                    'fr'    => ['FRA'],
+                    'en'    => ['USA', 'GBR'],
                 ],
-                'rules' => [
-                    '/custom' => 'test/action',
+                'rules'                        => [
+                    '/custom'      => 'test/action',
                     '/slug/<name>' => 'test/slug',
                     [
                         'class' => '\tests\TestUrlRule',
                     ],
                     [
                         'pattern' => '/slash',
-                        'route' => 'test/slash',
-                        'suffix' => '/',
+                        'route'   => 'test/slash',
+                        'suffix'  => '/',
                     ],
                 ],
             ],
-            'redirects' => [
+            'redirects'  => [
                 // No code in URL
-                '/' => [
+                '/'                     => [
                     ['/en'],    // default language
                     ['/de', 'session' => ['_language' => 'de']],
                     ['/alias', 'cookie' => ['_language' => 'fr']],
                     ['/de', 'server' => ['HTTP_X_GEO_COUNTRY' => 'DEU']],
                 ],
-                '/site/page' => [
-                    ['/en/site/page', ],  // default language
+                '/site/page'            => [
+                    ['/en/site/page',],  // default language
                     ['/de/site/page', 'session' => ['_language' => 'de']],
                     ['/alias/site/page', 'cookie' => ['_language' => 'fr']],
                     ['/de/site/page', 'server' => ['HTTP_X_GEO_COUNTRY' => 'DEU']],
                 ],
 
                 // Lang requests with different language in session, cookie, headers or GeoIp
-                '/en/site/page' => [
+                '/en/site/page'         => [
                     [false, 'session' => ['_language' => 'wc']],
                     [false, 'cookie' => ['_language' => 'wc']],
                     [false, 'request' => ['acceptableLanguages' => ['en']]],
                     [false, 'server' => ['HTTP_X_GEO_COUNTRY' => 'USA']],
                 ],
-                '/de/site/page' => [
+                '/de/site/page'         => [
                     [false, 'session' => ['_language' => 'wc']],
                     [false, 'cookie' => ['_language' => 'wc']],
                     [false, 'request' => ['acceptableLanguages' => ['en']]],
@@ -220,24 +221,24 @@ class RedirectTest extends TestCase
                 ],
 
                 // Custom URL rule
-                '/custom' => '/en/custom',
-                '/en/custom' => false,
-                '/de/custom' => false,
-                '/slash/' => '/en/slash/',
-                '/en/slash/' => false,
-                '/de/slash/' => false,
+                '/custom'               => '/en/custom',
+                '/en/custom'            => false,
+                '/de/custom'            => false,
+                '/slash/'               => '/en/slash/',
+                '/en/slash/'            => false,
+                '/de/slash/'            => false,
 
                 // Params
-                '/?a=b' => '/en?a=b',
-                '/site/page?a=b' => '/en/site/page?a=b',
-                '/custom?a=b' => '/en/custom?a=b',
-                '/slash/?a=b' => '/en/slash/?a=b',
-                '/site/page?a=b' => [
+                '/?a=b'                 => '/en?a=b',
+                '/site/page?a=b'        => '/en/site/page?a=b',
+                '/custom?a=b'           => '/en/custom?a=b',
+                '/slash/?a=b'           => '/en/slash/?a=b',
+                '/site/page?a=b'        => [
                     ['/de/site/page?a=b', 'request' => ['acceptableLanguages' => ['de']]],
                 ],
-                '/slug/value' => '/en/slug/value',
-                '/en/slug/value' => false,
-                '/ruleclass-english' => '/en/ruleclass-english',
+                '/slug/value'           => '/en/slug/value',
+                '/en/slug/value'        => false,
+                '/ruleclass-english'    => '/en/ruleclass-english',
                 '/en/ruleclass-deutsch' => '/en/ruleclass-english',
                 '/en/ruleclass-english' => false,
             ],
@@ -246,12 +247,12 @@ class RedirectTest extends TestCase
         // Upper case language codes allowed in URL
         [
             'urlManager' => [
-                'languages' => ['en-US', 'deutsch' => 'de', 'es-BO'],
+                'languages'                 => ['en-US', 'deutsch' => 'de', 'es-BO'],
                 'keepUppercaseLanguageCode' => true,
             ],
-            'redirects' => [
+            'redirects'  => [
                 // No code in URL
-                '/site/page' => [
+                '/site/page'       => [
                     ['/en-US/site/page', 'session' => ['_language' => 'en-US']],
                     ['/en-US/site/page', 'cookie' => ['_language' => 'en-US']],
                 ],
@@ -263,14 +264,14 @@ class RedirectTest extends TestCase
         // Ignore patterns
         [
             'urlManager' => [
-                'languages' => ['en-US', 'en', 'de'],
+                'languages'                    => ['en-US', 'en', 'de'],
                 'enableDefaultLanguageUrlCode' => true,
-                'ignoreLanguageUrlPatterns' => [
-                    '#not/used#' => '#^site/other#'
+                'ignoreLanguageUrlPatterns'    => [
+                    '#not/used#' => '#^site/other#',
                 ],
             ],
-            'redirects' => [
-                '/site/page' => '/en/site/page',
+            'redirects'  => [
+                '/site/page'  => '/en/site/page',
                 '/site/other' => false,
             ],
         ],
@@ -278,48 +279,48 @@ class RedirectTest extends TestCase
         // No persistence / detection
         [
             'urlManager' => [
-                'languages' => ['en-US', 'en', 'de', 'pt', 'at' => 'de-AT', 'alias' => 'fr', 'es-BO', 'wc-*'],
-                'enableLanguageDetection' => false,
+                'languages'                 => ['en-US', 'en', 'de', 'pt', 'at' => 'de-AT', 'alias' => 'fr', 'es-BO', 'wc-*'],
+                'enableLanguageDetection'   => false,
                 'enableLanguagePersistence' => false,
             ],
-            'redirects' => [
-                '/' => [
+            'redirects'  => [
+                '/'             => [
                     [false],
                     [false,
-                        'session' => ['_language' => 'de'],
-                        'cookie' => ['_language' => 'fr'],
-                        'request' => ['acceptableLanguages' => ['pt']],
-                        'server' => ['HTTP_X_GEO_COUNTRY' => 'DEU'],
+                     'session' => ['_language' => 'de'],
+                     'cookie'  => ['_language' => 'fr'],
+                     'request' => ['acceptableLanguages' => ['pt']],
+                     'server'  => ['HTTP_X_GEO_COUNTRY' => 'DEU'],
                     ],
                 ],
-                '/site/page' => [
+                '/site/page'    => [
                     [false],
                     [false,
-                        'session' => ['_language' => 'de'],
-                        'cookie' => ['_language' => 'fr'],
-                        'request' => ['acceptableLanguages' => ['pt']],
-                        'server' => ['HTTP_X_GEO_COUNTRY' => 'DEU'],
+                     'session' => ['_language' => 'de'],
+                     'cookie'  => ['_language' => 'fr'],
+                     'request' => ['acceptableLanguages' => ['pt']],
+                     'server'  => ['HTTP_X_GEO_COUNTRY' => 'DEU'],
                     ],
                 ],
-                '/de' => [
+                '/de'           => [
                     [false],
                     [false,
-                        'session' => ['_language' => 'en'],
-                        'cookie' => ['_language' => 'fr'],
-                        'request' => ['acceptableLanguages' => ['pt']],
-                        'server' => ['HTTP_X_GEO_COUNTRY' => 'FRA'],
+                     'session' => ['_language' => 'en'],
+                     'cookie'  => ['_language' => 'fr'],
+                     'request' => ['acceptableLanguages' => ['pt']],
+                     'server'  => ['HTTP_X_GEO_COUNTRY' => 'FRA'],
                     ],
                 ],
                 '/de/site/page' => [
                     [false],
                     [false,
-                        'session' => ['_language' => 'en'],
-                        'cookie' => ['_language' => 'fr'],
-                        'request' => ['acceptableLanguages' => ['pt']],
-                        'server' => ['HTTP_X_GEO_COUNTRY' => 'FRA'],
+                     'session' => ['_language' => 'en'],
+                     'cookie'  => ['_language' => 'fr'],
+                     'request' => ['acceptableLanguages' => ['pt']],
+                     'server'  => ['HTTP_X_GEO_COUNTRY' => 'FRA'],
                     ],
                 ],
-                '/en' => '/',
+                '/en'           => '/',
                 '/en/site/page' => '/site/page',
             ],
         ],
@@ -329,84 +330,84 @@ class RedirectTest extends TestCase
         [
             'urlManager' => [
                 'languages' => ['en-US', 'en', 'de'],
-                'suffix' => '/',
-                'rules' => [
-                    '/custom' => 'test/action',
+                'suffix'    => '/',
+                'rules'     => [
+                    '/custom'      => 'test/action',
                     '/slug/<name>' => 'test/slug',
                     [
                         'pattern' => '/noslash',
-                        'route' => 'test/slash',
-                        'suffix' => '',
+                        'route'   => 'test/slash',
+                        'suffix'  => '',
                     ],
                 ],
             ],
-            'redirects' => [
-                '/en' => '/',
-                '/en/site/page/' => '/site/page/',
-                '/site/page/' => false,
-                '/de/site/page/' => false,
+            'redirects'  => [
+                '/en'                => '/',
+                '/en/site/page/'     => '/site/page/',
+                '/site/page/'        => false,
+                '/de/site/page/'     => false,
 
                 // Custom URL rule
-                '/custom/' => false,
-                '/en/custom/' => '/custom/',
-                '/de/custom/' => false,
-                '/noslash' => false,
-                '/en/noslash' => '/noslash',
-                '/de/noslash' => false,
+                '/custom/'           => false,
+                '/en/custom/'        => '/custom/',
+                '/de/custom/'        => false,
+                '/noslash'           => false,
+                '/en/noslash'        => '/noslash',
+                '/de/noslash'        => false,
 
                 // Params
-                '/en?a=b' => '/?a=b',
+                '/en?a=b'            => '/?a=b',
                 '/en/site/page/?a=b' => '/site/page/?a=b',
-                '/en/custom/?a=b' => '/custom/?a=b',
-                '/en/noslash?a=b' => '/noslash?a=b',
-                '/site/page/?a=b' => [
+                '/en/custom/?a=b'    => '/custom/?a=b',
+                '/en/noslash?a=b'    => '/noslash?a=b',
+                '/site/page/?a=b'    => [
                     ['/de/site/page/?a=b', 'request' => ['acceptableLanguages' => ['de']]],
                 ],
-                '/slug/value/' => false,
-                '/en/slug/value/' => '/slug/value/',
+                '/slug/value/'       => false,
+                '/en/slug/value/'    => '/slug/value/',
             ],
         ],
         [
             'urlManager' => [
-                'languages' => ['en-US', 'en', 'de', 'pt', 'at' => 'de-AT', 'alias' => 'fr', 'es-BO', 'wc-*'],
-                'geoIpLanguageCountries' => [
-                    'de' => ['DEU'],
+                'languages'                    => ['en-US', 'en', 'de', 'pt', 'at' => 'de-AT', 'alias' => 'fr', 'es-BO', 'wc-*'],
+                'geoIpLanguageCountries'       => [
+                    'de'    => ['DEU'],
                     'de-AT' => ['AUT'],
-                    'fr' => ['FRA'],
-                    'en' => ['USA', 'GBR'],
+                    'fr'    => ['FRA'],
+                    'en'    => ['USA', 'GBR'],
                 ],
                 'enableDefaultLanguageUrlCode' => true,
-                'suffix' => '/',
-                'rules' => [
-                    '/custom' => 'test/action',
+                'suffix'                       => '/',
+                'rules'                        => [
+                    '/custom'      => 'test/action',
                     '/slug/<name>' => 'test/slug',
                     [
                         'pattern' => '/noslash',
-                        'route' => 'test/slash',
-                        'suffix' => '',
+                        'route'   => 'test/slash',
+                        'suffix'  => '',
                     ],
                 ],
             ],
-            'redirects' => [
-                '/' => [
+            'redirects'  => [
+                '/'               => [
                     ['/en/'],    // default language
                     ['/de/', 'session' => ['_language' => 'de']],
                     ['/alias/', 'cookie' => ['_language' => 'fr']],
                     ['/de/', 'server' => ['HTTP_X_GEO_COUNTRY' => 'DEU']],
                 ],
-                '/site/page/' => [
+                '/site/page/'     => [
                     ['/en/site/page/'],  // default language
                     ['/de/site/page/', 'session' => ['_language' => 'de']],
                     ['/alias/site/page/', 'cookie' => ['_language' => 'fr']],
                     ['/de/site/page/', 'server' => ['HTTP_X_GEO_COUNTRY' => 'DEU']],
                 ],
-                '/en/site/page/' => [
+                '/en/site/page/'  => [
                     [false],
                     [false, 'session' => ['_language' => 'de']],
                     [false, 'cookie' => ['_language' => 'fr']],
                     [false, 'server' => ['HTTP_X_GEO_COUNTRY' => 'FRA']],
                 ],
-                '/pt/site/page/' => [
+                '/pt/site/page/'  => [
                     [false],
                     [false, 'session' => ['_language' => 'de']],
                     [false, 'cookie' => ['_language' => 'fr']],
@@ -414,22 +415,22 @@ class RedirectTest extends TestCase
                 ],
 
                 // Custom URL rule
-                '/custom/' => '/en/custom/',
-                '/en/custom/' => false,
-                '/de/custom/' => false,
-                '/noslash' => '/en/noslash',
-                '/en/noslash' => false,
-                '/de/noslash' => false,
+                '/custom/'        => '/en/custom/',
+                '/en/custom/'     => false,
+                '/de/custom/'     => false,
+                '/noslash'        => '/en/noslash',
+                '/en/noslash'     => false,
+                '/de/noslash'     => false,
 
                 // Params
-                '/?a=b' => '/en/?a=b',
+                '/?a=b'           => '/en/?a=b',
                 '/site/page/?a=b' => '/en/site/page/?a=b',
-                '/custom/?a=b' => '/en/custom/?a=b',
-                '/noslash?a=b' => '/en/noslash?a=b',
+                '/custom/?a=b'    => '/en/custom/?a=b',
+                '/noslash?a=b'    => '/en/noslash?a=b',
                 '/site/page/?a=b' => [
                     ['/de/site/page/?a=b', 'request' => ['acceptableLanguages' => ['de']]],
                 ],
-                '/slug/value/' => '/en/slug/value/',
+                '/slug/value/'    => '/en/slug/value/',
                 '/en/slug/value/' => false,
             ],
         ],
@@ -437,268 +438,268 @@ class RedirectTest extends TestCase
         // Normalizer with + w/o suffix, no URL code for default language
         [
             'urlManager' => [
-                'languages' => ['en-US', 'en', 'de'],
-                'suffix' => '/',
+                'languages'  => ['en-US', 'en', 'de'],
+                'suffix'     => '/',
                 'normalizer' => [
                     'class' => '\yii\web\UrlNormalizer',
                 ],
-                'rules' => [
-                    '/custom' => 'test/action',
+                'rules'      => [
+                    '/custom'      => 'test/action',
                     '/slug/<name>' => 'test/slug',
                     [
                         'pattern' => '/noslash',
-                        'route' => 'test/slash',
-                        'suffix' => '',
+                        'route'   => 'test/slash',
+                        'suffix'  => '',
                     ],
                 ],
             ],
-            'redirects' => [
-                '' => '',
-                '/site/page' => '/site/page/',
+            'redirects'  => [
+                ''            => '',
+                '/site/page'  => '/site/page/',
                 '/site/page/' => false,
 
-                '/de' => '/de/',    // normalizer
+                '/de'  => '/de/',    // normalizer
                 '/de/' => false,
 
-                '/de/site/login' => '/de/site/login/',  // normalizer
+                '/de/site/login'  => '/de/site/login/',  // normalizer
                 '/de/site/login/' => false,
 
-                '/en/site/login' => '/site/login/',     // normalizer
-                '/en/site/login/' => '/site/login/',    // localeurls
+                '/en/site/login'      => '/site/login/',     // normalizer
+                '/en/site/login/'     => '/site/login/',    // localeurls
 
                 // Custom URL rule
-                '/custom' => '/custom/',
-                '/custom/' => false,
-                '/en/custom' => '/custom/',
-                '/en/custom/' => '/custom/',
-                '/de/custom' => '/de/custom/',
-                '/de/custom/' => false,
-                '/noslash' => false,
-                '/noslash/' => '/noslash',
-                '/en/noslash' => '/noslash',
-                '/en/noslash/' => '/noslash',
-                '/de/noslash' => false,
-                '/de/noslash/' => '/de/noslash',
+                '/custom'             => '/custom/',
+                '/custom/'            => false,
+                '/en/custom'          => '/custom/',
+                '/en/custom/'         => '/custom/',
+                '/de/custom'          => '/de/custom/',
+                '/de/custom/'         => false,
+                '/noslash'            => false,
+                '/noslash/'           => '/noslash',
+                '/en/noslash'         => '/noslash',
+                '/en/noslash/'        => '/noslash',
+                '/de/noslash'         => false,
+                '/de/noslash/'        => '/de/noslash',
 
                 // Params
-                '/site/page?a=b' => '/site/page/?a=b',
-                '/de?a=b' => '/de/?a=b',
-                '/de/site/login?a=b' => '/de/site/login/?a=b',
-                '/en/site/login?a=b' => '/site/login/?a=b',
+                '/site/page?a=b'      => '/site/page/?a=b',
+                '/de?a=b'             => '/de/?a=b',
+                '/de/site/login?a=b'  => '/de/site/login/?a=b',
+                '/en/site/login?a=b'  => '/site/login/?a=b',
                 '/en/site/login/?a=b' => '/site/login/?a=b',
-                '/custom?a=b' => '/custom/?a=b',
-                '/en/custom?a=b' => '/custom/?a=b',
-                '/en/custom/?a=b' => '/custom/?a=b',
-                '/de/custom?a=b' => '/de/custom/?a=b',
-                '/noslash/?a=b' => '/noslash?a=b',
-                '/en/noslash?a=b' => '/noslash?a=b',
-                '/en/noslash/?a=b' => '/noslash?a=b',
-                '/de/noslash/?a=b' => '/de/noslash?a=b',
-                '/slug/value' => '/slug/value/',
-                '/en/slug/value' => '/slug/value/',
-                '/de/slug/value' => '/de/slug/value/',
+                '/custom?a=b'         => '/custom/?a=b',
+                '/en/custom?a=b'      => '/custom/?a=b',
+                '/en/custom/?a=b'     => '/custom/?a=b',
+                '/de/custom?a=b'      => '/de/custom/?a=b',
+                '/noslash/?a=b'       => '/noslash?a=b',
+                '/en/noslash?a=b'     => '/noslash?a=b',
+                '/en/noslash/?a=b'    => '/noslash?a=b',
+                '/de/noslash/?a=b'    => '/de/noslash?a=b',
+                '/slug/value'         => '/slug/value/',
+                '/en/slug/value'      => '/slug/value/',
+                '/de/slug/value'      => '/de/slug/value/',
             ],
         ],
         [
             'urlManager' => [
-                'languages' => ['en-US', 'en', 'de'],
+                'languages'  => ['en-US', 'en', 'de'],
                 'normalizer' => [
                     'class' => '\yii\web\UrlNormalizer',
                 ],
-                'rules' => [
-                    '/custom' => 'test/action',
+                'rules'      => [
+                    '/custom'      => 'test/action',
                     '/slug/<name>' => 'test/slug',
                     [
                         'pattern' => '/slash',
-                        'route' => 'test/slash',
-                        'suffix' => '/',
+                        'route'   => 'test/slash',
+                        'suffix'  => '/',
                     ],
                 ],
             ],
-            'redirects' => [
-                '' => '',
+            'redirects'  => [
+                ''            => '',
                 '/site/page/' => '/site/page',
-                '/site/page' => false,
+                '/site/page'  => false,
 
                 '/de/' => '/de',    // normalizer
-                '/de' => false,
+                '/de'  => false,
 
                 '/de/site/login/' => '/de/site/login',  // normalizer
-                '/de/site/login' => false,
+                '/de/site/login'  => false,
 
-                '/en/site/login/' => '/site/login',     // normalizer
-                '/en/site/login' => '/site/login',      // localeurls
+                '/en/site/login/'     => '/site/login',     // normalizer
+                '/en/site/login'      => '/site/login',      // localeurls
 
                 // Custom URL rule
-                '/custom' => false,
-                '/custom/' => '/custom',
-                '/en/custom' => '/custom',
-                '/en/custom/' => '/custom',
-                '/de/custom' => false,
-                '/de/custom/' => '/de/custom',
-                '/slash' => '/slash/',
-                '/slash/' => false,
-                '/en/slash' => '/slash/',
-                '/en/slash/' => '/slash/',
-                '/de/slash' => '/de/slash/',
-                '/de/slash/' => false,
+                '/custom'             => false,
+                '/custom/'            => '/custom',
+                '/en/custom'          => '/custom',
+                '/en/custom/'         => '/custom',
+                '/de/custom'          => false,
+                '/de/custom/'         => '/de/custom',
+                '/slash'              => '/slash/',
+                '/slash/'             => false,
+                '/en/slash'           => '/slash/',
+                '/en/slash/'          => '/slash/',
+                '/de/slash'           => '/de/slash/',
+                '/de/slash/'          => false,
 
                 // Params
-                '/site/page/?a=b' => '/site/page?a=b',
-                '/de/?a=b' => '/de?a=b',    // normalizer
+                '/site/page/?a=b'     => '/site/page?a=b',
+                '/de/?a=b'            => '/de?a=b',    // normalizer
                 '/de/site/login/?a=b' => '/de/site/login?a=b',  // normalizer
                 '/en/site/login/?a=b' => '/site/login?a=b',     // normalizer
-                '/en/site/login?a=b' => '/site/login?a=b',      // localeurls
-                '/custom/?a=b' => '/custom?a=b',
-                '/en/custom?a=b' => '/custom?a=b',
-                '/en/custom/?a=b' => '/custom?a=b',
-                '/de/custom/?a=b' => '/de/custom?a=b',
-                '/slash?a=b' => '/slash/?a=b',
-                '/en/slash?a=b' => '/slash/?a=b',
-                '/en/slash/?a=b' => '/slash/?a=b',
-                '/de/slash?a=b' => '/de/slash/?a=b',
-                '/slug/value/' => '/slug/value',
-                '/en/slug/value/' => '/slug/value',
-                '/de/slug/value/' => '/de/slug/value',
+                '/en/site/login?a=b'  => '/site/login?a=b',      // localeurls
+                '/custom/?a=b'        => '/custom?a=b',
+                '/en/custom?a=b'      => '/custom?a=b',
+                '/en/custom/?a=b'     => '/custom?a=b',
+                '/de/custom/?a=b'     => '/de/custom?a=b',
+                '/slash?a=b'          => '/slash/?a=b',
+                '/en/slash?a=b'       => '/slash/?a=b',
+                '/en/slash/?a=b'      => '/slash/?a=b',
+                '/de/slash?a=b'       => '/de/slash/?a=b',
+                '/slug/value/'        => '/slug/value',
+                '/en/slug/value/'     => '/slug/value',
+                '/de/slug/value/'     => '/de/slug/value',
             ],
         ],
 
         // Normalizer with + w/o suffix, with URL code for default language
         [
             'urlManager' => [
-                'languages' => ['en-US', 'en', 'de', 'pt', 'at' => 'de-AT', 'alias' => 'fr', 'es-BO', 'wc-*'],
-                'geoIpLanguageCountries' => [
-                    'de' => ['DEU'],
+                'languages'                    => ['en-US', 'en', 'de', 'pt', 'at' => 'de-AT', 'alias' => 'fr', 'es-BO', 'wc-*'],
+                'geoIpLanguageCountries'       => [
+                    'de'    => ['DEU'],
                     'de-AT' => ['AUT'],
-                    'fr' => ['FRA'],
-                    'en' => ['USA', 'GBR'],
+                    'fr'    => ['FRA'],
+                    'en'    => ['USA', 'GBR'],
                 ],
                 'enableDefaultLanguageUrlCode' => true,
-                'suffix' => '/',
-                'normalizer' => [
+                'suffix'                       => '/',
+                'normalizer'                   => [
                     'class' => '\yii\web\UrlNormalizer',
                 ],
-                'rules' => [
-                    '/custom' => 'test/action',
+                'rules'                        => [
+                    '/custom'      => 'test/action',
                     '/slug/<name>' => 'test/slug',
                     [
                         'pattern' => '/noslash',
-                        'route' => 'test/slash',
-                        'suffix' => '',
+                        'route'   => 'test/slash',
+                        'suffix'  => '',
                     ],
                 ],
             ],
-            'redirects' => [
-                '' => [
+            'redirects'  => [
+                ''                 => [
                     ['/en/'],    // default language
                     ['/de/', 'session' => ['_language' => 'de']],
                     ['/alias/', 'cookie' => ['_language' => 'fr']],
                     ['/de/', 'server' => ['HTTP_X_GEO_COUNTRY' => 'DEU']],
                 ],
-                '/site/page' => [
+                '/site/page'       => [
                     ['/en/site/page/'],  // default language
                     ['/de/site/page/', 'session' => ['_language' => 'de']],
                     ['/alias/site/page/', 'cookie' => ['_language' => 'fr']],
                     ['/de/site/page/', 'server' => ['HTTP_X_GEO_COUNTRY' => 'DEU']],
                 ],
-                '/en/site/page' => '/en/site/page/',
+                '/en/site/page'    => '/en/site/page/',
 
                 // Custom URL rule
-                '/custom' => '/en/custom/',
-                '/custom/' => '/en/custom/',
-                '/en/custom' => '/en/custom/',
-                '/en/custom/' => false,
-                '/de/custom' => '/de/custom/',
-                '/de/custom/' => false,
-                '/noslash' => '/en/noslash',
-                '/noslash/' => '/en/noslash',
-                '/en/noslash' => false,
-                '/en/noslash/' => '/en/noslash',
-                '/de/noslash' => false,
-                '/de/noslash/' => '/de/noslash',
+                '/custom'          => '/en/custom/',
+                '/custom/'         => '/en/custom/',
+                '/en/custom'       => '/en/custom/',
+                '/en/custom/'      => false,
+                '/de/custom'       => '/de/custom/',
+                '/de/custom/'      => false,
+                '/noslash'         => '/en/noslash',
+                '/noslash/'        => '/en/noslash',
+                '/en/noslash'      => false,
+                '/en/noslash/'     => '/en/noslash',
+                '/de/noslash'      => false,
+                '/de/noslash/'     => '/de/noslash',
 
                 // Params
-                '?a=b' => '/en/?a=b',
-                '/site/page?a=b' => '/en/site/page/?a=b',
-                '/custom?a=b' => '/en/custom/?a=b',
-                '/custom/?a=b' => '/en/custom/?a=b',
-                '/en/custom?a=b' => '/en/custom/?a=b',
-                '/de/custom?a=b' => '/de/custom/?a=b',
-                '/noslash?a=b' => '/en/noslash?a=b',
-                '/noslash/?a=b' => '/en/noslash?a=b',
+                '?a=b'             => '/en/?a=b',
+                '/site/page?a=b'   => '/en/site/page/?a=b',
+                '/custom?a=b'      => '/en/custom/?a=b',
+                '/custom/?a=b'     => '/en/custom/?a=b',
+                '/en/custom?a=b'   => '/en/custom/?a=b',
+                '/de/custom?a=b'   => '/de/custom/?a=b',
+                '/noslash?a=b'     => '/en/noslash?a=b',
+                '/noslash/?a=b'    => '/en/noslash?a=b',
                 '/en/noslash/?a=b' => '/en/noslash?a=b',
                 '/de/noslash/?a=b' => '/de/noslash?a=b',
-                '/slug/value' => '/en/slug/value/',
-                '/en/slug/value' => '/en/slug/value/',
-                '/de/slug/value' => '/de/slug/value/',
+                '/slug/value'      => '/en/slug/value/',
+                '/en/slug/value'   => '/en/slug/value/',
+                '/de/slug/value'   => '/de/slug/value/',
             ],
         ],
         [
             'urlManager' => [
-                'languages' => ['en-US', 'en', 'de', 'pt', 'at' => 'de-AT', 'alias' => 'fr', 'es-BO', 'wc-*'],
-                'geoIpLanguageCountries' => [
-                    'de' => ['DEU'],
+                'languages'                    => ['en-US', 'en', 'de', 'pt', 'at' => 'de-AT', 'alias' => 'fr', 'es-BO', 'wc-*'],
+                'geoIpLanguageCountries'       => [
+                    'de'    => ['DEU'],
                     'de-AT' => ['AUT'],
-                    'fr' => ['FRA'],
-                    'en' => ['USA', 'GBR'],
+                    'fr'    => ['FRA'],
+                    'en'    => ['USA', 'GBR'],
                 ],
                 'enableDefaultLanguageUrlCode' => true,
-                'normalizer' => [
+                'normalizer'                   => [
                     'class' => '\yii\web\UrlNormalizer',
                 ],
-                'rules' => [
-                    '/custom' => 'test/action',
+                'rules'                        => [
+                    '/custom'      => 'test/action',
                     '/slug/<name>' => 'test/slug',
                     [
                         'pattern' => '/slash',
-                        'route' => 'test/slash',
-                        'suffix' => '/',
+                        'route'   => 'test/slash',
+                        'suffix'  => '/',
                     ],
                 ],
             ],
-            'redirects' => [
-                '/' => [
+            'redirects'  => [
+                '/'                  => [
                     ['/en'],    // default language
                     ['/de', 'session' => ['_language' => 'de']],
                     ['/alias', 'cookie' => ['_language' => 'fr']],
                     ['/de', 'server' => ['HTTP_X_GEO_COUNTRY' => 'DEU']],
                 ],
-                '/site/page/' => [
+                '/site/page/'        => [
                     ['/en/site/page'],  // default language
                     ['/de/site/page', 'session' => ['_language' => 'de']],
                     ['/alias/site/page', 'cookie' => ['_language' => 'fr']],
                     ['/de/site/page', 'server' => ['HTTP_X_GEO_COUNTRY' => 'DEU']],
                 ],
-                '/en/site/page/' => '/en/site/page',
+                '/en/site/page/'     => '/en/site/page',
 
                 // Custom URL rule
-                '/custom' => '/en/custom',
-                '/custom/' => '/en/custom',
-                '/en/custom' => false,
-                '/en/custom/' => '/en/custom',
-                '/de/custom' => false,
-                '/de/custom/' => '/de/custom',
-                '/slash' => '/en/slash/',
-                '/slash/' => '/en/slash/',
-                '/en/slash' => '/en/slash/',
-                '/en/slash/' => false,
-                '/de/slash' => '/de/slash/',
-                '/de/slash/' => false,
+                '/custom'            => '/en/custom',
+                '/custom/'           => '/en/custom',
+                '/en/custom'         => false,
+                '/en/custom/'        => '/en/custom',
+                '/de/custom'         => false,
+                '/de/custom/'        => '/de/custom',
+                '/slash'             => '/en/slash/',
+                '/slash/'            => '/en/slash/',
+                '/en/slash'          => '/en/slash/',
+                '/en/slash/'         => false,
+                '/de/slash'          => '/de/slash/',
+                '/de/slash/'         => false,
 
                 // Params
-                '/?a=b' => '/en?a=b',
-                '/site/page/?a=b' => '/en/site/page?a=b',
+                '/?a=b'              => '/en?a=b',
+                '/site/page/?a=b'    => '/en/site/page?a=b',
                 '/en/site/page/?a=b' => '/en/site/page?a=b',
-                '/custom?a=b' => '/en/custom?a=b',
-                '/custom/?a=b' => '/en/custom?a=b',
-                '/de/custom/?a=b' => '/de/custom?a=b',
-                '/slash?a=b' => '/en/slash/?a=b',
-                '/slash/?a=b' => '/en/slash/?a=b',
-                '/en/slash?a=b' => '/en/slash/?a=b',
-                '/de/slash?a=b' => '/de/slash/?a=b',
-                '/slug/value/' => '/en/slug/value',
-                '/en/slug/value/' => '/en/slug/value',
-                '/de/slug/value/' => '/de/slug/value',
+                '/custom?a=b'        => '/en/custom?a=b',
+                '/custom/?a=b'       => '/en/custom?a=b',
+                '/de/custom/?a=b'    => '/de/custom?a=b',
+                '/slash?a=b'         => '/en/slash/?a=b',
+                '/slash/?a=b'        => '/en/slash/?a=b',
+                '/en/slash?a=b'      => '/en/slash/?a=b',
+                '/de/slash?a=b'      => '/de/slash/?a=b',
+                '/slug/value/'       => '/en/slug/value',
+                '/en/slug/value/'    => '/en/slug/value',
+                '/de/slug/value/'    => '/de/slug/value',
             ],
         ],
     ];
@@ -727,37 +728,37 @@ class RedirectTest extends TestCase
     /**
      * Tests for a redirect
      *
-     * @param string $from the request URL
-     * @param mixed $to the expected redirect URL or a falsey value for no redirect
-     * @param array $urlManager the urlManager configuration
-     * @param array $request the configuration for the request component
-     * @param array $session the session variables
-     * @param array $cookie the cookies
+     * @param string $from       the request URL
+     * @param mixed  $to         the expected redirect URL or a falsey value for no redirect
+     * @param array  $urlManager the urlManager configuration
+     * @param array  $request    the configuration for the request component
+     * @param array  $session    the session variables
+     * @param array  $cookie     the cookies
      */
     public function performRedirectTest($from, $to, $urlManager, $request = [], $session = [], $cookie = [], $server = [])
     {
         $this->tearDown();
         $this->mockUrlManager($urlManager);
-        if (!empty($session)) {
+        if (! empty($session)) {
             @session_start();
             $_SESSION = $session;
         }
-        if (!empty($cookie)) {
+        if (! empty($cookie)) {
             $_COOKIE = $cookie;
         }
-        if (!empty($server)) {
+        if (! empty($server)) {
             foreach ($server as $key => $value) {
                 $_SERVER[$key] = $value;
             }
         }
         $configMessage = print_r([
-            'from' => $from,
-            'to' => $to,
+            'from'       => $from,
+            'to'         => $to,
             'urlManager' => $urlManager,
-            'request' => $request,
-            'session' => $session,
-            'cookie' => $cookie,
-            'server' => $server,
+            'request'    => $request,
+            'session'    => $session,
+            'cookie'     => $cookie,
+            'server'     => $server,
         ], true);
         try {
             $this->mockRequest($from, $request);

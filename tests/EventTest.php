@@ -1,4 +1,5 @@
 <?php
+
 namespace tests;
 
 use yii\helpers\Url;
@@ -26,7 +27,7 @@ class EventTest extends TestCase
     public function testFiresIfNoLanguagePersisted()
     {
         $this->mockUrlManager([
-            'languages' => ['fr', 'en', 'de'],
+            'languages'          => ['fr', 'en', 'de'],
             'on languageChanged' => [$this, 'languageChangedHandler'],
         ]);
         $this->expectedLanguage = 'fr';
@@ -40,7 +41,7 @@ class EventTest extends TestCase
     {
         $_COOKIE['_language'] = 'de';
         $this->mockUrlManager([
-            'languages' => ['fr', 'en', 'de'],
+            'languages'          => ['fr', 'en', 'de'],
             'on languageChanged' => [$this, 'languageChangedHandler'],
         ]);
         $this->expectedLanguage = 'fr';
@@ -56,7 +57,7 @@ class EventTest extends TestCase
         @session_start();
         $_SESSION['_language'] = 'de';
         $this->mockUrlManager([
-            'languages' => ['fr', 'en', 'de'],
+            'languages'          => ['fr', 'en', 'de'],
             'on languageChanged' => [$this, 'languageChangedHandler'],
         ]);
         $this->expectedLanguage = 'fr';
@@ -71,7 +72,7 @@ class EventTest extends TestCase
     {
         $_COOKIE['_language'] = 'fr';
         $this->mockUrlManager([
-            'languages' => ['fr', 'en', 'de'],
+            'languages'          => ['fr', 'en', 'de'],
             'on languageChanged' => [$this, 'languageChangedHandler'],
         ]);
 
@@ -85,7 +86,7 @@ class EventTest extends TestCase
         @session_start();
         $_SESSION['_language'] = 'fr';
         $this->mockUrlManager([
-            'languages' => ['fr', 'en', 'de'],
+            'languages'          => ['fr', 'en', 'de'],
             'on languageChanged' => [$this, 'languageChangedHandler'],
         ]);
 
@@ -97,8 +98,8 @@ class EventTest extends TestCase
     public function testFiresNotIfPersistenceDisabled()
     {
         $this->mockUrlManager([
-            'languages' => ['fr', 'en', 'de'],
-            'on languageChanged' => [$this, 'languageChangedHandler'],
+            'languages'                 => ['fr', 'en', 'de'],
+            'on languageChanged'        => [$this, 'languageChangedHandler'],
             'enableLanguagePersistence' => false,
         ]);
         $this->expectedLanguage = 'fr';
