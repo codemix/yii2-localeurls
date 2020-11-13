@@ -389,6 +389,7 @@ class UrlManager extends BaseUrlManager
                 }
             }
             Yii::$app->language = $language;
+            $this->languageValue=$language;
             Yii::trace("Language code found in URL. Setting application language to '$language'.", __METHOD__);
             if ($this->enableLanguagePersistence) {
                 $this->persistLanguage($language);
