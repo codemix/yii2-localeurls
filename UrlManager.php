@@ -119,6 +119,11 @@ class UrlManager extends BaseUrlManager
      * configuration
      */
     protected $_defaultLanguage;
+    
+    /**
+     * @var string indicates the language of formation of the URL
+     */
+    public $languageValue;
 
     /**
      * @inheritdoc
@@ -175,6 +180,7 @@ class UrlManager extends BaseUrlManager
                 throw new InvalidConfigException('Locale URL support requires enablePrettyUrl to be set to true.');
             }
         }
+        $this->languageValue = Yii::$app->language;
         $this->_defaultLanguage = Yii::$app->language;
         parent::init();
     }
@@ -244,7 +250,7 @@ class UrlManager extends BaseUrlManager
             $isLanguageGiven = isset($params[$this->languageParam]);
             $language = $isLanguageGiven ? $params[$this->languageParam] : Yii::$app->language;
             $isDefaultLanguage = $language === $this->getDefaultLanguage();
-
+            $this->languageValue=$language;
             if ($isLanguageGiven) {
                 unset($params[$this->languageParam]);
             }
