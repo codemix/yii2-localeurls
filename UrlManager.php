@@ -72,6 +72,12 @@ class UrlManager extends BaseUrlManager
     public $keepUppercaseLanguageCode = false;
 
     /**
+     * @var bool whether to add the default language to baseUrl. Default is `false` wich will .e.g redirect / to /fr (if the default language is `fr`), but if this is `true` default language is ignored ONLY for baseUrl.
+     *
+     */
+    public $disabledForBaseUrl = false;
+
+    /**
      * @var string|bool the name of the session key that is used to store the
      * language. If `false` no session is used. Default is '_language'.
      */
@@ -188,6 +194,14 @@ class UrlManager extends BaseUrlManager
         return $this->_defaultLanguage;
     }
 
+    /*
+     * @return bool the baseUrl check 
+     */
+    public function isBaseUrl()
+    {
+        return $this->_request->getPathInfo() === "";
+    }
+
     /**
      * @inheritdoc
      */
@@ -251,9 +265,15 @@ class UrlManager extends BaseUrlManager
 
             $url = parent::createUrl($params);
 
+            $skipForBaseUrl = ($this->disabledForBaseUrl && $isDefaultLanguage && $this->isBaseUrl());
+            
             if (
-                // Only add language if it's not empty and ...
-                $language!=='' && (
+                // Only add language if it's not empty and
+                $language!=='' && 
+
+                // if baseUrl is not skipped and ..
+                !$skipForBaseUrl &&     
+                    (
 
                     // ... it's not the default language or default language uses URL code ...
                     !$isDefaultLanguage || $this->enableDefaultLanguageUrlCode ||

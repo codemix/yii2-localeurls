@@ -519,6 +519,22 @@ class UrlCreationTest extends TestCase
             ]
         ],
 
+        //Disabled for baseUrl
+        [
+            'urlManager' => [
+                'languages' => ['en', 'de'],
+                'disabledForBaseUrl' => true,
+            ],
+            'urls' => [
+                '' => [
+                    '/' => ['/', 'language' => 'en'],
+                ],
+
+                '/' => [
+                    '/' => ['/', 'language' => 'en'],
+                ],
+            ]
+        ],
     ];
 
     public function testUrlCreation()
