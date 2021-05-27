@@ -442,7 +442,7 @@ class UrlManager extends BaseUrlManager
             }
         }
         if ($this->languageSessionKey !== false) {
-            Yii::$app->session[$this->languageSessionKey] = $language;
+            Yii::$app->session->set($this->languageSessionKey, $language);
             Yii::trace("Persisting language '$language' in session.", __METHOD__);
         }
         if ($this->languageCookieDuration) {
