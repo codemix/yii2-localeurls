@@ -166,6 +166,16 @@ class UrlManager extends BaseUrlManager
     protected $_processed = false;
 
     /**
+     * @var int the status code to send to client (see \yii\web\Response::redirect())
+     */
+    public $statusCode = 302;
+
+    /**
+     * @var bool whether to send X-Redirect header to client (see \yii\web\Response::redirect())
+     */
+    public $checkAjax = true;
+
+    /**
      * @inheritdoc
      */
     public function init()
@@ -195,9 +205,10 @@ class UrlManager extends BaseUrlManager
     {
         if ($this->enableLocaleUrls && $this->languages) {
             $this->_request = $request;
+            $pathInfo = $request->getPathInfo();
+
             $process = true;
             if ($this->ignoreLanguageUrlPatterns) {
-                $pathInfo = $request->getPathInfo();
                 foreach ($this->ignoreLanguageUrlPatterns as $k => $pattern) {
                     if (preg_match($pattern, $pathInfo)) {
                         $message = "Ignore pattern '$pattern' matches '$pathInfo.' Skipping language processing.";
@@ -216,6 +227,19 @@ class UrlManager extends BaseUrlManager
                         $normalized = true;
                     }
                 }
+
+                if (isset($request->queryParams['checkAjax'])) {
+                    $queryCheckAjax = $request->queryParams['checkAjax'];
+
+                    $this->checkAjax = $queryCheckAjax === 'false'
+                        ? false : boolval($queryCheckAjax);
+                } elseif (isset($request->bodyParams['checkAjax'])) {
+                    $bodyCheckAjax = $request->bodyParams['checkAjax'];
+
+                    $this->checkAjax = $bodyCheckAjax === 'false'
+                        ? false : boolval($bodyCheckAjax);
+                }
+
                 $this->_processed = true;
                 $this->processLocaleUrl($normalized);
             }
@@ -588,10 +612,12 @@ class UrlManager extends BaseUrlManager
      *
      * @param string $language the language code to add. Can also be empty to
      * not add any language code.
+     * @param int $statusCode the status code to send to client (see \yii\web\Response::redirect())
+     * @param bool $checkAjax whether to send X-Redirect header to client (see \yii\web\Response::redirect())
      * @throws \yii\base\Exception
      * @throws \yii\web\NotFoundHttpException
      */
-    protected function redirectToLanguage($language)
+    protected function redirectToLanguage($language, $statusCode = null, $checkAjax = null)
     {
         try {
             $result = parent::parseRequest($this->_request);
@@ -625,7 +651,11 @@ class UrlManager extends BaseUrlManager
             return;
         }
         Yii::trace("Redirecting to $url.", __METHOD__);
-        Yii::$app->getResponse()->redirect($url);
+        Yii::$app->getResponse()->redirect(
+            $url, 
+            $statusCode ?: $this->statusCode, 
+            $checkAjax ?: $this->checkAjax
+        );
         if (YII2_LOCALEURLS_TEST) {
             // Response::redirect($url) above will call `Url::to()` internally.
             // So to really test for the same final redirect URL here, we need
