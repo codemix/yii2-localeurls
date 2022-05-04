@@ -115,12 +115,6 @@ class UrlManager extends BaseUrlManager
     public $ignoreLanguageUrlPatterns = [];
 
     /**
-     * @var string the language that was initially set in the application
-     * configuration
-     */
-    protected $_defaultLanguage;
-
-    /**
      * @inheritdoc
      */
     public $enablePrettyUrl = true;
@@ -156,10 +150,15 @@ class UrlManager extends BaseUrlManager
     public $geoIpLanguageCountries = [];
 
     /**
-     * @var int the HTTP status code.
-     * Defaults is 302.
+     * @var int the HTTP status code. Default is 302.
      */
     public $languageRedirectCode = 302;
+
+    /**
+     * @var string the language that was initially set in the application
+     * configuration
+     */
+    protected $_defaultLanguage;
 
     /**
      * @var \yii\web\Request
