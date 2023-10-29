@@ -13,12 +13,13 @@
     "minimum-stability": "dev",
     "require": {
         "php": ">=8.1",
-        "yiisoft/yii2": "^2.2",
-        "ext-mbstring": "*"
+        "ext-mbstring": "*",
+        "yiisoft/yii2": "^2.2"
     },
     "require-dev": {
         "maglnet/composer-require-checker": "^4.6",
         "phpunit/phpunit": "^10.4",
+        "rector/rector": "^0.18",
         "yii2-extensions/phpstan": "dev-main"
     },
     "repositories": [
