@@ -1,0 +1,31 @@
+on:
+  pull_request:
+    paths-ignore:
+      - 'docs/**'
+      - 'README.md'
+      - 'CHANGELOG.md'
+      - '.gitignore'
+      - '.gitattributes'
+      - 'infection.json.dist'
+      - 'phpunit.xml.dist'
+
+  push:
+    paths-ignore:
+      - 'docs/**'
+      - 'README.md'
+      - 'CHANGELOG.md'
+      - '.gitignore'
+      - '.gitattributes'
+      - 'infection.json.dist'
+      - 'phpunit.xml.dist'
+
+name: static analysis
+
+jobs:
+  phpstan:
+    uses: php-forge/actions/.github/workflows/phpstan.yml@main
+    with:
+      os: >-
+        ['ubuntu-latest']
+      php: >-
+        ['8.1']

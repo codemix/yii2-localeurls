@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace codemix\localeurls;
 
 use yii\base\Event;
@@ -11,10 +14,10 @@ class LanguageChangedEvent extends Event
     /**
      * @var string the new language
      */
-    public $language;
+    public string $language = '';
 
     /**
      * @var string|null the old language
      */
-    public $oldLanguage;
+    public string|null $oldLanguage = null;
 }

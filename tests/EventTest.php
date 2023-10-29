@@ -1,10 +1,13 @@
 <?php
+
+declare(strict_types=1);
+
 namespace tests;
 
 use yii\helpers\Url;
 use \codemix\localeurls\LanguageChangedEvent;
 
-class EventTest extends TestCase
+final class EventTest extends TestCase
 {
     protected $eventExpected = true;
     protected $eventFired = false;
@@ -14,7 +17,7 @@ class EventTest extends TestCase
     /**
      * @inheritdoc
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
         $this->eventExpected = true;

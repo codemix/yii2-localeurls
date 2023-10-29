@@ -24,7 +24,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     protected $_server;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         if ($this->_server === null) {
             // Keep initial $_SERVER content to restore after each
@@ -36,7 +36,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     /**
      * Destroy Yii app singleton, DI container, session and cookies
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         $_COOKIE = [];
         $_SERVER = $this->_server;
@@ -102,7 +102,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     {
         $url = $this->prepareUrl($url);
         $this->expectException('\yii\base\Exception');
-        $this->expectExceptionMessageRegExp('#^' . $url . '$#');
+        $this->expectExceptionMessageMatches('#^' . $url . '$#');
     }
 
     /**

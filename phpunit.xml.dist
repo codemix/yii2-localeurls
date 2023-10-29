@@ -1,19 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<phpunit backupGlobals="false"
-         backupStaticAttributes="false"
-         colors="true"
-         convertErrorsToExceptions="true"
-         convertNoticesToExceptions="true"
-         convertWarningsToExceptions="true"
-         processIsolation="false"
-         stopOnFailure="false"
-         stderr="true"
-         bootstrap="./tests/bootstrap.php"
+<phpunit
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  backupGlobals="false"
+  colors="true" processIsolation="false"
+  stopOnFailure="false"
+  stderr="true"
+  bootstrap="./tests/bootstrap.php"
+  xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
+  cacheDirectory=".phpunit.cache"
+  backupStaticProperties="false"
 >
-    <testsuites>
-        <testsuite name="PHP tmpfile Test Suite">
-            <directory>./tests/</directory>
-        </testsuite>
-    </testsuites>
+  <testsuites>
+    <testsuite name="Yii2-LocaleUrls">
+      <directory>./tests</directory>
+    </testsuite>
+  </testsuites>
+
+  <source>
+    <include>
+      <directory suffix=".php">./src</directory>
+    </include>
+  </source>
 </phpunit>

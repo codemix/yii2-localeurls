@@ -1,0 +1,21 @@
+includes:
+	- vendor/yii2-extensions/phpstan/extension.neon
+parameters:
+    dynamicConstantNames:
+        - YII_DEBUG
+        - YII_ENV
+        - YII_ENV_DEV
+        - YII_ENV_PROD
+        - YII_ENV_TEST
+
+    level: 3
+
+    paths:
+        - src
+
+    scanFiles:
+        - vendor/yiisoft/yii2/Yii.php
+
+    yii2:
+        config_path: %currentWorkingDirectory%/phpstan-yii-config.php
+

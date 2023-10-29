@@ -1,10 +1,13 @@
 <?php
+
+declare(strict_types=1);
+
 namespace tests;
 
 use Yii;
 use yii\web\UrlRuleInterface;
 
-class TestUrlRule implements UrlRuleInterface
+final class TestUrlRule implements UrlRuleInterface
 {
     public function createUrl($manager, $route, $params)
     {
