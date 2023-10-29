@@ -1,7 +1,11 @@
 Yii2 Locale URLs
 ================
 
-[![Build Status](https://secure.travis-ci.org/codemix/yii2-localeurls.png)](http://travis-ci.org/codemix/yii2-localeurls)
+[![php81](https://img.shields.io/badge/PHP-%3E%3D8.1-787CB5)](https://www.php.net/releases/8.1/en.php)
+[![yii2](https://img.shields.io/badge/Yii2%20version-2.2-blue)](https://github.com/yiisoft/yii2/tree/2.2)
+[![Build Status](https://github.com/codemix/yii2-localeurls/actions/workflows/build.yml/badge.svg)](https://github.com/codemix/yii2-localeurls/actions/workflows/build.yml)
+[![static analysis](https://github.com/codemix/yii2-localeurls/actions/workflows/static.yml/badge.svg)](https://github.com/codemix/yii2-localeurls/actions/workflows/static.yml)
+[![phpstan-level](https://img.shields.io/badge/PHPStan%20level-3-blue)](https://github.com/yii2-extensions/debug/actions/workflows/static.yml)
 [![Latest Stable Version](https://poser.pugx.org/codemix/yii2-localeurls/v/stable.svg)](https://packagist.org/packages/codemix/yii2-localeurls)
 [![Total Downloads](https://poser.pugx.org/codemix/yii2-localeurls/downloads)](https://packagist.org/packages/codemix/yii2-localeurls)
 [![Latest Unstable Version](https://poser.pugx.org/codemix/yii2-localeurls/v/unstable.svg)](https://packagist.org/packages/codemix/yii2-localeurls)
