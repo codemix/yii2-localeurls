@@ -6,8 +6,8 @@
     "license": "MIT",
     "authors": [
       	{
-        	"name": "Michael Härtl",
-        	"email": "haertl.mike@gmail.com"
+            "name": "Michael Härtl",
+            "email": "haertl.mike@gmail.com"
       	}
     ],
     "minimum-stability": "dev",
