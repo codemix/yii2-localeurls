@@ -89,7 +89,8 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
      *
      * @param array $config for urlManager component
      */
-    public function mockUrlManager($config = []) {
+    public function mockUrlManager($config = []): void
+    {
         $this->urlManager = $config;
     }
 

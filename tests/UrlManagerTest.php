@@ -12,7 +12,7 @@ use yii\helpers\Url;
  */
 class UrlManagerTest extends TestCase
 {
-    public function testSetsDefaultLanguageIfNoLanguageSpecified()
+    public function testSetsDefaultLanguageIfNoLanguageSpecified(): void
     {
         $this->mockUrlManager( [
             'languages' => ['en-US', 'en', 'de'],
@@ -23,7 +23,7 @@ class UrlManagerTest extends TestCase
         $this->assertEquals('', $request->pathInfo);
     }
 
-    public function testSetsLanguageFromUrl()
+    public function testSetsLanguageFromUrl(): void
     {
         $this->mockUrlManager([
             'languages' => ['en-US', 'en', 'de'],
@@ -38,7 +38,7 @@ class UrlManagerTest extends TestCase
         $this->assertEquals('site/page', $request->pathInfo);
     }
 
-    public function testSetsLanguageFromUrlOrder()
+    public function testSetsLanguageFromUrlOrder(): void
     {
         $this->mockUrlManager([
             'languages' => ['en', 'en-US', 'de'],
@@ -53,7 +53,7 @@ class UrlManagerTest extends TestCase
         $this->assertEquals('site/page', $request->pathInfo);
     }
 
-    public function testSetsLanguageFromUrlIfUppercaseEnabled()
+    public function testSetsLanguageFromUrlIfUppercaseEnabled(): void
     {
         $this->mockUrlManager([
             'languages' => ['en-US', 'en', 'de'],
@@ -69,7 +69,7 @@ class UrlManagerTest extends TestCase
         $this->assertEquals('site/page', $request->pathInfo);
     }
 
-    public function testSetsLanguageFromUrlIfItMatchesWildcard()
+    public function testSetsLanguageFromUrlIfItMatchesWildcard(): void
     {
         $this->mockUrlManager([
             'languages' => ['en-US', 'de-*'],
@@ -84,7 +84,7 @@ class UrlManagerTest extends TestCase
         $this->assertEquals('site/page', $request->pathInfo);
     }
 
-    public function testCanUseLanguageAliasInUrl()
+    public function testCanUseLanguageAliasInUrl(): void
     {
         $this->mockUrlManager([
             'languages' => ['en-US', 'en', 'deutsch' => 'de'],
@@ -99,7 +99,7 @@ class UrlManagerTest extends TestCase
         $this->assertEquals('site/page', $request->pathInfo);
     }
 
-    public function testCanUseLanguageWithWildcardCountryInUrl()
+    public function testCanUseLanguageWithWildcardCountryInUrl(): void
     {
         $this->mockUrlManager([
             'languages' => ['en-US', 'deutsch' => 'de', 'es-*'],
@@ -114,7 +114,7 @@ class UrlManagerTest extends TestCase
         $this->assertEquals('site/page', $request->pathInfo);
     }
 
-    public function testCanUseLanguageWithScriptCode()
+    public function testCanUseLanguageWithScriptCode(): void
     {
         $this->mockUrlManager([
             'languages' => ['en-US', 'deutsch' => 'de', 'sr-Latn'],
@@ -132,7 +132,7 @@ class UrlManagerTest extends TestCase
     /**
      * Tests for situations where no action is expected:
      */
-    public function testDoesNothingIfLocaleUrlsDisabled()
+    public function testDoesNothingIfLocaleUrlsDisabled(): void
     {
         $this->mockUrlManager([
             'enableLocaleUrls' => false,
@@ -156,7 +156,7 @@ class UrlManagerTest extends TestCase
         $this->assertEquals($this->prepareUrl('/site/test?x=y'), Url::to(['/site/test', 'x' => 'y']));
     }
 
-    public function testDoesNothingIfNoLanguagesConfigured()
+    public function testDoesNothingIfNoLanguagesConfigured(): void
     {
         $this->mockUrlManager([
             'languages' => [],
@@ -169,7 +169,7 @@ class UrlManagerTest extends TestCase
         $this->assertEquals('site/page', $request->pathInfo);
     }
 
-    public function testDoesNothingIfUrlMatchesIgnoresUrls()
+    public function testDoesNothingIfUrlMatchesIgnoresUrls(): void
     {
         $this->mockUrlManager([
             'languages' => ['en-US', 'en', 'de'],
@@ -185,7 +185,7 @@ class UrlManagerTest extends TestCase
         $this->assertEquals('site/page', $request->pathInfo);
     }
 
-    public function testDoesNothingIfInvalidLanguageInCookie()
+    public function testDoesNothingIfInvalidLanguageInCookie(): void
     {
         $_COOKIE['_language'] = 'fr';
         $this->mockUrlManager( [
@@ -195,7 +195,7 @@ class UrlManagerTest extends TestCase
         $this->assertTrue(true);
     }
 
-    public function testDoesNothingIfInvalidLanguageInSession()
+    public function testDoesNothingIfInvalidLanguageInSession(): void
     {
         @session_start();
         $_SESSION['_language'] = 'fr';
@@ -209,7 +209,7 @@ class UrlManagerTest extends TestCase
     /**
      * Tests for disabled features:
      */
-    public function testCanDisableLanguageDetection()
+    public function testCanDisableLanguageDetection(): void
     {
         $this->mockUrlManager([
             'languages' => ['en-US', 'en', 'de'],
@@ -223,7 +223,7 @@ class UrlManagerTest extends TestCase
         $this->assertEquals('site/page', $request->pathInfo);
     }
 
-    public function testCanDisablePersistence()
+    public function testCanDisablePersistence(): void
     {
         $this->mockUrlManager([
             'languages' => ['en-US', 'en', 'de'],
@@ -237,7 +237,7 @@ class UrlManagerTest extends TestCase
         $this->assertEquals('site/page', $request->pathInfo);
     }
 
-    public function testCanDisableCookieOnly()
+    public function testCanDisableCookieOnly(): void
     {
         $this->mockUrlManager([
             'languages' => ['en-US', 'en', 'de'],
@@ -251,7 +251,7 @@ class UrlManagerTest extends TestCase
         $this->assertEquals('site/page', $request->pathInfo);
     }
 
-    public function testCanDisableSessionOnly()
+    public function testCanDisableSessionOnly(): void
     {
         $this->mockUrlManager([
             'languages' => ['en-US', 'en', 'de'],

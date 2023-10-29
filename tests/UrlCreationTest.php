@@ -525,10 +525,10 @@ class UrlCreationTest extends TestCase
 
     ];
 
-    public function testUrlCreation()
+    public function testUrlCreation(): void
     {
         foreach ($this->testConfigs as $config) {
-            $urlManager = isset($config['urlManager']) ? $config['urlManager'] : [];
+            $urlManager = $config['urlManager'] ?? [];
             foreach ($config['urls'] as $requestUrl => $routes) {
                 $this->performUrlCreationTest($requestUrl, $urlManager, $routes);
             }
@@ -542,7 +542,7 @@ class UrlCreationTest extends TestCase
      * @param array $urlManager the urlManager configuration
      * @param array $routes to create URL for indexed by the expected URL
      */
-    public function performUrlCreationTest($requestUrl, $urlManager, $routes)
+    public function performUrlCreationTest($requestUrl, $urlManager, $routes): void
     {
         $this->tearDown();
         $this->mockUrlManager($urlManager);

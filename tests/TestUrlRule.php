@@ -12,18 +12,12 @@ final class TestUrlRule implements UrlRuleInterface
     public function createUrl($manager, $route, $params)
     {
         if ($route === 'ruleclass/test') {
-            $language = isset($params['slugLanguage']) ?
-                $params['slugLanguage'] : Yii::$app->language;
-            switch ($language) {
-                case 'de':
-                    return 'ruleclass-deutsch';
-                case 'fr':
-                    return 'ruleclass-francais';
-                case 'en':
-                case 'en-US':
-                default:
-                    return 'ruleclass-english';
-            }
+            $language = $params['slugLanguage'] ?? Yii::$app->language;
+            return match ($language) {
+                'de' => 'ruleclass-deutsch',
+                'fr' => 'ruleclass-francais',
+                default => 'ruleclass-english',
+            };
         }
         return false;
     }

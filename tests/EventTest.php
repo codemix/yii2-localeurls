@@ -25,7 +25,7 @@ final class EventTest extends TestCase
         $this->expectedOldLanguage = null;
     }
 
-    public function testFiresIfNoLanguagePersisted()
+    public function testFiresIfNoLanguagePersisted(): void
     {
         $this->mockUrlManager([
             'languages' => ['fr', 'en', 'de'],
@@ -38,7 +38,7 @@ final class EventTest extends TestCase
         $this->assertTrue($this->eventFired);
     }
 
-    public function testFiresOnCookieLanguageChange()
+    public function testFiresOnCookieLanguageChange(): void
     {
         $_COOKIE['_language'] = 'de';
         $this->mockUrlManager([
@@ -53,7 +53,7 @@ final class EventTest extends TestCase
         $this->assertTrue($this->eventFired);
     }
 
-    public function testFiresOnSessionLanguageChange()
+    public function testFiresOnSessionLanguageChange(): void
     {
         @session_start();
         $_SESSION['_language'] = 'de';
@@ -69,7 +69,7 @@ final class EventTest extends TestCase
         $this->assertTrue($this->eventFired);
     }
 
-    public function testFiresNotIfNoCookieLanguageChange()
+    public function testFiresNotIfNoCookieLanguageChange(): void
     {
         $_COOKIE['_language'] = 'fr';
         $this->mockUrlManager([
@@ -82,7 +82,7 @@ final class EventTest extends TestCase
         $this->assertFalse($this->eventFired);
     }
 
-    public function testFiresNotIfNoSessionLanguageChange()
+    public function testFiresNotIfNoSessionLanguageChange(): void
     {
         @session_start();
         $_SESSION['_language'] = 'fr';
@@ -96,7 +96,7 @@ final class EventTest extends TestCase
         $this->assertFalse($this->eventFired);
     }
 
-    public function testFiresNotIfPersistenceDisabled()
+    public function testFiresNotIfPersistenceDisabled(): void
     {
         $this->mockUrlManager([
             'languages' => ['fr', 'en', 'de'],
@@ -113,7 +113,7 @@ final class EventTest extends TestCase
     /**
      * Event handler
      */
-    public function languageChangedHandler($event)
+    public function languageChangedHandler($event): void
     {
         $this->assertInstanceOf(LanguageChangedEvent::class, $event);
         $this->assertTrue($this->eventExpected);

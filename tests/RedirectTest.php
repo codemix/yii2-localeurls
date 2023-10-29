@@ -703,10 +703,10 @@ class RedirectTest extends TestCase
         ],
     ];
 
-    public function testRedirects()
+    public function testRedirects(): void
     {
         foreach ($this->testConfigs as $config) {
-            $urlManager = isset($config['urlManager']) ? $config['urlManager'] : [];
+            $urlManager = $config['urlManager'] ?? [];
             foreach ($config['redirects'] as $from => $to) {
                 if (is_array($to)) {
                     foreach ($to as $params) {
@@ -734,7 +734,7 @@ class RedirectTest extends TestCase
      * @param array $session the session variables
      * @param array $cookie the cookies
      */
-    public function performRedirectTest($from, $to, $urlManager, $request = [], $session = [], $cookie = [], $server = [])
+    public function performRedirectTest($from, mixed $to, $urlManager, $request = [], $session = [], $cookie = [], $server = []): void
     {
         $this->tearDown();
         $this->mockUrlManager($urlManager);
@@ -769,7 +769,7 @@ class RedirectTest extends TestCase
             if (is_array($url)) {
                 if (isset($url[0])) {
                     // ensure the route is absolute
-                    $url[0] = '/' . ltrim($url[0], '/');
+                    $url[0] = '/' . ltrim((string) $url[0], '/');
                 }
                 $url += Yii::$app->request->getQueryParams();
             }
