@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace tests;
 
-use yii\helpers\Url;
-
 class SlugRedirectTest extends TestCase
 {
-    public function mockUrlManager($config = []) {
+    public function mockUrlManager($config = [])
+    {
         if (!isset($config['rules'])) {
             $config['rules'] = [];
         }
@@ -53,10 +52,9 @@ class SlugRedirectTest extends TestCase
         $this->mockRequest('/es-BO/foo/baz/bar');
     }
 
-
-
-    // Accepted language tests
-    //
+    /**
+     * Accepted language tests
+     */
     public function testRedirectsIfNoLanguageInUrlAndAcceptedLanguageMatches()
     {
         $this->expectRedirect('/de/foo/baz/bar');
@@ -145,10 +143,9 @@ class SlugRedirectTest extends TestCase
         ]);
     }
 
-
-
-    // GeoIp ltests
-    //
+    /**
+     * GeoIp ltests
+     */
     public function testRedirectsIfNoLanguageInUrlAndGeoIpMatches()
     {
         $this->expectRedirect('/de/foo/baz/bar');
@@ -219,9 +216,9 @@ class SlugRedirectTest extends TestCase
         $this->mockRequest('/foo/baz/bar');
     }
 
-
-    // Session test
-    //
+    /**
+     * Session test
+     */
     public function testRedirectsIfNoLanguageInUrlAndLanguageInSession()
     {
         $this->expectRedirect('/de/foo/baz/bar');
@@ -244,10 +241,9 @@ class SlugRedirectTest extends TestCase
         $this->mockRequest('/foo/baz/bar');
     }
 
-
-
-    // Cookie test
-    //
+    /**
+     * Cookie test
+     */
     public function testRedirectsIfNoLanguageInUrlAndLanguageInCookie()
     {
         $this->expectRedirect('/de/foo/baz/bar');
@@ -268,9 +264,9 @@ class SlugRedirectTest extends TestCase
         $this->mockRequest('/foo/baz/bar');
     }
 
-
-
-    // Ignore URL test
+    /**
+     * Ignore URL test
+     */
     public function testRedirectsIfUrlDoesNotMatchIgnoresUrls()
     {
         $this->expectRedirect('/foo/baz/bar');
@@ -283,10 +279,9 @@ class SlugRedirectTest extends TestCase
         $this->mockRequest('/en/foo/baz/bar');
     }
 
-
-
-    // Trailing slash tests
-    //
+    /**
+     * Trailing slash tests
+     */
     public function testRedirectsIfDefaultLanguageInUrlAndDefaultLanguageUsesNoSuffixAndTrailingSlashEnabled()
     {
         $this->expectRedirect('/foo/baz/bar/');

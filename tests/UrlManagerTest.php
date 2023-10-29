@@ -7,11 +7,11 @@ namespace tests;
 use Yii;
 use yii\helpers\Url;
 
+/**
+ * Generic tests for UrlManager.
+ */
 class UrlManagerTest extends TestCase
 {
-    //////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Generic tests:
-
     public function testSetsDefaultLanguageIfNoLanguageSpecified()
     {
         $this->mockUrlManager( [
@@ -129,18 +129,9 @@ class UrlManagerTest extends TestCase
         $this->assertEquals('site/page', $request->pathInfo);
     }
 
-
-
-
-
-
-
-
-
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Tests for situations where no action is expected:
-
+    /**
+     * Tests for situations where no action is expected:
+     */
     public function testDoesNothingIfLocaleUrlsDisabled()
     {
         $this->mockUrlManager([
@@ -215,18 +206,9 @@ class UrlManagerTest extends TestCase
         $this->assertTrue(true);
     }
 
-
-
-
-
-
-
-
-
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Tests for disabled features:
-
+    /**
+     * Tests for disabled features:
+     */
     public function testCanDisableLanguageDetection()
     {
         $this->mockUrlManager([

@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace tests;
 
-use yii\helpers\Url;
-use \codemix\localeurls\LanguageChangedEvent;
+use codemix\localeurls\LanguageChangedEvent;
 
 final class EventTest extends TestCase
 {
@@ -116,7 +115,7 @@ final class EventTest extends TestCase
      */
     public function languageChangedHandler($event)
     {
-        $this->assertInstanceOf('\codemix\localeurls\LanguageChangedEvent', $event);
+        $this->assertInstanceOf(LanguageChangedEvent::class, $event);
         $this->assertTrue($this->eventExpected);
         $this->assertEquals($this->expectedLanguage, $event->language);
         $this->assertEquals($this->expectedOldLanguage, $event->oldLanguage);

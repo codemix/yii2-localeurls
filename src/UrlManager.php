@@ -1,6 +1,6 @@
 <?php
 
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace codemix\localeurls;
 
@@ -93,7 +93,7 @@ class UrlManager extends \yii\web\UrlManager
     public bool $keepUppercaseLanguageCode = false;
 
     /**
-     * @var string|bool the name of the session key that is used to store the language. If `false` no session is used.
+     * @var bool|string the name of the session key that is used to store the language. If `false` no session is used.
      * Default is '_language'.
      */
     public string|bool $languageSessionKey = '_language';
@@ -282,7 +282,6 @@ class UrlManager extends \yii\web\UrlManager
             if (
                 // Only add language if it's not empty and ...
                 $language!=='' && (
-
                     // ... it's not the default language or default language uses URL code ...
                     !$isDefaultLanguage || $this->enableDefaultLanguageUrlCode ||
 
@@ -315,7 +314,7 @@ class UrlManager extends \yii\web\UrlManager
 
                 // Remove any trailing slashes for root URLs
                 if ($this->suffix !== '/') {
-                    if (count($params) === 1 ) {
+                    if (count($params) === 1) {
                         // / -> ''
                         // /base/ -> /base
                         // /index.php/ -> /index.php
@@ -405,7 +404,7 @@ class UrlManager extends \yii\web\UrlManager
         $pattern = implode('|', $parts);
 
         if (preg_match("#^($pattern)\b(/?)#i", $pathInfo, $m)) {
-            $this->_request->setPathInfo(mb_substr($pathInfo, mb_strlen($m[1].$m[2])));
+            $this->_request->setPathInfo(mb_substr($pathInfo, mb_strlen($m[1] . $m[2])));
             $code = $m[1];
             if (isset($this->languages[$code])) {
                 // Replace alias with language code
@@ -658,7 +657,8 @@ class UrlManager extends \yii\web\UrlManager
      * @param string $language the language code to add. Can also be empty to not add any language code.
      *
      * @throws Exception
-     * @throws NotFoundHttpException|ExitException
+     * @throws NotFoundHttpException
+     * @throws ExitException
      */
     protected function redirectToLanguage(string $language): void
     {
@@ -680,7 +680,7 @@ class UrlManager extends \yii\web\UrlManager
 
         [$route, $params] = $result;
 
-        if($language){
+        if($language) {
             $params[$this->languageParam] = $language;
         }
 
@@ -691,7 +691,7 @@ class UrlManager extends \yii\web\UrlManager
 
         // Required to prevent double slashes on generated URLs
         if ($this->suffix === '/' && $route === '' && count($params) === 1) {
-            $url = rtrim($url, '/').'/';
+            $url = rtrim($url, '/') . '/';
         }
 
         // Prevent redirects to same URL which could happen in certain

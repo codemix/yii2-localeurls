@@ -37,7 +37,6 @@ class RedirectTest extends TestCase
      * ```
      */
     public $testConfigs = [
-
         // No URL code for default language
         [
             'urlManager' => [
@@ -68,7 +67,6 @@ class RedirectTest extends TestCase
 
                 // No code in URL but params in session, cookie or headers
                 '/site/page' => [
-
                     // Country in GeoIp server var
                     ['/de/site/page', 'server' => ['HTTP_X_GEO_COUNTRY' => 'DEU']],
                     ['/at/site/page', 'server' => ['HTTP_X_GEO_COUNTRY' => 'AUT']],
@@ -269,7 +267,7 @@ class RedirectTest extends TestCase
                 'languages' => ['en-US', 'en', 'de'],
                 'enableDefaultLanguageUrlCode' => true,
                 'ignoreLanguageUrlPatterns' => [
-                    '#not/used#' => '#^site/other#'
+                    '#not/used#' => '#^site/other#',
                 ],
             ],
             'redirects' => [
@@ -326,7 +324,6 @@ class RedirectTest extends TestCase
                 '/en/site/page' => '/site/page',
             ],
         ],
-
 
         // Suffix in UrlManager, with + w/o URL code for default language
         [
@@ -714,10 +711,10 @@ class RedirectTest extends TestCase
                 if (is_array($to)) {
                     foreach ($to as $params) {
                         $url = $params[0];
-                        $request = isset($params['request']) ? $params['request'] : [];
-                        $session = isset($params['session']) ? $params['session'] : [];
-                        $cookie = isset($params['cookie']) ? $params['cookie'] : [];
-                        $server = isset($params['server']) ? $params['server'] : [];
+                        $request = $params['request'] ?? [];
+                        $session = $params['session'] ?? [];
+                        $cookie = $params['cookie'] ?? [];
+                        $server = $params['server'] ?? [];
                         $this->performRedirectTest($from, $url, $urlManager, $request, $session, $cookie, $server);
                     }
                 } else {
@@ -783,5 +780,4 @@ class RedirectTest extends TestCase
             $this->assertEquals($this->prepareUrl($to), $e->getMessage(), $message);
         }
     }
-
 }
