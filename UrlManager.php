@@ -548,44 +548,24 @@ class UrlManager extends BaseUrlManager
                 $language = $code;
                 $country = null;
             }
+
             if (in_array($language . '-*', $this->languages)) {
                 if ($hasDash) {
                     // TODO: Make wildcards work with script codes
                     // like `sr-Latn`
                     return [$language, strtoupper($country)];
-                } else {
-                    return [$language, null];
                 }
-            } elseif ($hasDash && in_array($language, $this->languages)) {
                 return [$language, null];
-            } else {
-                return [null, null];
             }
-        } else {
-            $result = $this->languages[$key];
-            return $hasDash ? explode('-', $result, 2) : [$result, null];
-        }
-
-        $language = $code;
-        $country = null;
-        $parts = explode('-', $code);
-        if (count($parts) === 2) {
-            $language = $parts[0];
-            $country = strtoupper($parts[1]);
-        }
-
-        if (in_array($code, $this->languages)) {
-            return [$language, $country];
-        } elseif (
-            $country && in_array("$language-$country", $this->languages) ||
-            in_array("$language-*", $this->languages)
-        ) {
-            return [$language, $country];
-        } elseif (in_array($language, $this->languages)) {
-            return [$language, null];
-        } else {
+            if ($hasDash && in_array($language, $this->languages)) {
+                return [$language, null];
+            }
             return [null, null];
         }
+
+        $result = $this->languages[$key];
+
+        return $hasDash ? explode('-', $result, 2) : [$result, null];
     }
 
     /**
