@@ -1,5 +1,9 @@
 <?php
+
+declare(strict_types=1);
+
 namespace tests;
+
 use yii\helpers\Url;
 
 class UrlCreationTest extends TestCase
@@ -205,7 +209,7 @@ class UrlCreationTest extends TestCase
                     'http://localhost/slugslash/baz/bar/' => ['/demo/slug-slash', 'language' => '', 'term' => 'baz'],
                     'http://localhost/slugslash/baz/bar/?x=y' => ['/demo/slug-slash', 'language' => '', 'term' => 'baz', 'x' => 'y'],
                 ],
-            ]
+            ],
         ],
 
         // Trailing slashes
@@ -380,9 +384,8 @@ class UrlCreationTest extends TestCase
 
                     'http://www.example.com/foo/baz/bar/' => ['/demo/absolute-slug', 'language' => '', 'term' => 'baz'],
                     'http://www.example.com/foo/baz/bar/?x=y' => ['/demo/absolute-slug', 'language' => '', 'term' => 'baz', 'x' => 'y'],
-
                 ],
-            ]
+            ],
         ],
 
         // Keep Upper case
@@ -501,7 +504,7 @@ class UrlCreationTest extends TestCase
                     '/demo/action?language=de' => ['/demo/action', 'language' => 'de'],
                     '/foo/baz/bar?language=de' => ['/demo/slug', 'language' => 'de', 'term' => 'baz'],
                 ],
-            ]
+            ],
         ],
         [
             'urlManager' => [
@@ -516,15 +519,14 @@ class UrlCreationTest extends TestCase
                     '/demo/action?language=de' => ['/demo/action', 'language' => 'de'],
                     '/foo/baz/bar?language=de' => ['/demo/slug', 'language' => 'de', 'term' => 'baz'],
                 ],
-            ]
+            ],
         ],
-
     ];
 
-    public function testUrlCreation()
+    public function testUrlCreation(): void
     {
         foreach ($this->testConfigs as $config) {
-            $urlManager = isset($config['urlManager']) ? $config['urlManager'] : [];
+            $urlManager = $config['urlManager'] ?? [];
             foreach ($config['urls'] as $requestUrl => $routes) {
                 $this->performUrlCreationTest($requestUrl, $urlManager, $routes);
             }
@@ -538,7 +540,7 @@ class UrlCreationTest extends TestCase
      * @param array $urlManager the urlManager configuration
      * @param array $routes to create URL for indexed by the expected URL
      */
-    public function performUrlCreationTest($requestUrl, $urlManager, $routes)
+    public function performUrlCreationTest($requestUrl, $urlManager, $routes): void
     {
         $this->tearDown();
         $this->mockUrlManager($urlManager);

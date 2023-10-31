@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace tests;
 
 use Yii;
@@ -24,7 +27,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     protected $_server;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         if ($this->_server === null) {
             // Keep initial $_SERVER content to restore after each
@@ -36,7 +39,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     /**
      * Destroy Yii app singleton, DI container, session and cookies
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         $_COOKIE = [];
         $_SERVER = $this->_server;
@@ -63,8 +66,8 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     {
         $url = $this->prepareUrl($url);
         $_SERVER['REQUEST_URI'] = $url;
-        $_SERVER['SCRIPT_NAME'] = $this->baseUrl.'/index.php';
-        $_SERVER['SCRIPT_FILENAME'] = __DIR__ . $this->baseUrl.'/index.php';
+        $_SERVER['SCRIPT_NAME'] = $this->baseUrl . '/index.php';
+        $_SERVER['SCRIPT_FILENAME'] = __DIR__ . $this->baseUrl . '/index.php';
         $_SERVER['DOCUMENT_ROOT'] = __DIR__;
         $parts = explode('?', $url);
         if (isset($parts[1])) {
@@ -89,7 +92,8 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
      *
      * @param array $config for urlManager component
      */
-    public function mockUrlManager($config = []) {
+    public function mockUrlManager($config = []): void
+    {
         $this->urlManager = $config;
     }
 
@@ -102,11 +106,12 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     {
         $url = $this->prepareUrl($url);
         $this->expectException('\yii\base\Exception');
-        $this->expectExceptionMessageRegExp('#^' . $url . '$#');
+        $this->expectExceptionMessageMatches('#^' . $url . '$#');
     }
 
     /**
      * @param string $url
+     *
      * @return string the URL with scriptName and baseUrl applied if enabled
      */
     protected function prepareUrl($url)
@@ -133,7 +138,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
             'id' => 'testapp',
             'language' => 'en',
             'basePath' => __DIR__,
-            'vendorPath' => __DIR__.'/../vendor/',
+            'vendorPath' => __DIR__ . '/../vendor/',
             'components' => [
                 'request' => [
                     'enableCookieValidation' => false,

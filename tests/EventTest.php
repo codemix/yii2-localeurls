@@ -1,10 +1,12 @@
 <?php
+
+declare(strict_types=1);
+
 namespace tests;
 
-use yii\helpers\Url;
-use \codemix\localeurls\LanguageChangedEvent;
+use codemix\localeurls\LanguageChangedEvent;
 
-class EventTest extends TestCase
+final class EventTest extends TestCase
 {
     protected $eventExpected = true;
     protected $eventFired = false;
@@ -14,7 +16,7 @@ class EventTest extends TestCase
     /**
      * @inheritdoc
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
         $this->eventExpected = true;
@@ -23,7 +25,7 @@ class EventTest extends TestCase
         $this->expectedOldLanguage = null;
     }
 
-    public function testFiresIfNoLanguagePersisted()
+    public function testFiresIfNoLanguagePersisted(): void
     {
         $this->mockUrlManager([
             'languages' => ['fr', 'en', 'de'],
@@ -36,7 +38,7 @@ class EventTest extends TestCase
         $this->assertTrue($this->eventFired);
     }
 
-    public function testFiresOnCookieLanguageChange()
+    public function testFiresOnCookieLanguageChange(): void
     {
         $_COOKIE['_language'] = 'de';
         $this->mockUrlManager([
@@ -51,7 +53,7 @@ class EventTest extends TestCase
         $this->assertTrue($this->eventFired);
     }
 
-    public function testFiresOnSessionLanguageChange()
+    public function testFiresOnSessionLanguageChange(): void
     {
         @session_start();
         $_SESSION['_language'] = 'de';
@@ -67,7 +69,7 @@ class EventTest extends TestCase
         $this->assertTrue($this->eventFired);
     }
 
-    public function testFiresNotIfNoCookieLanguageChange()
+    public function testFiresNotIfNoCookieLanguageChange(): void
     {
         $_COOKIE['_language'] = 'fr';
         $this->mockUrlManager([
@@ -80,7 +82,7 @@ class EventTest extends TestCase
         $this->assertFalse($this->eventFired);
     }
 
-    public function testFiresNotIfNoSessionLanguageChange()
+    public function testFiresNotIfNoSessionLanguageChange(): void
     {
         @session_start();
         $_SESSION['_language'] = 'fr';
@@ -94,7 +96,7 @@ class EventTest extends TestCase
         $this->assertFalse($this->eventFired);
     }
 
-    public function testFiresNotIfPersistenceDisabled()
+    public function testFiresNotIfPersistenceDisabled(): void
     {
         $this->mockUrlManager([
             'languages' => ['fr', 'en', 'de'],
@@ -111,9 +113,9 @@ class EventTest extends TestCase
     /**
      * Event handler
      */
-    public function languageChangedHandler($event)
+    public function languageChangedHandler($event): void
     {
-        $this->assertInstanceOf('\codemix\localeurls\LanguageChangedEvent', $event);
+        $this->assertInstanceOf(LanguageChangedEvent::class, $event);
         $this->assertTrue($this->eventExpected);
         $this->assertEquals($this->expectedLanguage, $event->language);
         $this->assertEquals($this->expectedOldLanguage, $event->oldLanguage);

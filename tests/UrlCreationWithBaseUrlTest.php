@@ -1,9 +1,10 @@
 <?php
+
+declare(strict_types=1);
+
 namespace tests;
 
-use yii\helpers\Url;
-
-class UrlCreationWithBaseUrlTest extends UrlCreationTest
+final class UrlCreationWithBaseUrlTest extends UrlCreationTest
 {
     protected $baseUrl = '/base';
 }
