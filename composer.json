@@ -1,35 +1,40 @@
 {
-  "name": "codemix/yii2-localeurls",
-  "description": "Automatic locale/language management for URLs.",
-  "keywords": ["yii2", "i18n", "locale"],
-  "type": "yii2-extension",
-  "license": "MIT",
-  "authors": [
+    "name": "codemix/yii2-localeurls",
+    "description": "Automatic locale/language management for URLs.",
+    "keywords": ["yii2", "i18n", "locale"],
+    "type": "yii2-extension",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Michael Härtl",
+            "email": "haertl.mike@gmail.com"
+        }
+    ],
+    "require": {
+        "yiisoft/yii2": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.6"
+    },
+    "repositories": [
     {
-      "name": "Michael Härtl",
-      "email": "haertl.mike@gmail.com"
+        "type": "composer",
+        "url": "https://asset-packagist.org"
     }
-  ],
-  "require": {
-    "yiisoft/yii2": "*"
-  },
-  "require-dev": {
-    "phpunit/phpunit": ">4.0 <8"
-  },
-  "repositories": [
-    {
-      "type": "composer",
-      "url": "https://asset-packagist.org"
+    ],
+    "autoload": {
+        "psr-4": {
+            "codemix\\localeurls\\": ""
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "tests\\": "tests"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "yiisoft/yii2-composer": true
+        }
     }
-  ],
-  "autoload": {
-    "psr-4": {
-      "codemix\\localeurls\\": ""
-    }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "tests\\": "tests"
-    }
-  }
 }

@@ -1,0 +1,32 @@
+on:
+  pull_request:
+    paths-ignore:
+      - 'docs/**'
+      - 'README.md'
+      - 'CHANGELOG.md'
+      - '.gitignore'
+      - '.gitattributes'
+      - 'infection.json.dist'
+      - 'psalm.xml'
+
+  push:
+    paths-ignore:
+      - 'docs/**'
+      - 'README.md'
+      - 'CHANGELOG.md'
+      - '.gitignore'
+      - '.gitattributes'
+      - 'infection.json.dist'
+      - 'psalm.xml'
+
+name: build
+
+jobs:
+  phpunit:
+    uses: yiisoft/actions/.github/workflows/phpunit.yml@master
+    with:
+      extensions: mbstring, intl
+      os: >-
+        ['ubuntu-latest', 'windows-latest']
+      php: >-
+        ['7.4', '8.0', '8.1', '8.2', '8.3']

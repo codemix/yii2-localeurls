@@ -1,9 +1,10 @@
 <?php
+
+declare(strict_types=1);
+
 namespace tests;
 
-use yii\helpers\Url;
-
-class UrlManagerWithScriptNameTest extends UrlManagerTest
+final class UrlManagerWithScriptNameTest extends UrlManagerTest
 {
     protected $showScriptName = true;
 }
