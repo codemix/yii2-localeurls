@@ -617,8 +617,7 @@ class UrlManager extends BaseUrlManager
             $params[$this->languageParam] = $language;
         }
         // See Yii Issues #8291 and #9161:
-        $params = $params + $this->_request->getQueryParams();
-        array_unshift($params, $route);
+        $params = [$route] + $params + $this->_request->getQueryParams();
         $url = $this->createUrl($params);
         // Required to prevent double slashes on generated URLs
         if ($this->suffix === '/' && $route === '' && count($params) === 1) {
