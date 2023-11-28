@@ -249,9 +249,10 @@ class UrlManager extends BaseUrlManager
             $isLanguageGiven = isset($params[$this->languageParam]);
             $language = $isLanguageGiven ? $params[$this->languageParam] : Yii::$app->language;
             $isDefaultLanguage = $language === $this->getDefaultLanguage();
+            $isLinkRefersToBaseUrl = empty($params[0]);
 
-            if ($isLanguageGiven) {
-                unset($params[$this->languageParam]);
+            if (!$isLanguageGiven && !$isLinkRefersToBaseUrl) {
+                $params[$this->languageParam] = $language;
             }
 
             $url = parent::createUrl($params);
