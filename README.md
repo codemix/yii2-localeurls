@@ -133,6 +133,16 @@ redirected to the URLs without language code. For example if default language is
     /fr/            -> Redirect to /
     /fr/some/page   -> Redirect to /some/page
 
+If you need to keep these URLs accessible without redirect (e.g. to avoid extra redirects
+reported by SEO tools like Google Search Console), you can disable this behavior:
+
+```php
+'enableDefaultLanguageRedirect' => false,
+```
+
+Then `/fr/some/page` will stay on `/fr/some/page` while the default language still uses
+unprefixed URLs when generating links.
+
 If `enableDefaultLanguageUrlCode` is changed to `true` it's vice versa. The default language
 is now treated like any other configured language. Requests with URL that don't contain a
 language code are no longer accessible:
@@ -238,6 +248,7 @@ for the default language in the URL. For example if default language is `fr`:
     /fr/demo/action -> Redirect to /demo/action
 
 In this case, `fr` will first be stored as last used language before the user is redirected.
+If `enableDefaultLanguageRedirect` is `false`, this redirect step is skipped.
 
 If you explicitely need to create a URL to the default language without any language code,
 you can also pass an empty string as language:
