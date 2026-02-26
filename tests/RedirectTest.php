@@ -167,6 +167,29 @@ class RedirectTest extends TestCase
             ],
         ],
 
+        // No redirect from default-language-prefixed URL
+        [
+            'urlManager' => [
+                'languages' => ['en-US', 'en', 'de'],
+                'enableDefaultLanguageRedirect' => false,
+                'rules' => [
+                    '/custom' => 'test/action',
+                ],
+            ],
+            'redirects' => [
+                '/en' => false,
+                '/en/site/page' => false,
+                '/en/site/page?a=b' => false,
+                '/en/custom' => false,
+
+                '/site/page' => [
+                    ['/de/site/page', 'session' => ['_language' => 'de']],
+                    [false, 'session' => ['_language' => 'en']],
+                    [false, 'cookie' => ['_language' => 'en']],
+                ],
+            ],
+        ],
+
         // URL code for default language
         [
             'urlManager' => [

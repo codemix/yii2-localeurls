@@ -51,6 +51,17 @@ class UrlManager extends BaseUrlManager
     public $enableDefaultLanguageUrlCode = false;
 
     /**
+     * @var bool whether requests containing the default language code should
+     * be redirected to URLs without language code when
+     * `$enableDefaultLanguageUrlCode` is `false`.
+     *
+     * This only affects requests that explicitly contain the default language
+     * code (e.g. `/en/page`). When set to `false`, such requests stay on the
+     * prefixed URL and no reset redirect is issued.
+     */
+    public $enableDefaultLanguageRedirect = true;
+
+    /**
      * @var bool whether to detect the app language from the HTTP headers (i.e.
      * browser settings).  Default is `true`.
      */
@@ -397,7 +408,7 @@ class UrlManager extends BaseUrlManager
             // Now we can redirect to the URL without language prefix, if default prefixes are disabled.
             $reset = !$this->enableDefaultLanguageUrlCode && $language === $this->_defaultLanguage;
 
-            if ($reset || $normalized) {
+            if (($reset && $this->enableDefaultLanguageRedirect) || $normalized) {
                 $this->redirectToLanguage('');
             }
         } else {
